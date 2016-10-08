@@ -1,0 +1,5 @@
+3 3
+0 0 S
+RRMRMLM
+1 3 W
+MLMLM
