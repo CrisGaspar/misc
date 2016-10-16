@@ -1,9 +1,6 @@
 import os
 import sys
 
-from os.path import isfile, join
-
-
 class RoverException(Exception):
     def __init__(self, msg):
         self.msg = msg
@@ -119,7 +116,7 @@ class RoverExploration:
             self.rovers.append(rover)
         return success
 
-    def _position_line_to_tuple(self, line):
+    def _position_line_to_tuple(line):
         position = [s.rstrip() for s in line.split(' ')]
         position[0] = int(position[0])
         position[1] = int(position[1])
@@ -128,14 +125,14 @@ class RoverExploration:
     def load_rover_data(self, filename):
         with open(filename, 'r') as f:
             lines = f.readlines()
-            self.limits[1] = self._position_line_to_tuple(lines[0])
+            self.limits[1] = _position_line_to_tuple(lines[0])
 
             if len(lines) % 2 != 1:
                 raise RoverException("Incorrect input: rover data input file has even number of lines")
 
             rovers_count = (len(lines) - 1) // 2
             for i in range(0, rovers_count):
-                position_tuple = self._position_line_to_tuple(lines[2*i+1])
+                position_tuple = _position_line_to_tuple(lines[2*i+1])
                 commands = lines[2*i+2].rstrip()
                 self.rovers_input_data.append((position_tuple, commands))
 
@@ -143,7 +140,7 @@ class RoverExploration:
         positions =  []
         with open(filename, 'r') as f:
             for line in f.readlines():
-                positions.append(self._position_line_to_tuple(line))
+                positions.append(_position_line_to_tuple(line))
         return positions
 
 

@@ -28,21 +28,21 @@ def findClosest(colorTuple):
             closest = "Inconclusive"
     return closest
 
-def findColorCode(hex):
-    x = int(hex[0:8], 2)
-    y = int(hex[8:16],2)
-    z = int(hex[16:24],2)
+def findColorCode(hexVal):
+    x = int(hexVal[0:8], 2)
+    y = int(hexVal[8:16],2)
+    z = int(hexVal[16:24],2)
     return (x,y,z)
 
-def  ClosestColor( hexcodes):
+def  ClosestColor( hexValCodes):
     res = []
-    for hex in hexcodes:
+    for hex in hexValCodes:
         closest = findClosest(findColorCode(hex))
         res.append(closest)
     return res
 
 if __name__ == "__main__":
-    hexcodes = ['000000110000011100001111']
-    results = ClosestColor(hexcodes)
+    hexValCodes = ['000000110000011100001111']
+    results = ClosestColor(hexValCodes)
     for res in results:
         print "{}".format(res)

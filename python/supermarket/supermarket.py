@@ -15,10 +15,10 @@ class Product:
 class Discount:
     discounts = []
 
-    def __init__(self, discounts = []):
+    def __init__(self, discounts):
         self.discounts = discounts
         self.discounts.sort(reverse = True)
-        print self.discounts
+        print(self.discounts)
 
 
     def add(self, count = 0, total_price = 0.0):
@@ -41,7 +41,7 @@ class Checkout:
         self.id_to_counts[id] = cur_count + count
 
     def _calculate_product_price(self, count, product):
-        d = self.id_to_discounts.get(product.id, Discount())
+        d = self.id_to_discounts.get(product.id, Discount([]))
         total = 0
 
         for cnt,discount_price in d.discounts:
@@ -67,4 +67,4 @@ class Checkout:
 
 if __name__ == "__main":
     p = Product(price = 1.99)
-    print p.get_price()
+    print(p.get_price())

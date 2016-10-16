@@ -41,11 +41,11 @@ def braces(values):
     return res
 
 if __name__ == "__main__":
-    input = [
+    test_input = [
         "a(b[c(d[f][[g]])h]i)j[",
         "([]{()}())"
     ]
-    output = braces(input)
-    assert(output[0] == "NO")
-    assert(output[1] == "YES")
+    test_output = braces(test_input)
+    assert(test_output[0] == "NO")
+    assert(test_output[1] == "YES")
 
