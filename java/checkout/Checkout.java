@@ -1,7 +1,6 @@
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import com.google.common.util.concurrent.AtomicDouble;
 
 /**

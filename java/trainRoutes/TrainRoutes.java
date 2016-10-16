@@ -44,7 +44,7 @@ public class TrainRoutes {
         }
     }
 
-    void addDestinationToHashMap(String startStation, String destination) {
+    protected void addDestinationToHashMap(String startStation, String destination) {
         // Create an initial set in case there were no previously known destinations
         HashSet<String> destinations = new HashSet<>();
         destinations.add(destination);

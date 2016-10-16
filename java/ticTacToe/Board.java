@@ -348,6 +348,8 @@ public class Board {
             case 0:
                 System.out.println("It's a draw!");
                 break;
+            default:
+                throw new IllegalArgumentException();
         }
     }
 }
