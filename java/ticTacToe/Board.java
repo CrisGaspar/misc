@@ -108,10 +108,7 @@ public class Board {
 
     private Integer getMatchScore(Player winner, Player current) {
         //pre: called if we have a winner`:
-        if (winner == current) {
-            return 1;
-        }
-        return -1;
+        return winner.equals(current) ? 1: -1;
     }
 
     private Integer horizontalScore(Player currentPlayer) {
