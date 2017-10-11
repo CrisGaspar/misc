@@ -28,7 +28,7 @@ public interface UserApi {
 
     @ApiOperation(value = "Create user", notes = "Creating a new user", response = Void.class, tags={ "user", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Success. Hello $name", response = Void.class) })
+        @ApiResponse(code = 200, message = "Success.", response = Void.class) })
     
     @RequestMapping(value = "/user",
         produces = { "application/xml", "application/json" }, 
@@ -49,7 +49,7 @@ public interface UserApi {
 
     @ApiOperation(value = "Get user by username", notes = "", response = User.class, tags={ "user", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Success. Retrieved user $name", response = User.class),
+        @ApiResponse(code = 200, message = "Success. Retrieved user", response = User.class),
         @ApiResponse(code = 400, message = "Invalid username", response = Void.class),
         @ApiResponse(code = 404, message = "Did not find user", response = Void.class) })
     
@@ -67,6 +67,6 @@ public interface UserApi {
     @RequestMapping(value = "/user/{username}",
         produces = { "application/json" }, 
         method = RequestMethod.PUT)
-    ResponseEntity<Void> updateUser(@ApiParam(value = "name that need to be updated",required=true ) @PathVariable("username") String username,@ApiParam(value = "Updated user $name" ,required=true )  @Valid @RequestBody User body);
+    ResponseEntity<Void> updateUser(@ApiParam(value = "name that need to be updated",required=true ) @PathVariable("username") String username,@ApiParam(value = "Updated user" ,required=true )  @Valid @RequestBody User body);
 
 }
