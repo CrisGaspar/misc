@@ -1,4 +1,5 @@
 Miscellaneous code
+Solutions for programming exercises
 
 * C++
   - matrixRotation.cpp: rotate a matrix clockwise by 1 position for each element
