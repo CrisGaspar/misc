@@ -1,5 +1,7 @@
 Miscellaneous code
 
+Solutions for programming exercises
+
 * C++
   - matrixRotation.cpp: rotate a matrix clockwise by 1 position for each element
   - value-semantics.cpp: Adobe implementation of a container of hetergenenous objects - useful for full undo functionality
