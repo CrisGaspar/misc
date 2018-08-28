@@ -26,15 +26,19 @@ get_data <- function(filename, municipalities = NULL) {
   data_frame  
 }
 
-add_stats <- function(data_frame) {
-  data_frame_2 <- data_frame[,-1]
-  rownames(data_frame_2) <- data_frame$Municipality
-  data_frame_2["Min",] <- colMins(data_frame_2)
-  data_frame_2["Max",] <- colMaxs(data_frame_2)
-  data_frame_2["Average",] <- colMeans(data_frame_2)
-  data_frame_2["Median",] <- colMedians(data_frame_2)
-  data_frame_2
+get_stats <- function(data_frame) {
+  data_frame_only_numeric <- data_frame[,-1]
+  
+  df <- data.frame(matrix(ncol = ncol(data_frame)-1, nrow = 0))
+  colnames(df) <- colnames(data_frame_only_numeric)
+
+  df["Min",] <- colMins(data_frame_only_numeric)
+  df["Max",] <- colMaxs(data_frame_only_numeric)
+  df["Average",] <- colMeans(data_frame_only_numeric)
+  df["Median",] <- colMedians(data_frame_only_numeric)
+  df
 }
+
 
 call_login_endpoint <- function(userid, password) {
   url <- paste(base, login_endpoint, "?", "userid", "=", userid, "&", "password", "=", password, sep="")
@@ -76,12 +80,6 @@ print(municipality_selected_choices)
 
 refresh_data <- function(src_filename, selected_municpalities) {
   data_frame <- get_data(src_filename, selected_municpalities)
-  data_frame <- add_stats(data_frame)
-  
-  # Format to display currency
-  ncols_data = ncol(data_frame)
-  DT::datatable(data_frame) %>% formatCurrency(1:ncols_data)
-  print(data_frame)
   data_frame
 }
 
@@ -104,6 +102,7 @@ ui <- fluidPage(
               size = 10),
  # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
   DTOutput("data"),
+  DTOutput("data_stats"),
 #  actionButton(inputId="exportButton", label ="Export"),
   # Button
   downloadButton(export_filename, "Download"),
@@ -111,19 +110,35 @@ ui <- fluidPage(
 #  actionButton(inputId = "save", label = "Save")
 )
 
-renderDT_currency <- function(data_frame) {
-  renderDT(datatable(data_frame) %>% formatCurrency(1:ncol(data_frame)), selection = 'none', server = F, editable = T)
+renderDT_formatted <- function(data_frame, can_edit = F) {
+  renderDT(datatable(data_frame) %>% formatCurrency(1:ncol(data_frame)), selection = 'none', server = F, editable = can_edit)
 }
 
 server <- function(input, output, session) {
+  # Refresh and render
   data_frame <- refresh_data(source_filename, municipality_selected_choices)
+  # TODO: set 'editable' based on user role
+  editable = T
+  output$data <- renderDT_formatted(data_frame, can_edit = editable)
+  data_frame_stats <- get_stats(data_frame)
+  output$data_stats <- renderDT_formatted(data_frame_stats, can_edit = F)
+  
+  
+  slices <- c(10, 12,4, 16, 8)
+  lbls <- c("US", "UK", "Australia", "Germany", "France")
+  #pie(slices, labels = lbls, main="Tax Split by Type of Property")
+  
+  output$plot <- renderPlot({pie(slices, labels = lbls, main="Tax Split by Type of Property")})    
   
   observeEvent(input$municipalitySelector, {
     # Refresh data frame with newly selected municipalities
     data_frame <- refresh_data(source_filename, input$municipalitySelector)
     
     # Refresh data table in UI
-    output$data <- renderDT_currency(data_frame)
+    # TODO: set 'editable' based on user role
+    output$data <- renderDT_formatted(data_frame, can_edit = editable)
+    data_frame_stats <- get_stats(data_frame)
+    output$data_stats <- renderDT_formatted(data_frame_stats, can_edit = F)
   })
   
   
@@ -171,14 +186,6 @@ server <- function(input, output, session) {
       write_xlsx(data_frame, file)
     }
   )    
-
-  output$data <- renderDT_currency(data_frame)
-
-  slices <- c(10, 12,4, 16, 8)
-  lbls <- c("US", "UK", "Australia", "Germany", "France")
-  #pie(slices, labels = lbls, main="Tax Split by Type of Property")
-  
-  output$plot <- renderPlot({pie(slices, labels = lbls, main="Tax Split by Type of Property")})
 }
 
 shinyApp(ui = ui, server = server)
