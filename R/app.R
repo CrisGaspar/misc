@@ -80,13 +80,10 @@ refresh_data <- function(src_filename, selected_municpalities) {
   
   # Format to display currency
   ncols_data = ncol(data_frame)
-  datatable(data_frame) %>% formatCurrency(1:ncols_data)
+  DT::datatable(data_frame) %>% formatCurrency(1:ncols_data)
   print(data_frame)
-  print(ncol(data_frame))
   data_frame
 }
-
-data_frame <- refresh_data(source_filename, municipality_selected_choices)
 
 ui <- fluidPage(
 #  tabPanel("Login",
@@ -114,6 +111,10 @@ ui <- fluidPage(
 #  actionButton(inputId = "save", label = "Save")
 )
 
+renderDT_currency <- function(data_frame) {
+  renderDT(datatable(data_frame) %>% formatCurrency(1:ncol(data_frame)), selection = 'none', server = F, editable = T)
+}
+
 server <- function(input, output, session) {
   data_frame <- refresh_data(source_filename, municipality_selected_choices)
   
@@ -122,7 +123,7 @@ server <- function(input, output, session) {
     data_frame <- refresh_data(source_filename, input$municipalitySelector)
     
     # Refresh data table in UI
-    output$data <- renderDT(data_frame, selection = 'none', server = F, editable = T)
+    output$data <- renderDT_currency(data_frame)
   })
   
   
@@ -171,15 +172,13 @@ server <- function(input, output, session) {
     }
   )    
 
-  output$data <- renderDT(data_frame, selection = 'none', server = F, editable = T)
+  output$data <- renderDT_currency(data_frame)
 
   slices <- c(10, 12,4, 16, 8)
   lbls <- c("US", "UK", "Australia", "Germany", "France")
   #pie(slices, labels = lbls, main="Tax Split by Type of Property")
   
   output$plot <- renderPlot({pie(slices, labels = lbls, main="Tax Split by Type of Property")})
-  
-#    output$data <- renderDT(data_frame, selection = 'none', server = F, editable = input$passwd %in% editPermissionUsers)
 }
 
 shinyApp(ui = ui, server = server)
