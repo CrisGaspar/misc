@@ -31,8 +31,6 @@ get_data <- function(filename, municipalities = NULL) {
 # Create stats data frame for given data frame with min, max, average, and median 
 # for each of numeric column in given data frame
 get_stats <- function(data_frame) {
-  
-  # TODO: adjust to skip more an arbitrary number of intial non-numeric columns
   data_frame_only_numeric <- data_frame[,-non_numeric_cols_count]
   
   # Create empty data frame that will store the stats
@@ -88,7 +86,7 @@ call_API <- function(endpoint, userid=NULL, municipalities = NULL) {
 renderDT_formatted <- function(data_frame, can_edit = F) {
   # Before rendering format the numbers to display in currency format
   # TODO: handle percent and other non-currency columns
-  renderDT(datatable(data_frame) %>% formatCurrency(1:ncol(data_frame)), selection = 'none', server = F, editable = can_edit)
+  renderDT(datatable(data_frame, editable = can_edit) %>% formatCurrency(1:ncol(data_frame)), selection = 'none', server = F)
 }
 
 #
@@ -138,17 +136,11 @@ server <- function(input, output, session) {
   })
   
   ################### APP SERVER CODE #####################################################
-  # TODO: FIX this!!!!
-  # Set selected municipalities based on existing user preference
-  #input$municipalitySelector <- unlist(call_API(municipalities_endpoint, userid))
-  
   # Refresh data frame
   data_frame <- get_data(source_filename, municipality_selected_choices)
   
   # Render the data and stats tables in UI 
-  # TODO: set 'editable' based on user role
-  editable = T
-  output$data <- renderDT_formatted(data_frame, can_edit = editable)
+  output$data <- renderDT_formatted(data_frame, can_edit = user_input$is_superuser)
   data_frame_stats <- get_stats(data_frame)
   output$data_stats <- renderDT_formatted(data_frame_stats, can_edit = F)
   
@@ -168,9 +160,7 @@ server <- function(input, output, session) {
     data_frame <- get_data(source_filename, input$municipalitySelector)
     
     # Render data and stats tables in UI
-    
-    # TODO: set 'editable' based on user role
-    output$data <- renderDT_formatted(data_frame, can_edit = editable)
+    output$data <- renderDT_formatted(data_frame, can_edit = user_input$is_superuser)
     data_frame_stats <- get_stats(data_frame)
     output$data_stats <- renderDT_formatted(data_frame_stats, can_edit = F)
   })
@@ -226,13 +216,15 @@ server <- function(input, output, session) {
   
   #### PASSWORD server code ---------------------------------------------------- 
   # reactive value containing user's authentication status
-  user_input <- reactiveValues(authenticated = FALSE, error_message = NULL)
+  user_input <- reactiveValues(authenticated = FALSE, error_message = NULL, is_superuser = F)
   
   observeEvent(input$login_button, {
     login_result <- call_login_endpoint(input$user_name, input$password)
+    print(login_result)
     
     if (login_result$success == "true") {
       user_input$authenticated <- TRUE
+      user_input$is_superuser <- (login_result$is_superuser == 'TRUE') 
 
       # Get Municipalities from API
       
@@ -261,11 +253,10 @@ server <- function(input, output, session) {
     )
   })
   
-  # red error message if bad credentials
+  # error message if bad credentials
   output$pass <- renderUI({
     if (!is.null(user_input$error_message)) {
-      #TODO: Check if should remove user_input$error_message for security reasons
-      h5(strong(paste0("Failed to login. Incorrect credentials.\n", user_input$error_message), style = "color:red"), align = "center")
+      h5(strong(paste0("Failed to login. Incorrect credentials.\n"), style = "color:red"), align = "center")
     } else {
       ""
     }
