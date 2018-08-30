@@ -106,37 +106,48 @@ renderDT_formatted <- function(data_frame, can_edit = F) {
 #
 # UI definition
 #
-ui <- fluidPage(
-#  tabPanel("Login",
-#           br(),
-#           tags$form(
-#             textInput(inputId = "username", label = "Userid"),
-#             passwordInput("passwd",label = "Password"),
-#             submitButton("Login")
-#           ),
-#           textOutput("pwrd")
-#  ),
-  selectInput(inputId = "municipalitySelector", 
-              label="Municipalities", 
-              choices = municipality_all_choices,
-              selected = municipality_selected_choices,
-              multiple = TRUE,
-              selectize = FALSE,
-              size = 10),
- # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
-  DTOutput("data"),
-  DTOutput("data_stats"),
-#  actionButton(inputId="exportButton", label ="Export"),
-  # Button
-  downloadButton(export_filename, "Download"),
-  mainPanel(plotOutput('plot'))
-#  actionButton(inputId = "save", label = "Save")
-)
+ui <- uiOutput("ui")
 
 # 
 # Server function sets up how the UI works
 #
 server <- function(input, output, session) {
+  #### UI code --------------------------------------------------------------
+  output$ui <- renderUI({
+    if (user_input$authenticated == FALSE) {
+      ##### UI code for login page
+      fluidPage(
+        fluidRow(
+          column(width = 2, offset = 5,
+                 br(), br(), br(), br(),
+                 uiOutput("uiLogin"),
+                 uiOutput("pass")
+          )
+        )
+      )
+    } else {
+      #### Your app's UI code goes here!
+      fluidPage(
+        selectInput(inputId = "municipalitySelector", 
+                    label="Municipalities", 
+                    choices = municipality_all_choices,
+                    selected = municipality_selected_choices,
+                    multiple = TRUE,
+                    selectize = FALSE,
+                    size = 10),
+        # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
+        DTOutput("data"),
+        DTOutput("data_stats"),
+        #  actionButton(inputId="exportButton", label ="Export"),
+        # Button
+        downloadButton(export_filename, "Download"),
+        mainPanel(plotOutput('plot'))
+        #  actionButton(inputId = "save", label = "Save")
+      )
+    }
+  })
+  
+  ################### APP SERVER CODE #####################################################
   # TODO: FIX this!!!!
   # Set selected municipalities based on existing user preference
   #input$municipalitySelector <- unlist(call_API(municipalities_endpoint, userid))
@@ -221,7 +232,48 @@ server <- function(input, output, session) {
       print(file)
       write_xlsx(data_frame, file)
     }
-  )    
+  )
+  
+  #### PASSWORD server code ---------------------------------------------------- 
+  # reactive value containing user's authentication status
+  user_input <- reactiveValues(authenticated = FALSE, error_message = NULL)
+  
+  observeEvent(input$login_button, {
+    login_result <- call_login_endpoint(input$user_name, input$password)
+    
+    if (login_result$success == "true") {
+      user_input$authenticated <- TRUE
+    } else {
+      user_input$authenticated <- FALSE
+    }
+    
+    # if user is not authenticated, set login status variable for error messages below
+    if (user_input$authenticated == FALSE) {
+        user_input$error_message <- login_result$error_message
+    }
+  })   
+  
+  # password entry UI componenets:
+  #   username and password text fields, login button
+  output$uiLogin <- renderUI({
+    wellPanel(
+      textInput("user_name", "User Name:"),
+      
+      passwordInput("password", "Password:"),
+      
+      actionButton("login_button", "Log in")
+    )
+  })
+  
+  # red error message if bad credentials
+  output$pass <- renderUI({
+    if (!is.null(user_input$error_message)) {
+      #TODO: Check if should remove user_input$error_message for security reasons
+      h5(strong(paste0("Failed to login. Incorrect credentials.\n", user_input$error_message), style = "color:red"), align = "center")
+    } else {
+      ""
+    }
+  })
 }
 
 # start our web app
