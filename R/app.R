@@ -22,10 +22,9 @@ export_filename <-"bmaExport.xls"
 ##### TODO: FIX to read from API instead of xls file
 get_data <- function(filename, municipalities = NULL) {
   data_frame <- read_excel(filename)
-  # TODO::: UNCOMMENT BELOW !!!!
-  #if (!is.null(municipalities)) {
-  #  data_frame <- data_frame[data_frame$Municipality %in% municipalities, ]
-  #}
+  if (!is.null(municipalities)) {
+    data_frame <- data_frame[data_frame$Municipality %in% municipalities, ]
+  }
   data_frame  
 }
 
@@ -43,6 +42,7 @@ get_stats <- function(data_frame) {
   df["Min",] <- colMins(data_frame_only_numeric, na.rm = TRUE)
   df["Max",] <- colMaxs(data_frame_only_numeric, na.rm = TRUE)
   df["Average",] <- colMeans(data_frame_only_numeric, na.rm = TRUE)
+  # Note: using colMedians from miscTools package because splus2R package implementation does not work with NA values
   df["Median",] <- colMedians(data_frame_only_numeric, na.rm = TRUE)
   df
 }
@@ -124,7 +124,7 @@ server <- function(input, output, session) {
         )
       )
     } else {
-      #### Your app's UI code goes here!
+      #### App's UI code goes here!
       fluidPage(
         selectInput(inputId = "municipalitySelector", 
                     label="Custom Grouping", 
@@ -146,14 +146,7 @@ server <- function(input, output, session) {
   })
   
   ################### APP SERVER CODE #####################################################
-  # Refresh data frame
-  data_frame <- get_data(source_filename, municipality_selected_choices)
-  
-  # Render the data and stats tables in UI 
-  output$data <- renderDT_formatted(data_frame)
-  data_frame_stats <- get_stats(data_frame)
-  output$data_stats <- renderDT_formatted(data_frame_stats, no_table_header = T)
-  
+
   # TODO: GRAPHS!!!!
   slices <- c(10, 12,4, 16, 8)
   lbls <- c("US", "UK", "Australia", "Germany", "France")
@@ -167,7 +160,7 @@ server <- function(input, output, session) {
   observeEvent(input$municipalitySelector, {
     # Refresh data frame filtered to newly selected municipalities
     data_frame <- get_data(source_filename, input$municipalitySelector)
-    
+
     # Render data and stats tables in UI
     output$data <- renderDT_formatted(data_frame)
     data_frame_stats <- get_stats(data_frame)
@@ -240,8 +233,6 @@ server <- function(input, output, session) {
       
       # Get municipalities that current user is interested in
       municipality_choices$selected <- unlist(call_API(municipalities_endpoint, input$user_name))
-      print(municipality_choices)
-      
     } else {
       user_input$authenticated <- FALSE
       user_input$error_message <- login_result$error_message
