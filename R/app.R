@@ -10,10 +10,7 @@ library(splus2R)
 setwd("~/Downloads/")
 source_filename <-"bmaDataSample.xls"
 
-userid <- 'crisoti'
-password <- 'Eclipse1999'
 api_server_url <- 'http://localhost:8000/bmaapp/'
-
 login_endpoint <- 'login'
 municipalities_endpoint <- 'municipalities'
 data_endpoint <- 'data'
@@ -21,6 +18,7 @@ data_endpoint <- 'data'
 non_numeric_cols_count <- 1
 export_filename <-"bmaExport.xls"
 
+##### TODO: FIX to read from API instead of xls file
 get_data <- function(filename, municipalities = NULL) {
   data_frame <- read_excel(filename)
   # TODO::: UNCOMMENT BELOW !!!!
@@ -86,16 +84,6 @@ call_API <- function(endpoint, userid=NULL, municipalities = NULL) {
   print(call_success_final)
 }
 
-# Login user
-login_result <- call_login_endpoint(userid, password)
-
-# Get Municipalities from API
-# Full list of Municipalities
-municipality_all_choices <- call_API(municipalities_endpoint)
-# Municipalities that current user is interested in
-#smunicipality_selected_choices <- unlist(call_API(municipalities_endpoint, userid))
-municipality_selected_choices <- list()
-
 # UI rendering of data frame as a data table
 renderDT_formatted <- function(data_frame, can_edit = F) {
   # Before rendering format the numbers to display in currency format
@@ -112,6 +100,8 @@ ui <- uiOutput("ui")
 # Server function sets up how the UI works
 #
 server <- function(input, output, session) {
+  municipality_choices <- reactiveValues(all = list(), selected = list())
+  
   #### UI code --------------------------------------------------------------
   output$ui <- renderUI({
     if (user_input$authenticated == FALSE) {
@@ -130,8 +120,8 @@ server <- function(input, output, session) {
       fluidPage(
         selectInput(inputId = "municipalitySelector", 
                     label="Municipalities", 
-                    choices = municipality_all_choices,
-                    selected = municipality_selected_choices,
+                    choices = municipality_choices$all,
+                    selected = municipality_choices$selected,
                     multiple = TRUE,
                     selectize = FALSE,
                     size = 10),
@@ -156,7 +146,7 @@ server <- function(input, output, session) {
   data_frame <- get_data(source_filename, municipality_selected_choices)
   
   # Render the data and stats tables in UI 
-  # TODO: set 'editable' api_server_urld on user role
+  # TODO: set 'editable' based on user role
   editable = T
   output$data <- renderDT_formatted(data_frame, can_edit = editable)
   data_frame_stats <- get_stats(data_frame)
@@ -179,7 +169,7 @@ server <- function(input, output, session) {
     
     # Render data and stats tables in UI
     
-    # TODO: set 'editable' api_server_urld on user role
+    # TODO: set 'editable' based on user role
     output$data <- renderDT_formatted(data_frame, can_edit = editable)
     data_frame_stats <- get_stats(data_frame)
     output$data_stats <- renderDT_formatted(data_frame_stats, can_edit = F)
@@ -243,13 +233,19 @@ server <- function(input, output, session) {
     
     if (login_result$success == "true") {
       user_input$authenticated <- TRUE
+
+      # Get Municipalities from API
+      
+      # Full list of Municipalities
+      municipality_choices$all <- call_API(municipalities_endpoint)
+      
+      # Municipalities that current user is interested in
+      municipality_choices$selected <- unlist(call_API(municipalities_endpoint, input$user_name))
+      print(municipality_choices)
+      
     } else {
       user_input$authenticated <- FALSE
-    }
-    
-    # if user is not authenticated, set login status variable for error messages below
-    if (user_input$authenticated == FALSE) {
-        user_input$error_message <- login_result$error_message
+      user_input$error_message <- login_result$error_message
     }
   })   
   
