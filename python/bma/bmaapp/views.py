@@ -4,16 +4,34 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
+from collections import namedtuple
 from django.utils.datastructures import MultiValueDictKeyError
 
 import json
 
-from bmaapp.models import EndUser, Municipality
+from bmaapp.models import EndUser, Municipality, MunicipalityData
+
+# Helper methods
+def is_user_allowed(current_user, target_user):
+    return (current_user.username == target_user) or current_user.is_superuser
+
+def error_response(error_msg):
+    return JsonResponse({'success': 'false', 'error_message' : error_msg})
+
+def success_response():
+    return JsonResponse({'success': 'true', 'error_message': ''})
+
+def login_success_response(is_superuser):
+    return JsonResponse({'success': 'true', 'error_message': '', 'is_superuser': is_superuser})
+
+def _json_object_hook(d): return namedtuple('X', d.keys())(*d.values())
+def json2obj(data): return json.loads(data, object_hook=_json_object_hook)
+
 
 # Create your views here.
 def index(request):
     return HttpResponse("Hello, world. You're at the BMA index.")
-
 
 # PRE condition: user logged in
 def get_municipalities_for_user(userID):
@@ -111,7 +129,7 @@ def municipalities(request):
             return error_response(error_msg)
         return success_response()
 
-    raise Http404('ERROR: Municipalities endpoint supports only GET or POST')
+    raise Http404('ERROR: /municipalities endpoint supports only GET or POST')
 
 def login(request):
     try:
@@ -123,7 +141,7 @@ def login(request):
 
     if user is not None:
         django_login(request, user)
-        return success_response()
+        return login_success_response(user.is_superuser)
 
     error_msg = 'ERROR: Invalid userid or password'
     return error_response(error_msg)
@@ -132,13 +150,53 @@ def logout(request):
     django_logout(request)
     return success_response()
 
+def municipality_data(request):
+    if request.user is None or not request.user.is_authenticated:
+        error_msg = "ERROR: User MUST authenticate first"
+        return error_response(error_msg)
 
-# Helper methods
-def is_user_allowed(current_user, target_user):
-    return (current_user.username == target_user) or current_user.is_superuser
+    user_id = request.user.username
 
-def error_response(error_msg):
-    return JsonResponse({'success': 'false', 'error_message' : error_msg})
+    if user_id is None:
+        error_msg = "ERROR: Missing userid"
+        return error_response(error_msg)
 
-def success_response():
-    return JsonResponse({'success': 'true', 'error_message': ''})
+    if request.method == 'GET':
+        year = request.GET.get('year')
+        print(year)
+        return get_municipality_data(user_id, year)
+
+    if request.method == 'POST':
+        if not request.user.is_superuser:
+            error_msg = 'MUST be logged in as superuser to change update municipality data'
+            return error_response(error_msg)
+
+        try:
+            json_object = json.loads(request.body)
+            data_to_write = json_object['data']
+
+            #TODO: Fix to store the full info 3-tuple (name, study_location, population_band)
+            for row_dict in data_to_write:
+                print(row_dict)
+                municipality_data = MunicipalityData()
+                municipality_data.load(row_dict)
+                municipality_data.save()
+        except json.JSONDecodeError as e:
+            error_msg = "ERROR: JSON decoding failed for request body."
+            return error_response(error_msg)
+        return success_response()
+    raise Http404('ERROR: Municipality data endpoint supports only GET or POST')
+
+
+def get_municipality_data(userid, year):
+    # TODO: restrict based on specified user's groupings preference
+    dataset_for_year = MunicipalityData.objects.filter(year = year)
+
+    # this gives you a list of dicts
+    raw_data = serializers.serialize('python', dataset_for_year)
+    # now extract the inner `fields` dicts
+    actual_data = [d['fields'] for d in raw_data]
+    # and now dump to JSON
+    json_output = json.dumps(actual_data)
+
+    return JsonResponse({'data':json_output})
