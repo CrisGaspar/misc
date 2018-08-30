@@ -83,10 +83,21 @@ call_API <- function(endpoint, userid=NULL, municipalities = NULL) {
 }
 
 # UI rendering of data frame as a data table
-renderDT_formatted <- function(data_frame, can_edit = F) {
+renderDT_formatted <- function(data_frame, no_table_header = F) {
   # Before rendering format the numbers to display in currency format
   # TODO: handle percent and other non-currency columns
-  renderDT(datatable(data_frame, editable = can_edit) %>% formatCurrency(1:ncol(data_frame)), selection = 'none', server = F)
+  # Display only table (do not show search box)
+
+  if (no_table_header) {
+    renderDT(datatable(data_frame, options = list(dom = 't', bSort = FALSE), colnames = NULL) %>% formatCurrency(1:ncol(data_frame)), selection = 'none', server = F)
+  }
+  else {
+    #column_names = colnames(data_frame)
+    #sort_enabled = TRUE
+    #opt = list(dom = 't', bSort = FALSE)
+    renderDT(datatable(data_frame, options = list(searching = FALSE)) %>% formatCurrency(1:ncol(data_frame)), selection = 'none', server = F)
+  }
+  #opt[["bSort"]] <- sort_enabled  
 }
 
 #
@@ -117,7 +128,7 @@ server <- function(input, output, session) {
       #### Your app's UI code goes here!
       fluidPage(
         selectInput(inputId = "municipalitySelector", 
-                    label="Municipalities", 
+                    label="User Grouping", 
                     choices = municipality_choices$all,
                     selected = municipality_choices$selected,
                     multiple = TRUE,
@@ -140,9 +151,9 @@ server <- function(input, output, session) {
   data_frame <- get_data(source_filename, municipality_selected_choices)
   
   # Render the data and stats tables in UI 
-  output$data <- renderDT_formatted(data_frame, can_edit = user_input$is_superuser)
+  output$data <- renderDT_formatted(data_frame)
   data_frame_stats <- get_stats(data_frame)
-  output$data_stats <- renderDT_formatted(data_frame_stats, can_edit = F)
+  output$data_stats <- renderDT_formatted(data_frame_stats, no_table_header = T)
   
   # TODO: GRAPHS!!!!
   slices <- c(10, 12,4, 16, 8)
@@ -160,9 +171,9 @@ server <- function(input, output, session) {
     data_frame <- get_data(source_filename, input$municipalitySelector)
     
     # Render data and stats tables in UI
-    output$data <- renderDT_formatted(data_frame, can_edit = user_input$is_superuser)
+    output$data <- renderDT_formatted(data_frame)
     data_frame_stats <- get_stats(data_frame)
-    output$data_stats <- renderDT_formatted(data_frame_stats, can_edit = F)
+    output$data_stats <- renderDT_formatted(data_frame_stats, no_table_header = T)
   })
   
   # Button to save currently selected municipalities
@@ -226,12 +237,10 @@ server <- function(input, output, session) {
       user_input$authenticated <- TRUE
       user_input$is_superuser <- (login_result$is_superuser == 'TRUE') 
 
-      # Get Municipalities from API
+      # Get full list of Municipalities
+      municipality_choices$all <- call_API(municipalities_endpoint)$municipalities
       
-      # Full list of Municipalities
-      municipality_choices$all <- call_API(municipalities_endpoint)
-      
-      # Municipalities that current user is interested in
+      # Get municipalities that current user is interested in
       municipality_choices$selected <- unlist(call_API(municipalities_endpoint, input$user_name))
       print(municipality_choices)
       
