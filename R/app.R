@@ -6,6 +6,7 @@ library(httr)
 library(jsonlite)
 library(dplyr)
 library(splus2R)
+library(miscTools)
 
 setwd("~/Downloads/")
 source_filename <-"bmaDataSample.xls"
@@ -39,10 +40,10 @@ get_stats <- function(data_frame) {
   # Copy non-numeric column names
   colnames(df) <- colnames(data_frame_only_numeric)
 
-  df["Min",] <- colMins(data_frame_only_numeric)
-  df["Max",] <- colMaxs(data_frame_only_numeric)
-  df["Average",] <- colMeans(data_frame_only_numeric)
-  df["Median",] <- colMedians(data_frame_only_numeric)
+  df["Min",] <- colMins(data_frame_only_numeric, na.rm = TRUE)
+  df["Max",] <- colMaxs(data_frame_only_numeric, na.rm = TRUE)
+  df["Average",] <- colMeans(data_frame_only_numeric, na.rm = TRUE)
+  df["Median",] <- colMedians(data_frame_only_numeric, na.rm = TRUE)
   df
 }
 
@@ -84,20 +85,18 @@ call_API <- function(endpoint, userid=NULL, municipalities = NULL) {
 
 # UI rendering of data frame as a data table
 renderDT_formatted <- function(data_frame, no_table_header = F) {
-  # Before rendering format the numbers to display in currency format
   # TODO: handle percent and other non-currency columns
-  # Display only table (do not show search box)
 
   if (no_table_header) {
+    # show only table (no column sorting)
+    # Before rendering format the numbers to display in currency format
     renderDT(datatable(data_frame, options = list(dom = 't', bSort = FALSE), colnames = NULL) %>% formatCurrency(1:ncol(data_frame)), selection = 'none', server = F)
   }
   else {
-    #column_names = colnames(data_frame)
-    #sort_enabled = TRUE
-    #opt = list(dom = 't', bSort = FALSE)
+    # Do not show search box
+    # Before rendering format the numbers to display in currency format
     renderDT(datatable(data_frame, options = list(searching = FALSE)) %>% formatCurrency(1:ncol(data_frame)), selection = 'none', server = F)
   }
-  #opt[["bSort"]] <- sort_enabled  
 }
 
 #
@@ -128,7 +127,7 @@ server <- function(input, output, session) {
       #### Your app's UI code goes here!
       fluidPage(
         selectInput(inputId = "municipalitySelector", 
-                    label="User Grouping", 
+                    label="Custom Grouping", 
                     choices = municipality_choices$all,
                     selected = municipality_choices$selected,
                     multiple = TRUE,
@@ -166,7 +165,6 @@ server <- function(input, output, session) {
   #
   # Municipality Selection
   observeEvent(input$municipalitySelector, {
-    
     # Refresh data frame filtered to newly selected municipalities
     data_frame <- get_data(source_filename, input$municipalitySelector)
     
