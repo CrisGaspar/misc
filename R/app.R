@@ -9,13 +9,17 @@ library(splus2R)
 
 setwd("~/Downloads/")
 source_filename <-"bmaDataSample.xls"
-export_filename <-"bmaExport.xls"
-editPermissionUsers <- c("cris", "oti")
-user <- 'crisoti'
-pwd <- 'Eclipse1999'
-base <- 'http://localhost:8000/bmaapp/'
+
+userid <- 'crisoti'
+password <- 'Eclipse1999'
+api_server_url <- 'http://localhost:8000/bmaapp/'
+
 login_endpoint <- 'login'
 municipalities_endpoint <- 'municipalities'
+data_endpoint <- 'data'
+
+non_numeric_cols_count <- 1
+export_filename <-"bmaExport.xls"
 
 get_data <- function(filename, municipalities = NULL) {
   data_frame <- read_excel(filename)
@@ -26,10 +30,17 @@ get_data <- function(filename, municipalities = NULL) {
   data_frame  
 }
 
+# Create stats data frame for given data frame with min, max, average, and median 
+# for each of numeric column in given data frame
 get_stats <- function(data_frame) {
-  data_frame_only_numeric <- data_frame[,-1]
   
-  df <- data.frame(matrix(ncol = ncol(data_frame)-1, nrow = 0))
+  # TODO: adjust to skip more an arbitrary number of intial non-numeric columns
+  data_frame_only_numeric <- data_frame[,-non_numeric_cols_count]
+  
+  # Create empty data frame that will store the stats
+  df <- data.frame(matrix(ncol = ncol(data_frame)-non_numeric_cols_count, nrow = 0))
+  
+  # Copy non-numeric column names
   colnames(df) <- colnames(data_frame_only_numeric)
 
   df["Min",] <- colMins(data_frame_only_numeric)
@@ -39,24 +50,24 @@ get_stats <- function(data_frame) {
   df
 }
 
-
+# Login given credentials. 
 call_login_endpoint <- function(userid, password) {
-  url <- paste(base, login_endpoint, "?", "userid", "=", userid, "&", "password", "=", password, sep="")
+  # call appropriate login endpoing
+  url <- paste(api_server_url, login_endpoint, "?", "userid", "=", userid, "&", "password", "=", password, sep="")
   call_success <- httr::GET(url)
   call_success_text <- content(call_success, "text")
   call_success_final <- fromJSON(call_success_text)
   print(call_success_final)  
 }
 
-# Log-in
-login_result <- call_login_endpoint(user, pwd)
-
-call_endpoint <- function(endpoint, user=NULL, municipalities = NULL) {
-  if (!is.null(user)) {
-    url <-paste(base, endpoint, "?", "userid", "=", user, sep="")
+# Call API given specified API endpoint. Userids passed in (if needed). 
+# Municipality list passed in when needed to store new selection of municipalities.
+call_API <- function(endpoint, userid=NULL, municipalities = NULL) {
+  if (!is.null(userid)) {
+    url <-paste(api_server_url, endpoint, "?", "userid", "=", userid, sep="")
   }
   else {
-    url <-paste(base, endpoint, sep="")
+    url <-paste(api_server_url, endpoint, sep="")
   }
   if (is.null(municipalities)) {
     method <- httr::GET
@@ -69,20 +80,32 @@ call_endpoint <- function(endpoint, user=NULL, municipalities = NULL) {
   
   call_success <- method(url, body=requestBody)
   call_success_text <- content(call_success, "text")
+  
+  # Get API response (succesful or unsuccesful) 
   call_success_final <- fromJSON(call_success_text)
   print(call_success_final)
 }
 
-municipality_all_choices <- call_endpoint(municipalities_endpoint)
-print(municipality_all_choices)
-municipality_selected_choices <- unlist(call_endpoint(municipalities_endpoint, user))
-print(municipality_selected_choices)
+# Login user
+login_result <- call_login_endpoint(userid, password)
 
-refresh_data <- function(src_filename, selected_municpalities) {
-  data_frame <- get_data(src_filename, selected_municpalities)
-  data_frame
+# Get Municipalities from API
+# Full list of Municipalities
+municipality_all_choices <- call_API(municipalities_endpoint)
+# Municipalities that current user is interested in
+#smunicipality_selected_choices <- unlist(call_API(municipalities_endpoint, userid))
+municipality_selected_choices <- list()
+
+# UI rendering of data frame as a data table
+renderDT_formatted <- function(data_frame, can_edit = F) {
+  # Before rendering format the numbers to display in currency format
+  # TODO: handle percent and other non-currency columns
+  renderDT(datatable(data_frame) %>% formatCurrency(1:ncol(data_frame)), selection = 'none', server = F, editable = can_edit)
 }
 
+#
+# UI definition
+#
 ui <- fluidPage(
 #  tabPanel("Login",
 #           br(),
@@ -110,41 +133,52 @@ ui <- fluidPage(
 #  actionButton(inputId = "save", label = "Save")
 )
 
-renderDT_formatted <- function(data_frame, can_edit = F) {
-  renderDT(datatable(data_frame) %>% formatCurrency(1:ncol(data_frame)), selection = 'none', server = F, editable = can_edit)
-}
-
+# 
+# Server function sets up how the UI works
+#
 server <- function(input, output, session) {
-  # Refresh and render
-  data_frame <- refresh_data(source_filename, municipality_selected_choices)
-  # TODO: set 'editable' based on user role
+  # TODO: FIX this!!!!
+  # Set selected municipalities based on existing user preference
+  #input$municipalitySelector <- unlist(call_API(municipalities_endpoint, userid))
+  
+  # Refresh data frame
+  data_frame <- get_data(source_filename, municipality_selected_choices)
+  
+  # Render the data and stats tables in UI 
+  # TODO: set 'editable' api_server_urld on user role
   editable = T
   output$data <- renderDT_formatted(data_frame, can_edit = editable)
   data_frame_stats <- get_stats(data_frame)
   output$data_stats <- renderDT_formatted(data_frame_stats, can_edit = F)
   
-  
+  # TODO: GRAPHS!!!!
   slices <- c(10, 12,4, 16, 8)
   lbls <- c("US", "UK", "Australia", "Germany", "France")
   #pie(slices, labels = lbls, main="Tax Split by Type of Property")
-  
   output$plot <- renderPlot({pie(slices, labels = lbls, main="Tax Split by Type of Property")})    
   
+  #
+  # UI event handling
+  #
+  # Municipality Selection
   observeEvent(input$municipalitySelector, {
-    # Refresh data frame with newly selected municipalities
-    data_frame <- refresh_data(source_filename, input$municipalitySelector)
     
-    # Refresh data table in UI
-    # TODO: set 'editable' based on user role
+    # Refresh data frame filtered to newly selected municipalities
+    data_frame <- get_data(source_filename, input$municipalitySelector)
+    
+    # Render data and stats tables in UI
+    
+    # TODO: set 'editable' api_server_urld on user role
     output$data <- renderDT_formatted(data_frame, can_edit = editable)
     data_frame_stats <- get_stats(data_frame)
     output$data_stats <- renderDT_formatted(data_frame_stats, can_edit = F)
   })
   
-  
+  # Button to save currently selected municipalities
   observeEvent(input$saveMunicipalitiesButton, {
     tryCatch(
-      result <- call_endpoint(municipalities_endpoint, user, municipalities=input$municipalitySelector), 
+      # Call API to store the selected municipalities
+      result <- call_API(municipalities_endpoint, userid, municipalities=input$municipalitySelector), 
       error = function(err) {
         showModal(modalDialog(
           title = "Failed to Save Settings",
@@ -169,6 +203,7 @@ server <- function(input, output, session) {
     }
   })  
 
+  # Export button behaviour
   observeEvent(input$exportButton, {
     write_xlsx(data_frame, export_filename)
     
@@ -178,6 +213,7 @@ server <- function(input, output, session) {
       footer = NULL))
   })      
 
+  # Download button behaviour
   output$bmaExport.xls <- downloadHandler(
     filename = export_filename,
     contentType = "text/xls",
@@ -188,4 +224,5 @@ server <- function(input, output, session) {
   )    
 }
 
+# start our web app
 shinyApp(ui = ui, server = server)
