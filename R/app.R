@@ -134,24 +134,41 @@ server <- function(input, output, session) {
                     selectize = FALSE,
                     size = 10),
         # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
-        DTOutput("data"),
-        DTOutput("data_stats"),
-        #  actionButton(inputId="exportButton", label ="Export"),
-        # Button
-        downloadButton(export_filename, "Download"),
-        mainPanel(plotOutput('plot'))
-        #  actionButton(inputId = "save", label = "Save")
+        #  actionButton(inputId = "save", label = "Save"),
+        
+        # Main panel for displaying outputs ----
+        mainPanel(
+          # Output: Tabset w/ plot, summary, and table ----
+          tabsetPanel(type = "tabs",
+                      tabPanel("Data", 
+                        DTOutput("data"),
+                        DTOutput("data_stats")
+                        #  actionButton(inputId="exportButton", label ="Export"),
+                        # Button
+                        #downloadButton(export_filename, "Download"),
+                      ),
+                      tabPanel("Pie Plot Example", plotOutput("pie_plot")),
+                      tabPanel("Summary", verbatimTextOutput("summary"))
+ #                    , tabPanel("Table", tableOutput("table"))
+          )
+          
+        )
       )
     }
   })
   
   ################### APP SERVER CODE #####################################################
-
+  
   # TODO: GRAPHS!!!!
   slices <- c(10, 12,4, 16, 8)
   lbls <- c("US", "UK", "Australia", "Germany", "France")
   #pie(slices, labels = lbls, main="Tax Split by Type of Property")
-  output$plot <- renderPlot({pie(slices, labels = lbls, main="Tax Split by Type of Property")})    
+  output$pie_plot <- renderPlot({pie(slices, labels = lbls, main="Tax Split by Type of Property")})    
+  
+  # Generate a summary of the data ----
+  output$summary <- renderPrint({
+    "Summary Test..."
+  })
   
   #
   # UI event handling
