@@ -19,8 +19,28 @@ data_endpoint <- 'data'
 non_numeric_cols_count <- 1
 export_filename <-"bmaExport.xls"
 
-##### TODO: FIX to read from API instead of xls file
+menu_tabs_text <- list(
+  "Socio Economic Indicators", 
+  "Municipal Financial Indicators",
+  "Select User Fee Information",
+  "Tax Policies",
+  "Comparison of Relative Taxes",
+  "Comparison of Water/Sewer Costs",
+  "Taxes as a % of Income",
+  "Net Expenditures per Capita"
+)
+
+menu_sub_tabs_text <- list(
+  list("Population", "Density and Land Area"), 
+  list("Development Charges"),
+  list("Tax Ratios"),
+  list("D"),
+  list("E"),
+  list("F")
+)
+
 get_data <- function(filename, municipalities = NULL) {
+  ##### TODO: FIX to read from API instead of xls file
   data_frame <- read_excel(filename)
   if (!is.null(municipalities)) {
     data_frame <- data_frame[data_frame$Municipality %in% municipalities, ]
@@ -99,6 +119,7 @@ renderDT_formatted <- function(data_frame, no_table_header = F) {
   }
 }
 
+
 #
 # UI definition
 #
@@ -139,19 +160,24 @@ server <- function(input, output, session) {
         # Main panel for displaying outputs ----
         mainPanel(
           # Output: Tabset w/ plot, summary, and table ----
-          tabsetPanel(type = "tabs",
-                      tabPanel("Data", 
-                        DTOutput("data"),
-                        DTOutput("data_stats")
+#          tabsetPanel(type = "tabs",
+#                      tabPanel("Data", 
+#                        DTOutput("data"),
+#                        DTOutput("data_stats")
                         #  actionButton(inputId="exportButton", label ="Export"),
                         # Button
                         #downloadButton(export_filename, "Download"),
-                      ),
-                      tabPanel("Pie Plot Example", plotOutput("pie_plot")),
-                      tabPanel("Summary", verbatimTextOutput("summary"))
- #                    , tabPanel("Table", tableOutput("table"))
-          )
-          
+#                      ),
+#                      tabPanel("Summary", verbatimTextOutput("summary"))
+#          )
+          # Generate the navigation menu. 
+          # Create menu tabs using menu_tabs_text for titles
+          # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
+          do.call(navbarPage, c(title = "Datasets", id='navbar_page', lapply(1:length(menu_sub_tabs_text), function(i) {
+            do.call(navbarMenu, c(title = menu_tabs_text[[i]], lapply(1:length(menu_sub_tabs_text[[i]]), function(j) {
+                  tabPanel(menu_sub_tabs_text[[i]][j], menu_sub_tabs_text[[i]][j])
+            })))
+          })))
         )
       )
     }
@@ -160,10 +186,7 @@ server <- function(input, output, session) {
   ################### APP SERVER CODE #####################################################
   
   # TODO: GRAPHS!!!!
-  slices <- c(10, 12,4, 16, 8)
-  lbls <- c("US", "UK", "Australia", "Germany", "France")
-  #pie(slices, labels = lbls, main="Tax Split by Type of Property")
-  output$pie_plot <- renderPlot({pie(slices, labels = lbls, main="Tax Split by Type of Property")})    
+   
   
   # Generate a summary of the data ----
   output$summary <- renderPrint({
@@ -195,7 +218,7 @@ server <- function(input, output, session) {
           err,        
           easyClose = TRUE,
           footer = NULL))   
-      },
+      }
     )
     
     if (result$success == "true") {
