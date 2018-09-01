@@ -25,18 +25,32 @@ menu_tabs_text <- list(
   "Select User Fee Information",
   "Tax Policies",
   "Comparison of Relative Taxes",
-  "Comparison of Water/Sewer Costs",
+  "Comparison of Water & Sewer Costs",
   "Taxes as a % of Income",
   "Net Expenditures per Capita"
 )
 
 menu_sub_tabs_text <- list(
-  list("Population", "Density and Land Area"), 
-  list("Development Charges"),
-  list("Tax Ratios"),
-  list("D"),
-  list("E"),
-  list("F")
+  list("Population", "Density and Land Area", "Assessment Information", "Assessment Composition", "Building Permit Activity"),
+  
+  list("Total Levy", "Upper Tier Levy", "Lower Tier Levy", "Tax Asset Consumption Ratio", "Financial Position per Capita", 
+       "Tax Dis Res as % OSR", "Tax Reserves as % of Taxation", "Tax Res per Capita", "Tax Debt Int % OSR", 
+       "Tax Debt Charges as % OSR", "Total Debt Out per Capita", "Tax Debt Out per Capita", "Debt to Reserve Ratio", 
+       "Tax Receivable as % Tax", "Rates Coverage Ratio", "Net Fin Liab Ratio"),
+  
+  list("Development Charges", "Building Permit Fees"),
+  
+  list("Tax Ratios", "Optional Class"),
+  
+  list("Total Tax Rates", "Municipal Tax Rates", "Education Tax Rates", "Residential", "Multi-Residential", 
+       "Commercial", "Industrial"),
+  
+  list("Water&Sewer Costs", "Water Asset Consumption", "Wastewater Asset Consumption", "Water Res as % OSR", 
+       "Wastewater Res as % OSR", "Water Res as % Acum Amort", "Wastewater Res as % Acum Amort", "Water Debt Int Cover",
+       "Wastewater Debt Int Cover", "Water Net Fin Liab", "Wastewater Net Fin Liab"),
+  
+  list("Average Household Income", "Average Value of Dwelling", "Combined costs", "Taxes as a % of Income"),
+  list("Net Expenditures per Capita")
 )
 
 get_data <- function(filename, municipalities = NULL) {
