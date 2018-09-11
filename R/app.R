@@ -4,9 +4,11 @@ library(writexl)
 library(DT)
 library(httr)
 library(jsonlite)
+library(rjson)
 library(dplyr)
 library(splus2R)
 library(miscTools)
+library(rlist)
 
 setwd("~/Downloads/")
 source_filename <-"bmaDataSample.xls"
@@ -18,6 +20,10 @@ data_endpoint <- 'data'
 
 non_numeric_cols_count <- 1
 export_filename <-"bmaExport.xls"
+
+current_year <- as.integer(format(Sys.Date(), "%Y"))
+oldest_year <- 1992L
+years_all_options <- oldest_year: current_year
 
 menu_tabs_text <- list(
   "Socio Economic Indicators", 
@@ -53,6 +59,9 @@ menu_sub_tabs_text <- list(
   list("Net Expenditures per Capita")
 )
 
+data_set_names <- list.flatten(menu_sub_tabs_text)
+sheet_names_test <- list("Building", "Density and Land Area")
+
 get_data <- function(filename, municipalities = NULL) {
   ##### TODO: FIX to read from API instead of xls file
   data_frame <- read_excel(filename)
@@ -60,6 +69,25 @@ get_data <- function(filename, municipalities = NULL) {
     data_frame <- data_frame[data_frame$Municipality %in% municipalities, ]
   }
   data_frame  
+}
+
+excel_sheet_names <- function(filename) {
+  readxl::excel_sheets(filename)
+}
+
+read_excel_allsheets <- function(filename) {
+  sheets <- readxl::excel_sheets(filename)
+  x <- lapply(sheets, function(X) readxl::read_excel(filename, sheet = X))
+  names(x) <- sheets
+  x
+}
+
+load_data <- function(filename, year) {
+#  lapply(1:length(data_set_names), function(i) {
+#  })
+  data_frame <- read_excel(filename, sheet = "Sheet1")
+  print(data_frame)
+  data_frame
 }
 
 # Create stats data frame for given data frame with min, max, average, and median 
@@ -77,7 +105,7 @@ get_stats <- function(data_frame) {
   df["Max",] <- colMaxs(data_frame_only_numeric, na.rm = TRUE)
   df["Average",] <- colMeans(data_frame_only_numeric, na.rm = TRUE)
   # Note: using colMedians from miscTools package because splus2R package implementation does not work with NA values
-  df["Median",] <- colMedians(data_frame_only_numeric, na.rm = TRUE)
+  df["Median",] <- splus2R::colMedians(data_frame_only_numeric, na.rm = TRUE)
   df
 }
 
@@ -93,20 +121,35 @@ call_login_endpoint <- function(userid, password) {
 
 # Call API given specified API endpoint. Userids passed in (if needed). 
 # Municipality list passed in when needed to store new selection of municipalities.
-call_API <- function(endpoint, userid=NULL, municipalities = NULL) {
+call_API <- function(endpoint, userid=NULL, municipalities = NULL, data_frames = NULL, year = NULL) {
   if (!is.null(userid)) {
     url <-paste(api_server_url, endpoint, "?", "userid", "=", userid, sep="")
+  }
+  else if (!is.null(year)) {
+    url <-paste(api_server_url, endpoint, "?", "year", "=", year, sep="")
   }
   else {
     url <-paste(api_server_url, endpoint, sep="")
   }
-  if (is.null(municipalities)) {
-    method <- httr::GET
-    requestBody <- NULL
-  }
-  else {
+
+  if (!is.null(municipalities)) {
     method <- httr::POST
     requestBody <- paste('{"municipalities":', toJSON(municipalities),'}')
+  }
+  else if (!is.null(data_frames)) {
+    method <- httr::POST
+#    data_frames_2 = lapply(data_frames, function(df) {
+#      df %>% t() %>% tibble::as_data_frame()
+#    })
+#    print(data_frames_2)
+#    print(toJSON(data_frames_2))
+#    requestBody <- paste('{"data":',  toJSON(data_frames_2), '}')
+    print(rjson::toJSON(data_frames))
+    requestBody <- paste('{"data":',  rjson::toJSON(data_frames), '}')
+  }
+  else {
+    method <- httr::GET
+    requestBody <- NULL
   }
   
   call_success <- method(url, body=requestBody)
@@ -116,6 +159,7 @@ call_API <- function(endpoint, userid=NULL, municipalities = NULL) {
   call_success_final <- fromJSON(call_success_text)
   print(call_success_final)
 }
+
 
 # UI rendering of data frame as a data table
 renderDT_formatted <- function(data_frame, no_table_header = F) {
@@ -168,6 +212,22 @@ server <- function(input, output, session) {
                     multiple = TRUE,
                     selectize = FALSE,
                     size = 10),
+
+        # TODO: Show fileInput and dataload year selector ONLY IF this is a superuser
+        selectInput(inputId = "dataload_year_selector",
+                    label="Select Year for Data Load",
+                    choices = years_all_options,
+                    selected = current_year,
+                    selectize = TRUE),
+
+        # Horizontal line ----
+        tags$hr(),
+
+        # Input: Select a file ----
+        fileInput(inputId = "load_file", "Choose Excel File",
+                  multiple = FALSE,
+                  accept = c("text/xls")),
+
         # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
         #  actionButton(inputId = "save", label = "Save"),
         
@@ -209,6 +269,48 @@ server <- function(input, output, session) {
   
   #
   # UI event handling
+  #
+  # Loading data from file
+  observeEvent(input$load_file, {
+    filename = input$load_file$datapath
+    sheet_names_read <- excel_sheet_names(filename)
+    print(sheet_names_read)
+
+    # TODO: fix this. remove the test sheet names  
+    if (setequal(sheet_names_read, sheet_names_test)) {
+#    if (setequal(sheet_names_read, data_set_names)) {
+
+      data_sheets <- read_excel_allsheets(filename)
+      result <- call_API(data_endpoint, data_frames = data_sheets, year = input$dataload_year_selector)
+
+      print(result)
+      # TODO: Add error handling for the REST endpoint connection fails
+      if (result$success == "true") {
+      }
+    }
+    else {
+      new_sheets <- setdiff(sheet_names_read, data_set_names)
+      missing_sheets <- setdiff(data_set_names, sheet_names_read)
+
+      error_1 <- ""
+      error_2 <- ""
+
+      if (length(new_sheets) > 0) {
+        error_1 <- paste("New sheets in uploaded file: ", paste(new_sheets, collapse=", "))
+      }
+      else if (length(missing_sheets) > 0) {
+        error_2 <- paste("Missing sheets in uploaded file: ", paste(data_set_names, collapse=", "))
+      }
+
+      err <- paste(error_1, error_2, sep = '\n')
+      showModal(modalDialog(
+        title = "Failed to Load from Excel File",
+        err,
+        easyClose = TRUE,
+        footer = NULL))
+    }
+  })
+
   #
   # Municipality Selection
   observeEvent(input$municipalitySelector, {
