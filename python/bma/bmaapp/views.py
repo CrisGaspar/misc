@@ -8,9 +8,50 @@ from django.core import serializers
 from collections import namedtuple
 from django.utils.datastructures import MultiValueDictKeyError
 
+import datetime
 import json
 
 from bmaapp.models import EndUser, Municipality, MunicipalityData
+
+NA_VALUE = "NA"
+
+CURRENT_YEAR = datetime.datetime.now().year
+MIN_YEAR = 1990
+MAX_YEAR = CURRENT_YEAR
+
+
+def clean(str):
+    # convert "NA" to None
+    if val == NA_VALUE:
+        return None
+    else:
+        # remove leading and trailing whitespace
+        return val.strip()
+
+def split_to_year_and_property_name(str, default_year, sheet_name):
+    # if str starts with a valid year, return (year,rest_of_str) tuple
+    # if it does not, return (default_year, str) tuple
+    property_name = str
+    year_to_use = default_year
+
+
+    if len(str) >= 5 and str[4] == ' ':
+        try:
+            year = int(str[0:4])
+            if year >= MIN_YEAR and year <= MAX_YEAR:
+                # skip the whitespace
+                property_name = str[5:]
+                year_to_use = year
+        except ValueError as err:
+            pass
+
+    if property_name == COLUMN_NAME_MULTI_RESIDENTIAL and sheet_name == 'Tax Ratios':
+        # this column name is same in both Tax Ratios and Assessment Composition sheets
+        # but we now know it's the tax ratio one
+        property_name = COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL
+    elif property_name == COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX and sheet_name == 'Building Permit Activity':
+        property_name = COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA
+    return (property_name, year_to_use)
 
 # Helper methods
 def is_user_allowed(current_user, target_user):
@@ -200,3 +241,92 @@ def get_municipality_data(userid, year):
     json_output = json.dumps(actual_data)
 
     return JsonResponse({'data':json_output})
+
+
+def municipality_data_new(request):
+    if request.user is None or not request.user.is_authenticated:
+        error_msg = "ERROR: User MUST authenticate first"
+        return error_response(error_msg)
+
+    user_id = request.user.username
+
+    if user_id is None:
+        error_msg = "ERROR: Missing userid"
+        return error_response(error_msg)
+
+    if request.method == 'GET':
+        #year = request.GET.get('year')
+        #print(year)
+        #return get_municipality_data(user_id, year)
+        return error_response("HTTP GET: to be implemented")
+
+    if request.method == 'POST':
+        if not request.user.is_superuser:
+            error_msg = 'MUST be logged in as superuser to update municipality data'
+            return error_response(error_msg)
+
+        try:
+            year = request.GET.get('year')
+            if year is None:
+                return error_response("Missing year parameter")
+            # convert to integer
+            year = int(year)
+
+            data_by_municipality_and_year = {}
+            json_object = json.loads(request.body)
+            data_to_write = json_object['data']
+            print(data_to_write)
+
+            for sheet_name, sheet_data in data_to_write.items():
+                print(sheet_name)
+                # each sheet can have different municipalities so reset on for each sheet
+                municipalities = []
+
+                for column_name, column_data in sheet_data.items():
+                    print(column_name)
+                    print(column_data)
+
+                    if column_name == "Municipality":
+                        municipalities = column_data
+                    elif not municipalities:
+                        # Municipalities has to be 1st column in sheet
+                        return error_response("First column in sheet {} is {}. All sheets must have Municipalities as 1st column".format(sheet_name, column_name))
+                    else:
+                        (property_name, year_to_use) = split_to_year_and_property_name(column_name, year, sheet_name)
+                        for index, val in enumerate(column_data):
+                            municipality = municipalities[index]
+                            tuple_key = (municipality, year_to_use)
+                            if tuple_key in data_by_municipality_and_year:
+                                data_entry = data_by_municipality_and_year[tuple_key]
+                            else:
+                                data_entry = None
+                            if data_entry is None:
+                                if year_to_use <= year:
+                                    # no entry present in dictionary, create new entry
+                                    data_entry = {}
+                                    data_entry["Municipality"] = municipality
+                                    data_entry["Year"] = year_to_use
+                                    data_by_municipality_and_year[tuple_key] = data_entry
+                                else:
+                                    return error_response("Column {} in sheet {} is for future year {} compared to year for the rest of the data ".format(column_name, sheet_name, year_to_use, year))
+                            data_entry[property_name] = clean(val)
+
+            # save each MunicipalityData to DB
+            print(data_by_municipality_and_year)
+            for (municipality, data_year), data in data_by_municipality_and_year.items():
+                db_data = MunicipalityData()
+                db_data.load(data)
+                if data_year < year:
+                    # historical data: we will only insert the first time.
+                    # we do not update if already exists so that we don't endup erasing data
+                    # because most of the fields in this MunicipalityData object will be empty
+                    db_data.save(force_insert=True)
+                else:
+                    # given-year data: fully overwrite corresponding DB model objects
+                    db_data.save()
+        except json.JSONDecodeError as e:
+            error_msg = "ERROR: JSON decoding failed for request body."
+            return error_response(error_msg)
+        return success_response()
+    raise Http404('ERROR: Municipality data endpoint supports only GET or POST')
+

@@ -7,5 +7,6 @@ urlpatterns = [
     path('login', views.login, name='login'),
     path('logout', views.logout, name='logout'),
     path('municipalities', views.municipalities, name='municipalities'),
-    path('data', views.municipality_data, name='municipality_data')
+    path('old_data', views.municipality_data, name='municipality_data'),
+    path('data', views.municipality_data_new, name='municipality_data_new')
 ]
