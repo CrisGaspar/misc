@@ -199,7 +199,7 @@ server <- function(input, output, session) {
           )
         )
       )
-    } else {
+    } else if (user_input$is_superuser) {
       #### App's UI code goes here!
       fluidPage(
         selectInput(inputId = "municipalitySelector",
@@ -252,6 +252,45 @@ server <- function(input, output, session) {
         )
       )
     }
+    else {
+      #### App's UI code goes here!
+      #### Not superuser
+      fluidPage(
+        selectInput(inputId = "municipalitySelector",
+                    label="Custom Grouping",
+                    choices = municipality_choices$all,
+                    selected = municipality_choices$selected,
+                    multiple = TRUE,
+                    selectize = FALSE,
+                    size = 10),
+        
+        # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
+        #  actionButton(inputId = "save", label = "Save"),
+        
+        # Main panel for displaying outputs ----
+        mainPanel(
+          # Output: Tabset w/ plot, summary, and table ----
+          #          tabsetPanel(type = "tabs",
+          #                      tabPanel("Data",
+          #                        DTOutput("data"),
+          #                        DTOutput("data_stats")
+          #  actionButton(inputId="exportButton", label ="Export"),
+          # Button
+          #downloadButton(export_filename, "Download"),
+          #                      ),
+          #                      tabPanel("Summary", verbatimTextOutput("summary"))
+          #          )
+          # Generate the navigation menu
+          # Create menu tabs using menu_tabs_text for titles
+          # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
+          do.call(navbarPage, c(title = "Datasets", id='navbar_page', lapply(1:length(menu_sub_tabs_text), function(i) {
+            do.call(navbarMenu, c(title = menu_tabs_text[[i]], lapply(1:length(menu_sub_tabs_text[[i]]), function(j) {
+              tabPanel(menu_sub_tabs_text[[i]][j], menu_sub_tabs_text[[i]][j])
+            })))
+          })))
+        )
+      )
+    }    
   })
 
   ################### APP SERVER CODE #####################################################
