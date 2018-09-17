@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from collections import namedtuple
 from django.utils.datastructures import MultiValueDictKeyError
+from django.db.utils import IntegrityError
 
 import datetime
 import json
@@ -23,6 +24,7 @@ MIN_YEAR = 1990
 MAX_YEAR = CURRENT_YEAR
 
 # ERRORS
+ERROR_DB_MUNICIPALITY_DATA_INSERT_UNIQUE_CONSTRAINT_FAIL = 'UNIQUE constraint failed: bmaapp_municipalitydata.yearPlusName'
 ERROR_USER_NOT_AUTHENTICATED = 'User not authenticated. Call login endpoint first'
 ERROR_USER_NOT_ALLOWED_OPERATION = 'User is not allowed to perform this operation'
 ERROR_MISSING_USERID_VALUE = 'Missing userid value'
@@ -34,10 +36,38 @@ ERROR_MISSING_YEAR_PARAMETER = 'Missing year parameter'
 
 #TODO: ADD LOGGING!!
 
+
+EXPECTED_SHEET_NAMES = [
+    "Population", "Density and Land Area", "Assessment Information", "Assessment Composition", "Building Permit Activity",
+
+    "Total Levy", "Upper Tier Levy", "Lower Tier Levy", "Tax Asset Consumption Ratio",
+    "Financial Position per Capita", "Tax Dis Res as % OSR", "Tax Reserves as % of Taxation",
+    "Tax Res per Capita", "Tax Debt Int % OSR", "Tax Debt Charges as % OSR", "Total Debt Out per Capita",
+    "Tax Debt Out per Capita", "Debt to Reserve Ratio", "Tax Receivable as % Tax",
+    "Rates Coverage Ratio", "Net Fin Liab Ratio",
+
+    "Development Charges", "Building Permit Fees",
+
+    "Tax Ratios", "Optional Class",
+
+    "Total Tax Rates", "Municipal Tax Rates", "Education Tax Rates", "Residential", "Multi-Residential",
+    "Commercial", "Industrial",
+
+    "Water&Sewer Costs", "Water Asset Consumption", "Wastewater Asset Consumption", "Water Res as % OSR",
+    "Wastewater Res as % OSR", "Water Res as % Acum Amort", "Wastewater Res as % Acum Amort", "Water Debt Int Cover",
+    "Wastewater Debt Int Cover", "Water Net Fin Liab", "Wastewater Net Fin Liab",
+
+    "Average Household Income", "Average Value of Dwelling", "Combined costs", "Taxes as a % of Income",
+
+    "Net Expenditures per Capita"
+]
+
+
 def clean(str):
     # convert "NA" to None
     if str == NA_VALUE:
         return None
+    return str
 
 def split_to_year_and_property_name(str, default_year, sheet_name):
     # if str starts with a valid year, return (year,rest_of_str) tuple
@@ -67,7 +97,6 @@ def split_to_year_and_property_name(str, default_year, sheet_name):
     elif property_name == COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX and sheet_name == 'Building Permit Activity':
         property_name = COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA
 
-    print( )
     return (property_name, year_to_use)
 
 # Helper methods
@@ -108,8 +137,6 @@ def get_municipalities_for_user(userID):
 def store_municipalities_for_user(user_id, municipality_list):
     # delete any previously stored municipalities
     EndUser.objects.filter(userid=user_id).delete()
-#    except EndUser.DoesNotExist:
-#        return
     for name in municipality_list:
         user = EndUser(userid=user_id, municipality_name=name)
         user.save()
@@ -271,7 +298,6 @@ def municipality_data_new(request):
             year = request.GET.get('year')
             if year is None:
                 return error_response(ERROR_MISSING_YEAR_PARAMETER)
-            # convert to integer
             year = int(year)
 
             data_by_municipality_and_year = {}
@@ -281,9 +307,13 @@ def municipality_data_new(request):
 
             for sheet_name, sheet_data in data_to_write.items():
                 print(sheet_name)
-                # each sheet can have different municipalities so reset on for each sheet
+                # each sheet can have different municipalities so reset
                 municipalities = []
 
+                if not sheet_name in EXPECTED_SHEET_NAMES:
+                    logging.error("Unexpected sheet name: {}".format(sheet_name))
+                    # ignore
+                    continue
                 for column_name, column_data in sheet_data.items():
                     print(column_name)
                     print(column_data)
@@ -292,7 +322,7 @@ def municipality_data_new(request):
                         municipalities = column_data
                     elif not municipalities:
                         # Municipalities has to be 1st column in sheet
-                        return error_response("ERROR: First column in sheet {} is {}. All sheets must have Municipalities as 1st column".format(sheet_name, column_name))
+                        return error_response("First column in sheet {} is {}. All sheets must have Municipalities as 1st column".format(sheet_name, column_name))
                     else:
                         (property_name, year_to_use) = split_to_year_and_property_name(column_name, year, sheet_name)
                         for index, val in enumerate(column_data):
@@ -310,19 +340,33 @@ def municipality_data_new(request):
                                     data_entry["Year"] = year_to_use
                                     data_by_municipality_and_year[tuple_key] = data_entry
                                 else:
-                                    return error_response("ERROR: Column {} in sheet {} is for future year {} compared to year for the rest of the data ".format(column_name, sheet_name, year_to_use, year))
+                                    return error_response("Column {} in sheet {} is for future year {} compared to year for the rest of the data ".format(column_name, sheet_name, year_to_use, year))
                             data_entry[property_name] = clean(val)
 
-            # save each MunicipalityData to DB
             print(data_by_municipality_and_year)
+
+            # Now save each MunicipalityData to DB
             for (municipality, data_year), data in data_by_municipality_and_year.items():
+                print (municipality, data_year)
+                print (data)
+
                 db_data = MunicipalityData()
                 db_data.load(data)
-                if data_year < year:
-                    # historical data: we will only insert the first time.
-                    # we do not update if already exists so that we don't endup erasing data
-                    # because most of the fields in this MunicipalityData object will be empty
-                    db_data.save(force_insert=True)
+
+                if data_year != year:
+                    # Case: data where the column name indicates a year different from the user-specified year parameter
+                    try:
+                        # We will only insert the first time. we do not update if (municipality, year) row already exists
+                        # so that we don't erase data because most of the other fields are for the different user-specified year parameter
+                        # so they will empty/NA for this column specified year
+                        db_data.save(force_insert=True)
+                    except IntegrityError as e:
+                        # One of the cases this exception is thrown is if for this different year we already have a
+                        # (municipality, year) row.  In this case do not update.
+                        if not ERROR_DB_MUNICIPALITY_DATA_INSERT_UNIQUE_CONSTRAINT_FAIL in str(e):
+                            # log only if exception text is different unique constraint as expected
+                            logging.error("Exception raised when saving the DB entry for {} {}".format(municipality, data_year))
+                            logging.error(e, exc_info=True)
                 else:
                     # given-year data: fully overwrite corresponding DB model objects
                     db_data.save()
@@ -333,4 +377,3 @@ def municipality_data_new(request):
             return error_response("Encountered exception {}".format(str(e)))
         return success_response()
     return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
-

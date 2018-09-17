@@ -21,12 +21,16 @@ data_endpoint <- 'data'
 non_numeric_cols_count <- 1
 export_filename <-"bmaExport.xls"
 
+# Errors
+kErrorTitleFailedToLoadData = 'Failed to Load from Excel File'
+
+
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 oldest_year <- 1992L
 years_all_options <- oldest_year: current_year
 
 menu_tabs_text <- list(
-  "Socio Economic Indicators", 
+  "Socio Economic Indicators",
   "Municipal Financial Indicators",
   "Select User Fee Information",
   "Tax Policies",
@@ -38,29 +42,28 @@ menu_tabs_text <- list(
 
 menu_sub_tabs_text <- list(
   list("Population", "Density and Land Area", "Assessment Information", "Assessment Composition", "Building Permit Activity"),
-  
-  list("Total Levy", "Upper Tier Levy", "Lower Tier Levy", "Tax Asset Consumption Ratio", "Financial Position per Capita", 
-       "Tax Dis Res as % OSR", "Tax Reserves as % of Taxation", "Tax Res per Capita", "Tax Debt Int % OSR", 
-       "Tax Debt Charges as % OSR", "Total Debt Out per Capita", "Tax Debt Out per Capita", "Debt to Reserve Ratio", 
+
+  list("Total Levy", "Upper Tier Levy", "Lower Tier Levy", "Tax Asset Consumption Ratio", "Financial Position per Capita",
+       "Tax Dis Res as % OSR", "Tax Reserves as % of Taxation", "Tax Res per Capita", "Tax Debt Int % OSR",
+       "Tax Debt Charges as % OSR", "Total Debt Out per Capita", "Tax Debt Out per Capita", "Debt to Reserve Ratio",
        "Tax Receivable as % Tax", "Rates Coverage Ratio", "Net Fin Liab Ratio"),
-  
+
   list("Development Charges", "Building Permit Fees"),
-  
+
   list("Tax Ratios", "Optional Class"),
-  
-  list("Total Tax Rates", "Municipal Tax Rates", "Education Tax Rates", "Residential", "Multi-Residential", 
+
+  list("Total Tax Rates", "Municipal Tax Rates", "Education Tax Rates", "Residential", "Multi-Residential",
        "Commercial", "Industrial"),
-  
-  list("Water&Sewer Costs", "Water Asset Consumption", "Wastewater Asset Consumption", "Water Res as % OSR", 
+
+  list("Water&Sewer Costs", "Water Asset Consumption", "Wastewater Asset Consumption", "Water Res as % OSR",
        "Wastewater Res as % OSR", "Water Res as % Acum Amort", "Wastewater Res as % Acum Amort", "Water Debt Int Cover",
        "Wastewater Debt Int Cover", "Water Net Fin Liab", "Wastewater Net Fin Liab"),
-  
+
   list("Average Household Income", "Average Value of Dwelling", "Combined costs", "Taxes as a % of Income"),
   list("Net Expenditures per Capita")
 )
 
 data_set_names <- list.flatten(menu_sub_tabs_text)
-sheet_names_test <- list("Building", "Density and Land Area")
 
 get_data <- function(filename, municipalities = NULL) {
   ##### TODO: FIX to read from API instead of xls file
@@ -68,7 +71,7 @@ get_data <- function(filename, municipalities = NULL) {
   if (!is.null(municipalities)) {
     data_frame <- data_frame[data_frame$Municipality %in% municipalities, ]
   }
-  data_frame  
+  data_frame
 }
 
 excel_sheet_names <- function(filename) {
@@ -90,14 +93,14 @@ load_data <- function(filename, year) {
   data_frame
 }
 
-# Create stats data frame for given data frame with min, max, average, and median 
+# Create stats data frame for given data frame with min, max, average, and median
 # for each of numeric column in given data frame
 get_stats <- function(data_frame) {
   data_frame_only_numeric <- data_frame[,-non_numeric_cols_count]
-  
+
   # Create empty data frame that will store the stats
   df <- data.frame(matrix(ncol = ncol(data_frame)-non_numeric_cols_count, nrow = 0))
-  
+
   # Copy non-numeric column names
   colnames(df) <- colnames(data_frame_only_numeric)
 
@@ -109,17 +112,17 @@ get_stats <- function(data_frame) {
   df
 }
 
-# Login given credentials. 
+# Login given credentials
 call_login_endpoint <- function(userid, password) {
   # call appropriate login endpoing
   url <- paste(api_server_url, login_endpoint, "?", "userid", "=", userid, "&", "password", "=", password, sep="")
   call_success <- httr::GET(url)
   call_success_text <- content(call_success, "text")
   call_success_final <- fromJSON(call_success_text)
-  print(call_success_final)  
+  print(call_success_final)
 }
 
-# Call API given specified API endpoint. Userids passed in (if needed). 
+# Call API given specified API endpoint. Userids passed in (if needed)
 # Municipality list passed in when needed to store new selection of municipalities.
 call_API <- function(endpoint, userid=NULL, municipalities = NULL, data_frames = NULL, year = NULL) {
   if (!is.null(userid)) {
@@ -145,10 +148,10 @@ call_API <- function(endpoint, userid=NULL, municipalities = NULL, data_frames =
     method <- httr::GET
     requestBody <- NULL
   }
-  
+
   call_success <- method(url, body=requestBody)
   call_success_text <- content(call_success, "text")
-  
+
   # Get API response (succesful or unsuccesful)
   call_success_final <- fromJSON(call_success_text)
   print(call_success_final)
@@ -177,12 +180,12 @@ renderDT_formatted <- function(data_frame, no_table_header = F) {
 #
 ui <- uiOutput("ui")
 
-# 
+#
 # Server function sets up how the UI works
 #
 server <- function(input, output, session) {
   municipality_choices <- reactiveValues(all = list(), selected = list())
-  
+
   #### UI code --------------------------------------------------------------
   output$ui <- renderUI({
     if (user_input$authenticated == FALSE) {
@@ -199,8 +202,8 @@ server <- function(input, output, session) {
     } else {
       #### App's UI code goes here!
       fluidPage(
-        selectInput(inputId = "municipalitySelector", 
-                    label="Custom Grouping", 
+        selectInput(inputId = "municipalitySelector",
+                    label="Custom Grouping",
                     choices = municipality_choices$all,
                     selected = municipality_choices$selected,
                     multiple = TRUE,
@@ -224,12 +227,12 @@ server <- function(input, output, session) {
 
         # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
         #  actionButton(inputId = "save", label = "Save"),
-        
+
         # Main panel for displaying outputs ----
         mainPanel(
           # Output: Tabset w/ plot, summary, and table ----
 #          tabsetPanel(type = "tabs",
-#                      tabPanel("Data", 
+#                      tabPanel("Data",
 #                        DTOutput("data"),
 #                        DTOutput("data_stats")
                         #  actionButton(inputId="exportButton", label ="Export"),
@@ -238,7 +241,7 @@ server <- function(input, output, session) {
 #                      ),
 #                      tabPanel("Summary", verbatimTextOutput("summary"))
 #          )
-          # Generate the navigation menu. 
+          # Generate the navigation menu
           # Create menu tabs using menu_tabs_text for titles
           # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
           do.call(navbarPage, c(title = "Datasets", id='navbar_page', lapply(1:length(menu_sub_tabs_text), function(i) {
@@ -250,17 +253,17 @@ server <- function(input, output, session) {
       )
     }
   })
-  
+
   ################### APP SERVER CODE #####################################################
-  
+
   # TODO: GRAPHS!!!!
-   
-  
+
   # Generate a summary of the data ----
   output$summary <- renderPrint({
     "Summary Test..."
   })
-  
+
+
   #
   # UI event handling
   #
@@ -270,43 +273,49 @@ server <- function(input, output, session) {
     sheet_names_read <- excel_sheet_names(filename)
     print(sheet_names_read)
 
-    # TODO: fix this. remove the test sheet names  
-    if (setequal(sheet_names_read, sheet_names_test)) {
-#    if (setequal(sheet_names_read, data_set_names)) {
+    # We check for missing sheets.
+    missing_sheets <- setdiff(data_set_names, sheet_names_read)
 
-      data_sheets <- read_excel_allsheets(filename)
-      result <- call_API(data_endpoint, data_frames = data_sheets, year = input$dataload_year_selector)
+    if (length(missing_sheets) > 0) {
+      err <- paste("Missing sheets in uploaded file: ", paste(data_set_names, collapse=", "))
 
-      print(result)
-      # TODO: Add error handling for the REST endpoint connection fails
-      if (result$success == "true") {
-        print("Data loading successful")
-      }
-      else {
-        # Handle error
-        print("Data loading failed!")
-      }
-    }
-    else {
-      new_sheets <- setdiff(sheet_names_read, data_set_names)
-      missing_sheets <- setdiff(data_set_names, sheet_names_read)
-
-      error_1 <- ""
-      error_2 <- ""
-
-      if (length(new_sheets) > 0) {
-        error_1 <- paste("New sheets in uploaded file: ", paste(new_sheets, collapse=", "))
-      }
-      else if (length(missing_sheets) > 0) {
-        error_2 <- paste("Missing sheets in uploaded file: ", paste(data_set_names, collapse=", "))
-      }
-
-      err <- paste(error_1, error_2, sep = '\n')
       showModal(modalDialog(
-        title = "Failed to Load from Excel File",
+        title = kErrorTitleFailedToLoadData,
         err,
         easyClose = TRUE,
         footer = NULL))
+
+      return
+    }
+
+    # Check and log any new sheets but still continue to upload
+    new_sheets <- setdiff(sheet_names_read, data_set_names)
+    if (length(new_sheets) > 0) {
+      info <- paste("New sheets in uploaded file: ", paste(new_sheets, collapse=", "))
+      print(info)
+    }
+
+    # Read all data and send to API to save
+    data_sheets <- read_excel_allsheets(filename)
+    result <- call_API(data_endpoint, data_frames = data_sheets, year = input$dataload_year_selector)
+
+    print(result)
+
+    # TODO: Add error handling for the REST endpoint connection fails
+    if (result$success == "true") {
+      print("Data loading successful")
+    }
+    else {
+      # Handle error
+      print("Data loading failed!")
+      err <- result$err
+      showModal(modalDialog(
+        title = kErrorTitleFailedToLoadData,
+        err,
+        easyClose = TRUE,
+        footer = NULL))
+
+      return
     }
   })
 
@@ -321,45 +330,45 @@ server <- function(input, output, session) {
     data_frame_stats <- get_stats(data_frame)
     output$data_stats <- renderDT_formatted(data_frame_stats, no_table_header = T)
   })
-  
+
   # Button to save currently selected municipalities
   observeEvent(input$saveMunicipalitiesButton, {
     tryCatch(
       # Call API to store the selected municipalities
-      result <- call_API(municipalities_endpoint, userid, municipalities=input$municipalitySelector), 
+      result <- call_API(municipalities_endpoint, userid, municipalities=input$municipalitySelector),
       error = function(err) {
         showModal(modalDialog(
           title = "Failed to Save Settings",
-          err,        
+          err,
           easyClose = TRUE,
-          footer = NULL))   
+          footer = NULL))
       }
     )
-    
+
     if (result$success == "true") {
       showModal(modalDialog(
         title = "Successfully Saved Settings",
         easyClose = TRUE,
-        footer = NULL))      
+        footer = NULL))
     }
     else {
       showModal(modalDialog(
         title = "Failed to Save Settings",
-        result$error_message,        
+        result$error_message,
         easyClose = TRUE,
-        footer = NULL))   
+        footer = NULL))
     }
-  })  
+  })
 
   # Export button behaviour
   observeEvent(input$exportButton, {
     write_xlsx(data_frame, export_filename)
-    
+
     showModal(modalDialog(
       title = paste("Exported to file: ", export_filename),
       easyClose = TRUE,
       footer = NULL))
-  })      
+  })
 
   # Download button behaviour
   output$bmaExport.xls <- downloadHandler(
@@ -370,30 +379,30 @@ server <- function(input, output, session) {
       write_xlsx(data_frame, file)
     }
   )
-  
-  #### PASSWORD server code ---------------------------------------------------- 
+
+  #### PASSWORD server code ----------------------------------------------------
   # reactive value containing user's authentication status
   user_input <- reactiveValues(authenticated = FALSE, error_message = NULL, is_superuser = F)
-  
+
   observeEvent(input$login_button, {
     login_result <- call_login_endpoint(input$user_name, input$password)
     print(login_result)
-    
+
     if (login_result$success == "true") {
       user_input$authenticated <- TRUE
-      user_input$is_superuser <- (login_result$is_superuser == 'TRUE') 
+      user_input$is_superuser <- (login_result$is_superuser == 'TRUE')
 
       # Get full list of Municipalities
       municipality_choices$all <- call_API(municipalities_endpoint)$municipalities
-      
+
       # Get municipalities that current user is interested in
       municipality_choices$selected <- unlist(call_API(municipalities_endpoint, input$user_name))
     } else {
       user_input$authenticated <- FALSE
       user_input$error_message <- login_result$error_message
     }
-  })   
-  
+  })
+
   # password entry UI componenets:
   #   username and password text fields, login button
   output$uiLogin <- renderUI({
@@ -403,7 +412,7 @@ server <- function(input, output, session) {
       actionButton("login_button", "Log in")
     )
   })
-  
+
   # error message if bad credentials
   output$pass <- renderUI({
     if (!is.null(user_input$error_message)) {

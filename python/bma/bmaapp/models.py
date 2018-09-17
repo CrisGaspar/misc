@@ -1,9 +1,9 @@
 from django.db import models
 
 
-default_decimal_places = 2
+default_decimal_places = 5
 default_max_digits_year = 4
-default_max_digits = 13
+default_max_digits = 20
 default_max_string_length = 100
 
 COLUMN_NAME_MUNICIPALITY = 'Municipality'
