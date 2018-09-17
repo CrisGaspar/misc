@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, Http404
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
@@ -10,8 +10,11 @@ from django.utils.datastructures import MultiValueDictKeyError
 
 import datetime
 import json
+import logging
 
 from bmaapp.models import EndUser, Municipality, MunicipalityData
+from bmaapp.models import COLUMN_NAME_MULTI_RESIDENTIAL, COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL
+from bmaapp.models import COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX, COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA
 
 NA_VALUE = "NA"
 
@@ -19,30 +22,42 @@ CURRENT_YEAR = datetime.datetime.now().year
 MIN_YEAR = 1990
 MAX_YEAR = CURRENT_YEAR
 
+# ERRORS
+ERROR_USER_NOT_AUTHENTICATED = 'User not authenticated. Call login endpoint first'
+ERROR_USER_NOT_ALLOWED_OPERATION = 'User is not allowed to perform this operation'
+ERROR_MISSING_USERID_VALUE = 'Missing userid value'
+ERROR_JSON_DECODING_FAILED = 'JSON decoding failed for request body'
+ERROR_USERID_DOES_NOT_EXIST = ' Userid does not exist'
+ERROR_UNSUPPORTED_HTTP_OPERATION = 'Endpoint supports only GET and POST'
+ERROR_USER_AUTHENTICATION_FAILED = 'Invalid userid or invalid password'
+ERROR_MISSING_YEAR_PARAMETER = 'Missing year parameter'
+
+#TODO: ADD LOGGING!!
 
 def clean(str):
     # convert "NA" to None
-    if val == NA_VALUE:
+    if str == NA_VALUE:
         return None
-    else:
-        # remove leading and trailing whitespace
-        return val.strip()
 
 def split_to_year_and_property_name(str, default_year, sheet_name):
     # if str starts with a valid year, return (year,rest_of_str) tuple
     # if it does not, return (default_year, str) tuple
-    property_name = str
+
+    # remove leading and trailing whitespace
+    property_name = str.strip()
     year_to_use = default_year
 
+    print('str = {} default_year = {} sheet_name = {}'.format(str, default_year, sheet_name))
 
     if len(str) >= 5 and str[4] == ' ':
         try:
             year = int(str[0:4])
-            if year >= MIN_YEAR and year <= MAX_YEAR:
+            if MIN_YEAR <= year <= MAX_YEAR:
                 # skip the whitespace
                 property_name = str[5:]
                 year_to_use = year
         except ValueError as err:
+            # str does not start with year
             pass
 
     if property_name == COLUMN_NAME_MULTI_RESIDENTIAL and sheet_name == 'Tax Ratios':
@@ -51,6 +66,8 @@ def split_to_year_and_property_name(str, default_year, sheet_name):
         property_name = COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL
     elif property_name == COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX and sheet_name == 'Building Permit Activity':
         property_name = COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA
+
+    print( )
     return (property_name, year_to_use)
 
 # Helper methods
@@ -58,7 +75,7 @@ def is_user_allowed(current_user, target_user):
     return (current_user.username == target_user) or current_user.is_superuser
 
 def error_response(error_msg):
-    return JsonResponse({'success': 'false', 'error_message' : error_msg})
+    return JsonResponse({'success': 'false', 'error_message' : 'ERROR: ' + error_msg})
 
 def success_response():
     return JsonResponse({'success': 'true', 'error_message': ''})
@@ -72,6 +89,7 @@ def json2obj(data): return json.loads(data, object_hook=_json_object_hook)
 
 # Create your views here.
 def index(request):
+    # TODO: IMPLEMENT THIS!
     return HttpResponse("Hello, world. You're at the BMA index.")
 
 # PRE condition: user logged in
@@ -100,44 +118,37 @@ def store_municipalities_for_user(user_id, municipality_list):
 
 def municipalities(request):
     if request.user is None or not request.user.is_authenticated:
-        error_msg = "ERROR: User MUST authenticate first"
-        return error_response(error_msg)
+        return error_response(ERROR_USER_NOT_AUTHENTICATED)
 
     if request.method == 'GET' and 'userid' in request.GET:
         user_id = request.GET['userid']
         if user_id:
             if not is_user_allowed(request.user, user_id):
-                error_msg = "ERROR: User can only access its own preferences"
-                return error_response(error_msg)
+                return error_response(ERROR_USER_NOT_ALLOWED_OPERATION)
 
             return get_municipalities_for_user(user_id)
         else:
-            error_msg = "ERROR: Missing userid value in 'userid' query parameter"
-            return error_response(error_msg)
+            return error_response(ERROR_MISSING_USERID_VALUE)
 
     if request.method == 'POST' and 'userid' in request.GET:
         user_id = request.GET['userid']
 
         if user_id:
             if not is_user_allowed(request.user, user_id):
-                error_msg = "ERROR: User can only access its own preferences"
-                return error_response(error_msg)
+                return error_response(ERROR_USER_NOT_ALLOWED_OPERATION)
 
             try:
                 json_object = json.loads(request.body)
                 municipality_list = json_object['municipalities']
                 store_municipalities_for_user(user_id, municipality_list)
                 return success_response()
-            # TODO: Should there be unique error_codes defined and added to JSON response ?????????????
             except EndUser.DoesNotExist as e:
-                error_msg = "ERROR: Userid {userid} does not exist"
-                return error_response(error_msg)
+                logging.error("ERROR: Userid {userid} does not exist")
+                return error_response(ERROR_USERID_DOES_NOT_EXIST)
             except json.JSONDecodeError as e:
-                error_msg = "ERROR: JSON decoding failed for request body."
-                return error_response(error_msg)
+                return error_response(ERROR_JSON_DECODING_FAILED)
         else:
-            error_msg = "ERROR: Missing userid value in 'userid' query parameter"
-            return error_response(error_msg)
+            return error_response(ERROR_MISSING_USERID_VALUE)
 
     if request.method == 'GET':
         try:
@@ -152,8 +163,7 @@ def municipalities(request):
 
     if request.method == 'POST':
         if not request.user.is_superuser:
-            error_msg = 'MUST be logged in as superuser to change full list of municipalities'
-            return error_response(error_msg)
+            return error_response(ERROR_USER_NOT_ALLOWED_OPERATION)
 
         try:
             json_object = json.loads(request.body)
@@ -166,11 +176,10 @@ def municipalities(request):
                 municipality = Municipality(name=municipality_name)
                 municipality.save()
         except json.JSONDecodeError as e:
-            error_msg = "ERROR: JSON decoding failed for request body."
-            return error_response(error_msg)
+            return error_response(ERROR_JSON_DECODING_FAILED)
         return success_response()
 
-    raise Http404('ERROR: /municipalities endpoint supports only GET or POST')
+    return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
 
 def login(request):
     try:
@@ -184,8 +193,7 @@ def login(request):
         django_login(request, user)
         return login_success_response(user.is_superuser)
 
-    error_msg = 'ERROR: Invalid userid or password'
-    return error_response(error_msg)
+    return error_response(ERROR_USER_AUTHENTICATION_FAILED)
 
 def logout(request):
     django_logout(request)
@@ -193,14 +201,12 @@ def logout(request):
 
 def municipality_data(request):
     if request.user is None or not request.user.is_authenticated:
-        error_msg = "ERROR: User MUST authenticate first"
-        return error_response(error_msg)
+        return error_response(ERROR_USER_NOT_AUTHENTICATED)
 
     user_id = request.user.username
 
     if user_id is None:
-        error_msg = "ERROR: Missing userid"
-        return error_response(error_msg)
+        return error_response(ERROR_MISSING_USERID_VALUE)
 
     if request.method == 'GET':
         year = request.GET.get('year')
@@ -209,8 +215,7 @@ def municipality_data(request):
 
     if request.method == 'POST':
         if not request.user.is_superuser:
-            error_msg = 'MUST be logged in as superuser to change update municipality data'
-            return error_response(error_msg)
+            return error_response(ERROR_USER_NOT_ALLOWED_OPERATION)
 
         try:
             json_object = json.loads(request.body)
@@ -223,10 +228,9 @@ def municipality_data(request):
                 municipality_data.load(row_dict)
                 municipality_data.save()
         except json.JSONDecodeError as e:
-            error_msg = "ERROR: JSON decoding failed for request body."
-            return error_response(error_msg)
+            return error_response(ERROR_JSON_DECODING_FAILED)
         return success_response()
-    raise Http404('ERROR: Municipality data endpoint supports only GET or POST')
+    return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
 
 
 def get_municipality_data(userid, year):
@@ -245,16 +249,15 @@ def get_municipality_data(userid, year):
 
 def municipality_data_new(request):
     if request.user is None or not request.user.is_authenticated:
-        error_msg = "ERROR: User MUST authenticate first"
-        return error_response(error_msg)
+        return error_response(ERROR_USER_NOT_AUTHENTICATED)
 
     user_id = request.user.username
 
     if user_id is None:
-        error_msg = "ERROR: Missing userid"
-        return error_response(error_msg)
+        return error_response(ERROR_MISSING_USERID_VALUE)
 
     if request.method == 'GET':
+        # TOOD: implement this!!!
         #year = request.GET.get('year')
         #print(year)
         #return get_municipality_data(user_id, year)
@@ -262,13 +265,12 @@ def municipality_data_new(request):
 
     if request.method == 'POST':
         if not request.user.is_superuser:
-            error_msg = 'MUST be logged in as superuser to update municipality data'
-            return error_response(error_msg)
+            return error_response(ERROR_USER_NOT_ALLOWED_OPERATION)
 
         try:
             year = request.GET.get('year')
             if year is None:
-                return error_response("Missing year parameter")
+                return error_response(ERROR_MISSING_YEAR_PARAMETER)
             # convert to integer
             year = int(year)
 
@@ -290,7 +292,7 @@ def municipality_data_new(request):
                         municipalities = column_data
                     elif not municipalities:
                         # Municipalities has to be 1st column in sheet
-                        return error_response("First column in sheet {} is {}. All sheets must have Municipalities as 1st column".format(sheet_name, column_name))
+                        return error_response("ERROR: First column in sheet {} is {}. All sheets must have Municipalities as 1st column".format(sheet_name, column_name))
                     else:
                         (property_name, year_to_use) = split_to_year_and_property_name(column_name, year, sheet_name)
                         for index, val in enumerate(column_data):
@@ -308,7 +310,7 @@ def municipality_data_new(request):
                                     data_entry["Year"] = year_to_use
                                     data_by_municipality_and_year[tuple_key] = data_entry
                                 else:
-                                    return error_response("Column {} in sheet {} is for future year {} compared to year for the rest of the data ".format(column_name, sheet_name, year_to_use, year))
+                                    return error_response("ERROR: Column {} in sheet {} is for future year {} compared to year for the rest of the data ".format(column_name, sheet_name, year_to_use, year))
                             data_entry[property_name] = clean(val)
 
             # save each MunicipalityData to DB
@@ -325,8 +327,10 @@ def municipality_data_new(request):
                     # given-year data: fully overwrite corresponding DB model objects
                     db_data.save()
         except json.JSONDecodeError as e:
-            error_msg = "ERROR: JSON decoding failed for request body."
-            return error_response(error_msg)
+            return error_response(ERROR_JSON_DECODING_FAILED)
+        except Exception as e:
+            logging.error(e, exc_info=True)
+            return error_response("Encountered exception {}".format(str(e)))
         return success_response()
-    raise Http404('ERROR: Municipality data endpoint supports only GET or POST')
+    return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
 

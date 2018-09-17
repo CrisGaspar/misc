@@ -138,12 +138,6 @@ call_API <- function(endpoint, userid=NULL, municipalities = NULL, data_frames =
   }
   else if (!is.null(data_frames)) {
     method <- httr::POST
-#    data_frames_2 = lapply(data_frames, function(df) {
-#      df %>% t() %>% tibble::as_data_frame()
-#    })
-#    print(data_frames_2)
-#    print(toJSON(data_frames_2))
-#    requestBody <- paste('{"data":',  toJSON(data_frames_2), '}')
     print(rjson::toJSON(data_frames))
     requestBody <- paste('{"data":',  rjson::toJSON(data_frames), '}')
   }
@@ -155,7 +149,7 @@ call_API <- function(endpoint, userid=NULL, municipalities = NULL, data_frames =
   call_success <- method(url, body=requestBody)
   call_success_text <- content(call_success, "text")
   
-  # Get API response (succesful or unsuccesful) 
+  # Get API response (succesful or unsuccesful)
   call_success_final <- fromJSON(call_success_text)
   print(call_success_final)
 }
@@ -286,6 +280,11 @@ server <- function(input, output, session) {
       print(result)
       # TODO: Add error handling for the REST endpoint connection fails
       if (result$success == "true") {
+        print("Data loading successful")
+      }
+      else {
+        # Handle error
+        print("Data loading failed!")
       }
     }
     else {
@@ -400,9 +399,7 @@ server <- function(input, output, session) {
   output$uiLogin <- renderUI({
     wellPanel(
       textInput("user_name", "User Name:"),
-      
       passwordInput("password", "Password:"),
-      
       actionButton("login_button", "Log in")
     )
   })
