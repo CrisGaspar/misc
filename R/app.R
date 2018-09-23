@@ -71,14 +71,7 @@ menu_sub_tabs_text <- list(
 
 data_set_names <- list.flatten(menu_sub_tabs_text)
 
-get_data <- function(filename, municipalities = NULL) {
-  ##### TODO: FIX to read from API instead of xls file
-  data_frame <- read_excel(filename)
-  if (!is.null(municipalities)) {
-    data_frame <- data_frame[data_frame$Municipality %in% municipalities, ]
-  }
-  data_frame
-}
+
 
 excel_sheet_names <- function(filename) {
   readxl::excel_sheets(filename)
@@ -89,14 +82,6 @@ read_excel_allsheets <- function(filename) {
   x <- lapply(sheets, function(X) readxl::read_excel(filename, sheet = X))
   names(x) <- sheets
   x
-}
-
-load_data <- function(filename, year) {
-#  lapply(1:length(data_set_names), function(i) {
-#  })
-  data_frame <- read_excel(filename, sheet = "Sheet1")
-  print(data_frame)
-  data_frame
 }
 
 # Create stats data frame for given data frame with min, max, average, and median
@@ -238,6 +223,29 @@ renderDT_formatted <- function(data_frame, no_table_header = F) {
   }
 }
 
+refresh_data_display <- function(municipalities=list(), year=current_year) {
+  # Refresh data frame filtered to selected municipalities and selected year
+  result <- call_API_data_endpoint(method = httr::GET, municipalities = municipalities, year = year)
+  print (result)
+  
+  if (result$success == "false") {
+    showModal(modalDialog(
+      title = "Failed to Get Data",
+      result$error_message,
+      easyClose = TRUE,
+      footer = NULL))
+    return
+  }
+  
+  data_frame <- result$data 
+  
+  # Render data and stats tables in UI
+  output$data <- renderDT_formatted(data_frame)
+  data_frame_stats <- get_stats(data_frame)
+  output$data_stats <- renderDT_formatted(data_frame_stats, no_table_header = T)
+}
+
+
 
 #
 # UI definition
@@ -315,7 +323,7 @@ server <- function(input, output, session) {
           # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
           do.call(navbarPage, c(title = "Datasets", id='navbar_page', lapply(1:length(menu_sub_tabs_text), function(i) {
             do.call(navbarMenu, c(title = menu_tabs_text[[i]], lapply(1:length(menu_sub_tabs_text[[i]]), function(j) {
-                  tabPanel(menu_sub_tabs_text[[i]][j], menu_sub_tabs_text[[i]][j])
+                  tabPanel(menu_sub_tabs_text[[i]][j], menu_sub_tabs_text[[i]][j], DTOutput("data"), DTOutput("data_stats"))
             })))
           })))
         )
@@ -413,8 +421,6 @@ server <- function(input, output, session) {
     data_sheets <- read_excel_allsheets(filename)
     result <- call_API_data_endpoint(method = httr::POST, data_frames = data_sheets, year = input$data_load_year_selector)
 
-    print(result)
-
     # TODO: Add error handling for the REST endpoint connection fails
     if (result$success == "true") {
       print("Data loading successful")
@@ -436,27 +442,12 @@ server <- function(input, output, session) {
   # Municipality Selection
   observeEvent(input$municipalitySelector, {
     # Refresh data frame filtered to selected municipalities and selected year
-    data_frame <- get_data(source_filename, input$municipalitySelector)
-
-    # Render data and stats tables in UI
-    output$data <- renderDT_formatted(data_frame)
-    data_frame_stats <- get_stats(data_frame)
-    output$data_stats <- renderDT_formatted(data_frame_stats, no_table_header = T)
+    refresh_data_display(municipalities = input$municipalitySelector, year = input$data_display_year_selector)
   })
   
   # Year Selection
   observeEvent(input$data_display_year_selector, {
-    # Refresh data frame filtered to selected municipalities and selected year
-    result <- call_API_data_endpoint(method = httr::GET, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
-    print (result)
-    # TODO CHECK RESULT for errors
-    #TODO: Uncomment!!
-    #data_frame <- result$data
-    
-    # Render data and stats tables in UI
-    #output$data <- renderDT_formatted(data_frame)
-    #data_frame_stats <- get_stats(data_frame)
-    #output$data_stats <- renderDT_formatted(data_frame_stats, no_table_header = T)
+    refresh_data_display(municipalities = input$municipalitySelector, year = input$data_display_year_selector)
   })
 
   # Button to save currently selected municipalities
