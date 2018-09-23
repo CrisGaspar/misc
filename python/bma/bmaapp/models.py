@@ -1,6 +1,5 @@
 from django.db import models
 
-
 default_decimal_places = 5
 default_max_digits_year = 4
 default_max_digits = 20
@@ -9,11 +8,11 @@ default_max_string_length = 100
 COLUMN_NAME_MUNICIPALITY = 'Municipality'
 COLUMN_NAME_YEAR = 'Year'
 
-#TODO: Implement the following 4 fields
-#self.region_county_district = dict.get('region_county_district')
-#self.study_location = dict.get('study_location')
-#self.tier = dict.get('tier')
-#self.population_bands = dict.get('population_bands')
+# TODO: Implement the following 4 fields
+# self.region_county_district = dict.get('region_county_district')
+# self.study_location = dict.get('study_location')
+# self.tier = dict.get('tier')
+# self.population_bands = dict.get('population_bands')
 
 COLUMN_NAME_POPULATION_DENSITY = 'Population Density per sq. km.'
 # TODO: FIX THIS in UI!
@@ -25,7 +24,7 @@ COLUMN_NAME_LAND_AREA = 'Land Area km2'
 COLUMN_NAME_POPULATION_INCREASE = 'Population Increase'
 COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA = 'Building Construction Value per Capita'
 COLUMN_NAME_ESTIMATED_AVG_HOUSEHOLD_INCOME = 'Estimated Average Household Income'
-COLUMN_NAME_WEIGHTED_MEDIAN_VAL_DWELLING  = 'Weighted Median Value of Dwelling'
+COLUMN_NAME_WEIGHTED_MEDIAN_VAL_DWELLING = 'Weighted Median Value of Dwelling'
 COLUMN_NAME_UNWEIGHTED_ASSESSMENT_PER_CAPITA = 'Unweighted Assessment per Capita'
 COLUMN_NAME_WEIGHTED_ASSESSMENT_PER_CAPITA = 'Weighted Assessment per Capita'
 COLUMN_NAME_TOTAL_UNWEIGHTED_ASSESSMENT = 'Total Unweighted Assessment'
@@ -168,11 +167,13 @@ COLUMN_NAME_CONSERVATION_AUTHORITY = 'Conservation Authority'
 COLUMN_NAME_AMBULANCE = 'Ambulance'
 COLUMN_NAME_CEMETERIES = 'Cemeteries'
 
+
 # create your models here.
 
 class EndUser(models.Model):
     userid = models.CharField(max_length=default_max_string_length, null=True)
-    municipality_name =  models.CharField(max_length=default_max_string_length, null=True)
+    municipality_name = models.CharField(max_length=default_max_string_length, null=True)
+
 
 class Municipality(models.Model):
     name = models.CharField(max_length=default_max_string_length, null=True)
@@ -185,7 +186,7 @@ class MunicipalityData(models.Model):
     # it uses actually does allow that
     # Hence the need for the following extra field that combines municipality name with year to create a
     # combined primary key
-    yearPlusName = models.CharField(max_length=default_max_string_length+4, primary_key=True)
+    yearPlusName = models.CharField(max_length=default_max_string_length + 4, primary_key=True)
 
     name = models.CharField(max_length=default_max_string_length)
     year = models.IntegerField()
@@ -197,159 +198,267 @@ class MunicipalityData(models.Model):
 
     land_area_km2 = models.CharField(max_length=default_max_string_length, null=True)
     population = models.IntegerField(null=True)
-    population_density_per_km2 = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    population_increase_percent = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    building_construction_value = models.DecimalField(max_digits=default_max_digits , decimal_places=default_decimal_places, null=True)
-    building_construction_per_capita_value = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    estimated_average_household_income = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    weighted_median_dwelling_value = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    unweighted_assessment_per_capita = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    weighted_assessment_per_capita = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    total_unweighted_assessment = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    total_weighted_assessment = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    population_density_per_km2 = models.DecimalField(max_digits=default_max_digits,
+                                                     decimal_places=default_decimal_places, null=True)
+    population_increase_percent = models.DecimalField(max_digits=default_max_digits,
+                                                      decimal_places=default_decimal_places, null=True)
+    building_construction_value = models.DecimalField(max_digits=default_max_digits,
+                                                      decimal_places=default_decimal_places, null=True)
+    building_construction_per_capita_value = models.DecimalField(max_digits=default_max_digits,
+                                                                 decimal_places=default_decimal_places, null=True)
+    estimated_average_household_income = models.DecimalField(max_digits=default_max_digits,
+                                                             decimal_places=default_decimal_places, null=True)
+    weighted_median_dwelling_value = models.DecimalField(max_digits=default_max_digits,
+                                                         decimal_places=default_decimal_places, null=True)
+    unweighted_assessment_per_capita = models.DecimalField(max_digits=default_max_digits,
+                                                           decimal_places=default_decimal_places, null=True)
+    weighted_assessment_per_capita = models.DecimalField(max_digits=default_max_digits,
+                                                         decimal_places=default_decimal_places, null=True)
+    total_unweighted_assessment = models.DecimalField(max_digits=default_max_digits,
+                                                      decimal_places=default_decimal_places, null=True)
+    total_weighted_assessment = models.DecimalField(max_digits=default_max_digits,
+                                                    decimal_places=default_decimal_places, null=True)
 
     residential = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    multi_residential = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    multi_residential = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                            null=True)
     commercial = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     industrial = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     pipelines = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     farmlands = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     forests = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
 
-    total_net_levy_upper_and_lower_tiers = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    levy_per_capita = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    upper_tier_levy = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    upper_tier_levy_per_capita = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    lower_tier_levy = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    lower_tier_levy_per_capita = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    tax_asset_consumption_ratio = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    financial_position_per_capita = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    tax_discretionary_reserves_percent_own_source_revenues = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    tax_reserves_percent_taxation = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    tax_reserves_capita = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    tax_debt_int_percent_osr = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    tax_debt_charges_percent_osr = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    total_debt_outstanding_capita = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    tax_debt_outstanding_capita = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    debt_to_reserve_ratio = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    taxes_receivable_percent_taxes_levied = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    rates_coverage_ratio = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    net_financial_liabilities_ratio = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    total_net_levy_upper_and_lower_tiers = models.DecimalField(max_digits=default_max_digits,
+                                                               decimal_places=default_decimal_places, null=True)
+    levy_per_capita = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                          null=True)
+    upper_tier_levy = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                          null=True)
+    upper_tier_levy_per_capita = models.DecimalField(max_digits=default_max_digits,
+                                                     decimal_places=default_decimal_places, null=True)
+    lower_tier_levy = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                          null=True)
+    lower_tier_levy_per_capita = models.DecimalField(max_digits=default_max_digits,
+                                                     decimal_places=default_decimal_places, null=True)
+    tax_asset_consumption_ratio = models.DecimalField(max_digits=default_max_digits,
+                                                      decimal_places=default_decimal_places, null=True)
+    financial_position_per_capita = models.DecimalField(max_digits=default_max_digits,
+                                                        decimal_places=default_decimal_places, null=True)
+    tax_discretionary_reserves_percent_own_source_revenues = models.DecimalField(max_digits=default_max_digits,
+                                                                                 decimal_places=default_decimal_places,
+                                                                                 null=True)
+    tax_reserves_percent_taxation = models.DecimalField(max_digits=default_max_digits,
+                                                        decimal_places=default_decimal_places, null=True)
+    tax_reserves_capita = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                              null=True)
+    tax_debt_int_percent_osr = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                   null=True)
+    tax_debt_charges_percent_osr = models.DecimalField(max_digits=default_max_digits,
+                                                       decimal_places=default_decimal_places, null=True)
+    total_debt_outstanding_capita = models.DecimalField(max_digits=default_max_digits,
+                                                        decimal_places=default_decimal_places, null=True)
+    tax_debt_outstanding_capita = models.DecimalField(max_digits=default_max_digits,
+                                                      decimal_places=default_decimal_places, null=True)
+    debt_to_reserve_ratio = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                null=True)
+    taxes_receivable_percent_taxes_levied = models.DecimalField(max_digits=default_max_digits,
+                                                                decimal_places=default_decimal_places, null=True)
+    rates_coverage_ratio = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                               null=True)
+    net_financial_liabilities_ratio = models.DecimalField(max_digits=default_max_digits,
+                                                          decimal_places=default_decimal_places, null=True)
 
-    single_detached_dwellings_per_unit = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    multiples_dwelling_3_plus_per_unit = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    multiples_dwelling_1_or_2_per_unit = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    apartment_units_at_least_2_per_unit = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    apartment_units_less_than_2_per_unit = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    non_residential_commercial_per_sq_ft = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    non_residential_industrial_per_sq_ft = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    building_permit_fee = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    single_detached_dwellings_per_unit = models.DecimalField(max_digits=default_max_digits,
+                                                             decimal_places=default_decimal_places, null=True)
+    multiples_dwelling_3_plus_per_unit = models.DecimalField(max_digits=default_max_digits,
+                                                             decimal_places=default_decimal_places, null=True)
+    multiples_dwelling_1_or_2_per_unit = models.DecimalField(max_digits=default_max_digits,
+                                                             decimal_places=default_decimal_places, null=True)
+    apartment_units_at_least_2_per_unit = models.DecimalField(max_digits=default_max_digits,
+                                                              decimal_places=default_decimal_places, null=True)
+    apartment_units_less_than_2_per_unit = models.DecimalField(max_digits=default_max_digits,
+                                                               decimal_places=default_decimal_places, null=True)
+    non_residential_commercial_per_sq_ft = models.DecimalField(max_digits=default_max_digits,
+                                                               decimal_places=default_decimal_places, null=True)
+    non_residential_industrial_per_sq_ft = models.DecimalField(max_digits=default_max_digits,
+                                                               decimal_places=default_decimal_places, null=True)
+    building_permit_fee = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                              null=True)
 
-    multi_residential_tax_ratio = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    commercial_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    industrial_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    multi_residential_tax_ratio = models.DecimalField(max_digits=default_max_digits,
+                                                      decimal_places=default_decimal_places, null=True)
+    commercial_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                              null=True)
+    industrial_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                              null=True)
 
-    new_multi_residential = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    commercial_office = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    commercial_shopping = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    commercial_parking = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    industrial_large = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    new_multi_residential = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                null=True)
+    commercial_office = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                            null=True)
+    commercial_shopping = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                              null=True)
+    commercial_parking = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                             null=True)
+    industrial_large = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                           null=True)
 
     total_resid = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    total_multi_resid = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    total_comm_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    total_comm_office = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    total_commercial_park_vac = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    total_comm_shopping = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    total_ind_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    total_ind_large = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    total_multi_resid = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                            null=True)
+    total_comm_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                              null=True)
+    total_comm_office = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                            null=True)
+    total_commercial_park_vac = models.DecimalField(max_digits=default_max_digits,
+                                                    decimal_places=default_decimal_places, null=True)
+    total_comm_shopping = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                              null=True)
+    total_ind_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                             null=True)
+    total_ind_large = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                          null=True)
 
-    municipal_resid = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    municipal_multi_resid = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    municipal_comm_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    municipal_comm_office = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    municipal_commercial_park_vac = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    municipal_comm_shopping = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    municipal_ind_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    municipal_ind_large = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    municipal_resid = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                          null=True)
+    municipal_multi_resid = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                null=True)
+    municipal_comm_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                  null=True)
+    municipal_comm_office = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                null=True)
+    municipal_commercial_park_vac = models.DecimalField(max_digits=default_max_digits,
+                                                        decimal_places=default_decimal_places, null=True)
+    municipal_comm_shopping = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                  null=True)
+    municipal_ind_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                 null=True)
+    municipal_ind_large = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                              null=True)
 
-    education_resid = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    education_multi_resid = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    education_comm_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    education_comm_office = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    education_commercial_park_vac = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    education_comm_shopping = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    education_ind_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    education_ind_large = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    education_resid = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                          null=True)
+    education_multi_resid = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                null=True)
+    education_comm_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                  null=True)
+    education_comm_office = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                null=True)
+    education_commercial_park_vac = models.DecimalField(max_digits=default_max_digits,
+                                                        decimal_places=default_decimal_places, null=True)
+    education_comm_shopping = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                  null=True)
+    education_ind_residual = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                 null=True)
+    education_ind_large = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                              null=True)
 
     bungalow = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     two_storey = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     executive = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    multi_res_walk_up = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    multi_res_high_rise = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    multi_res_walk_up = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                            null=True)
+    multi_res_high_rise = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                              null=True)
     shopping = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     hotel = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     motel = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     office = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    industrial_standard = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    industrial_large = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    industrial_vacant = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    industrial_standard = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                              null=True)
+    industrial_large = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                           null=True)
+    industrial_vacant = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                            null=True)
 
-    residential_200_m3_5_8_inch = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    commercial_10000_m3_2_inch = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    industrial_30000_m3_3_inch = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    industrial_100000_m3_4_inch = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    industrial_500000_m3_6_inch = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    water_asset_consumption = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    ww_asset_consumption = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    water_res_as_percent_osr = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    ww_res_percent_osr = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    water_res_as_percent_acum_amort = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    ww_res_percent_acum_amort = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    water_debt_interest_coverage = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    ww_debt_interest_coverage = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    water_net_lin_liab = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    ww_net_lin_liab = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    est_avg_household_income = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    residential_water_sewer_costs = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    average_residential_taxes = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    property_taxes_percent_household_income = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    total_municipal_tax_burden = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    total_municipal_burden_percent_household_income = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    residential_200_m3_5_8_inch = models.DecimalField(max_digits=default_max_digits,
+                                                      decimal_places=default_decimal_places, null=True)
+    commercial_10000_m3_2_inch = models.DecimalField(max_digits=default_max_digits,
+                                                     decimal_places=default_decimal_places, null=True)
+    industrial_30000_m3_3_inch = models.DecimalField(max_digits=default_max_digits,
+                                                     decimal_places=default_decimal_places, null=True)
+    industrial_100000_m3_4_inch = models.DecimalField(max_digits=default_max_digits,
+                                                      decimal_places=default_decimal_places, null=True)
+    industrial_500000_m3_6_inch = models.DecimalField(max_digits=default_max_digits,
+                                                      decimal_places=default_decimal_places, null=True)
+    water_asset_consumption = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                  null=True)
+    ww_asset_consumption = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                               null=True)
+    water_res_as_percent_osr = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                   null=True)
+    ww_res_percent_osr = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                             null=True)
+    water_res_as_percent_acum_amort = models.DecimalField(max_digits=default_max_digits,
+                                                          decimal_places=default_decimal_places, null=True)
+    ww_res_percent_acum_amort = models.DecimalField(max_digits=default_max_digits,
+                                                    decimal_places=default_decimal_places, null=True)
+    water_debt_interest_coverage = models.DecimalField(max_digits=default_max_digits,
+                                                       decimal_places=default_decimal_places, null=True)
+    ww_debt_interest_coverage = models.DecimalField(max_digits=default_max_digits,
+                                                    decimal_places=default_decimal_places, null=True)
+    water_net_lin_liab = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                             null=True)
+    ww_net_lin_liab = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                          null=True)
+    est_avg_household_income = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                   null=True)
+    residential_water_sewer_costs = models.DecimalField(max_digits=default_max_digits,
+                                                        decimal_places=default_decimal_places, null=True)
+    average_residential_taxes = models.DecimalField(max_digits=default_max_digits,
+                                                    decimal_places=default_decimal_places, null=True)
+    property_taxes_percent_household_income = models.DecimalField(max_digits=default_max_digits,
+                                                                  decimal_places=default_decimal_places, null=True)
+    total_municipal_tax_burden = models.DecimalField(max_digits=default_max_digits,
+                                                     decimal_places=default_decimal_places, null=True)
+    total_municipal_burden_percent_household_income = models.DecimalField(max_digits=default_max_digits,
+                                                                          decimal_places=default_decimal_places,
+                                                                          null=True)
 
     fire = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     roads_paved = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    bridges_and_culverts = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    bridges_and_culverts = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                               null=True)
     traffic = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     winter_roads = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    winter_sidewalks = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    winter_sidewalks = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                           null=True)
     transit = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     parking = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    waste_collection = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    waste_disposal = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    waste_collection = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                           null=True)
+    waste_disposal = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                         null=True)
     storm = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     recycling = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     public_health = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    emergency_measures = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    general_assistance = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    assistance_to_the_aged = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    emergency_measures = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                             null=True)
+    general_assistance = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                             null=True)
+    assistance_to_the_aged = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                 null=True)
     poa = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     child_care = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    social_housing = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    social_housing = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                         null=True)
     parks = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    recreation_programs = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    recreation_programs = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                              null=True)
     rec_fac_golf = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    rec_facilities_other = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    rec_facilities_other = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                               null=True)
     library = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     museums = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     cultural = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     planning = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     comm_and_ind = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    general_government = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    conservation_authority = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    general_government = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                             null=True)
+    conservation_authority = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+                                                 null=True)
     ambulance = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     cemeteries = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-
 
     def store(self, dict):
         dict.clear()
@@ -392,7 +501,8 @@ class MunicipalityData(models.Model):
         dict[COLUMN_NAME_LOWER_TIER_LEVY_PER_CAPITA] = self.lower_tier_levy_per_capita
         dict[COLUMN_NAME_TAX_ASSET_CONSUMPTION_RATIO] = self.tax_asset_consumption_ratio
         dict[COLUMN_NAME_FINANCIAL_POSITION_PER_CAPITA] = self.financial_position_per_capita
-        dict[COLUMN_NAME_TAX_DISCRETIONARY_RESERVES_PERCENT_SOURCE_REVENUES] = self.tax_discretionary_reserves_percent_own_source_revenues
+        dict[
+            COLUMN_NAME_TAX_DISCRETIONARY_RESERVES_PERCENT_SOURCE_REVENUES] = self.tax_discretionary_reserves_percent_own_source_revenues
         dict[COLUMN_NAME_TAX_RESERVES_PERCENT_TAXATION] = self.tax_reserves_percent_taxation
         dict[COLUMN_NAME_TAX_RESERVE_PER_CAPITA] = self.tax_reserves_capita
         dict[COLUMN_NAME_TAX_DEBT_INT_PERCENT_OSR] = self.tax_debt_int_percent_osr
@@ -483,7 +593,8 @@ class MunicipalityData(models.Model):
         dict[COLUMN_NAME_AVG_RESIDENTIAL_TAXES] = self.average_residential_taxes
         dict[COLUMN_NAME_PROPERTY_TAXES_PERCENT_HOUSEHOLD_INCOME] = self.property_taxes_percent_household_income
         dict[COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN] = self.total_municipal_tax_burden
-        dict[COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN_PERCENT_HOUSEHOLD_INCOME] = self.total_municipal_burden_percent_household_income
+        dict[
+            COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN_PERCENT_HOUSEHOLD_INCOME] = self.total_municipal_burden_percent_household_income
 
         dict[COLUMN_NAME_FIRE] = self.fire
         dict[COLUMN_NAME_ROADS_PAVED] = self.roads_paved
@@ -517,7 +628,6 @@ class MunicipalityData(models.Model):
         dict[COLUMN_NAME_CONSERVATION_AUTHORITY] = self.conservation_authority
         dict[COLUMN_NAME_AMBULANCE] = self.ambulance
         dict[COLUMN_NAME_CEMETERIES] = self.cemeteries
-
 
     def load(self, dict):
         self.name = dict.get(COLUMN_NAME_MUNICIPALITY)
@@ -559,7 +669,8 @@ class MunicipalityData(models.Model):
         self.lower_tier_levy_per_capita = dict.get(COLUMN_NAME_LOWER_TIER_LEVY_PER_CAPITA)
         self.tax_asset_consumption_ratio = dict.get(COLUMN_NAME_TAX_ASSET_CONSUMPTION_RATIO)
         self.financial_position_per_capita = dict.get(COLUMN_NAME_FINANCIAL_POSITION_PER_CAPITA)
-        self.tax_discretionary_reserves_percent_own_source_revenues = dict.get(COLUMN_NAME_TAX_DISCRETIONARY_RESERVES_PERCENT_SOURCE_REVENUES)
+        self.tax_discretionary_reserves_percent_own_source_revenues = dict.get(
+            COLUMN_NAME_TAX_DISCRETIONARY_RESERVES_PERCENT_SOURCE_REVENUES)
         self.tax_reserves_percent_taxation = dict.get(COLUMN_NAME_TAX_RESERVES_PERCENT_TAXATION)
         self.tax_reserves_capita = dict.get(COLUMN_NAME_TAX_RESERVE_PER_CAPITA)
         self.tax_debt_int_percent_osr = dict.get(COLUMN_NAME_TAX_DEBT_INT_PERCENT_OSR)
@@ -650,7 +761,8 @@ class MunicipalityData(models.Model):
         self.average_residential_taxes = dict.get(COLUMN_NAME_AVG_RESIDENTIAL_TAXES)
         self.property_taxes_percent_household_income = dict.get(COLUMN_NAME_PROPERTY_TAXES_PERCENT_HOUSEHOLD_INCOME)
         self.total_municipal_tax_burden = dict.get(COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN)
-        self.total_municipal_burden_percent_household_income = dict.get(COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN_PERCENT_HOUSEHOLD_INCOME)
+        self.total_municipal_burden_percent_household_income = dict.get(
+            COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN_PERCENT_HOUSEHOLD_INCOME)
 
         self.fire = dict.get(COLUMN_NAME_FIRE)
         self.roads_paved = dict.get(COLUMN_NAME_ROADS_PAVED)

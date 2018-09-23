@@ -15,7 +15,14 @@ import logging
 
 from bmaapp.models import EndUser, Municipality, MunicipalityData
 from bmaapp.models import COLUMN_NAME_MULTI_RESIDENTIAL, COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL
-from bmaapp.models import COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX, COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA
+from bmaapp.models import COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX, \
+    COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA
+
+# ---------------------------------------------------------------------------------------------------------------------
+# TODO:
+# 1. ADD LOGGING!!
+# 2. Add back CSFR in settings.py
+# ---------------------------------------------------------------------------------------------------------------------
 
 NA_VALUE = "NA"
 
@@ -34,11 +41,9 @@ ERROR_UNSUPPORTED_HTTP_OPERATION = 'Endpoint supports only GET and POST'
 ERROR_USER_AUTHENTICATION_FAILED = 'Invalid userid or invalid password'
 ERROR_MISSING_YEAR_PARAMETER = 'Missing year parameter'
 
-#TODO: ADD LOGGING!!
-
-
 EXPECTED_SHEET_NAMES = [
-    "Population", "Density and Land Area", "Assessment Information", "Assessment Composition", "Building Permit Activity",
+    "Population", "Density and Land Area", "Assessment Information", "Assessment Composition",
+    "Building Permit Activity",
 
     "Total Levy", "Upper Tier Levy", "Lower Tier Levy", "Tax Asset Consumption Ratio",
     "Financial Position per Capita", "Tax Dis Res as % OSR", "Tax Reserves as % of Taxation",
@@ -68,6 +73,7 @@ def clean(str):
     if str == NA_VALUE:
         return None
     return str
+
 
 def split_to_year_and_property_name(str, default_year, sheet_name):
     # if str starts with a valid year, return (year,rest_of_str) tuple
@@ -99,26 +105,33 @@ def split_to_year_and_property_name(str, default_year, sheet_name):
 
     return (property_name, year_to_use)
 
+
 # Helper methods
 def is_user_allowed(current_user, target_user):
     return (current_user.username == target_user) or current_user.is_superuser
+
 
 def _create_json_response(dict):
     # dict contains (name, object) pairs to be in the JSON response
     return JsonResponse(dict)
 
+
 def error_response(error_msg):
-    dict = {'success': 'false', 'error_message' : 'ERROR: ' + error_msg}
+    dict = {'success': 'false', 'error_message': 'ERROR: ' + error_msg}
     return _create_json_response(dict)
 
-def success_response(dict = None):
+
+def success_response(dict=None):
     if dict is None:
         dict = {}
     dict['success'] = 'true'
     dict['error_message'] = ''
     return _create_json_response(dict)
 
+
 def _json_object_hook(d): return namedtuple('X', d.keys())(*d.values())
+
+
 def json2obj(data): return json.loads(data, object_hook=_json_object_hook)
 
 
@@ -127,11 +140,12 @@ def index(request):
     # TODO: IMPLEMENT THIS!
     return HttpResponse("Hello, world. You're at the BMA index.")
 
+
 def login(request):
     try:
         user_id = request.GET['userid']
         password = request.GET['password']
-        user = authenticate(username = user_id, password = password)
+        user = authenticate(username=user_id, password=password)
     except MultiValueDictKeyError as e:
         user = None
 
@@ -141,14 +155,16 @@ def login(request):
 
     return error_response(ERROR_USER_AUTHENTICATION_FAILED)
 
+
 def logout(request):
     django_logout(request)
     return success_response()
 
+
 # PRE condition: user logged in
 def get_municipalities_for_user(userID):
     try:
-        entries = EndUser.objects.filter(userid = userID)
+        entries = EndUser.objects.filter(userid=userID)
     except EndUser.DoesNotExist:
         entries = None
 
@@ -156,6 +172,7 @@ def get_municipalities_for_user(userID):
     for entry in entries:
         municipalities.append(entry.municipality_name)
     return municipalities
+
 
 # PRE condition: user logged in
 def store_municipalities_for_user(user_id, municipality_list):
@@ -166,6 +183,7 @@ def store_municipalities_for_user(user_id, municipality_list):
         user.save()
     return
 
+
 def all_municipalities(request):
     if request.user is None or not request.user.is_authenticated:
         return error_response(ERROR_USER_NOT_AUTHENTICATED)
@@ -174,7 +192,7 @@ def all_municipalities(request):
         try:
             municipalities = Municipality.objects.all()
             municipality_list = []
-            #TODO: Fix to return the full info 3-tuple (name, study_location, population_band)
+            # TODO: Fix to return the full info 3-tuple (name, study_location, population_band)
             for entry in municipalities:
                 municipality_list.append(entry.name)
             return success_response({'municipalities': municipality_list})
@@ -191,7 +209,7 @@ def all_municipalities(request):
 
             # Delete previous entries
             Municipality.objects.all().delete()
-            #TODO: Fix to store the full info 3-tuple (name, study_location, population_band)
+            # TODO: Fix to store the full info 3-tuple (name, study_location, population_band)
             for municipality_name in municipality_list:
                 municipality = Municipality(name=municipality_name)
                 municipality.save()
@@ -211,7 +229,7 @@ def municipalities(request):
     if request.method == 'GET':
         if user_id:
             municipality_list = get_municipalities_for_user(user_id)
-            return success_response({'municipalities':municipality_list})
+            return success_response({'municipalities': municipality_list})
         else:
             return error_response(ERROR_MISSING_USERID_VALUE)
 
@@ -255,7 +273,7 @@ def old_municipality_data(request):
             json_object = json.loads(request.body)
             data_to_write = json_object['data']
 
-            #TODO: Fix to store the full info 3-tuple (name, study_location, population_band)
+            # TODO: Fix to store the full info 3-tuple (name, study_location, population_band)
             for row_dict in data_to_write:
                 print(row_dict)
                 municipality_data = MunicipalityData()
@@ -269,7 +287,7 @@ def old_municipality_data(request):
 
 def get_municipality_data(userid, year):
     # TODO: restrict based on specified user's groupings preference
-    dataset_for_year = MunicipalityData.objects.filter(year = year)
+    dataset_for_year = MunicipalityData.objects.filter(year=year)
 
     # this gives you a list of dicts
     raw_data = serializers.serialize('python', dataset_for_year)
@@ -278,7 +296,7 @@ def get_municipality_data(userid, year):
     # and now dump to JSON
     json_output = json.dumps(actual_data)
 
-    return success_response({'data':json_output})
+    return success_response({'data': json_output})
 
 
 def municipality_data_new(request):
@@ -292,9 +310,9 @@ def municipality_data_new(request):
 
     if request.method == 'GET':
         # TOOD: implement this!!!
-        #year = request.GET.get('year')
-        #print(year)
-        #return get_municipality_data(user_id, year)
+        # year = request.GET.get('year')
+        # print(year)
+        # return get_municipality_data(user_id, year)
         return error_response("HTTP GET: to be implemented")
 
     if request.method == 'POST':
@@ -329,7 +347,9 @@ def municipality_data_new(request):
                         municipalities = column_data
                     elif not municipalities:
                         # Municipalities has to be 1st column in sheet
-                        return error_response("First column in sheet {} is {}. All sheets must have Municipalities as 1st column".format(sheet_name, column_name))
+                        return error_response(
+                            "First column in sheet {} is {}. All sheets must have Municipalities as 1st column".format(
+                                sheet_name, column_name))
                     else:
                         (property_name, year_to_use) = split_to_year_and_property_name(column_name, year, sheet_name)
                         for index, val in enumerate(column_data):
@@ -347,7 +367,9 @@ def municipality_data_new(request):
                                     data_entry["Year"] = year_to_use
                                     data_by_municipality_and_year[tuple_key] = data_entry
                                 else:
-                                    return error_response("Column {} in sheet {} is for future year {} compared to year for the rest of the data ".format(column_name, sheet_name, year_to_use, year))
+                                    return error_response(
+                                        "Column {} in sheet {} is for future year {} compared to year for the rest of the data ".format(
+                                            column_name, sheet_name, year_to_use, year))
                             data_entry[property_name] = clean(val)
 
             print(data_by_municipality_and_year)
@@ -372,7 +394,8 @@ def municipality_data_new(request):
                         # (municipality, year) row.  In this case do not update.
                         if not ERROR_DB_MUNICIPALITY_DATA_INSERT_UNIQUE_CONSTRAINT_FAIL in str(e):
                             # log only if exception text is different unique constraint as expected
-                            logging.error("Exception raised when saving the DB entry for {} {}".format(municipality, data_year))
+                            logging.error(
+                                "Exception raised when saving the DB entry for {} {}".format(municipality, data_year))
                             logging.error(e, exc_info=True)
                 else:
                     # given-year data: fully overwrite corresponding DB model objects
