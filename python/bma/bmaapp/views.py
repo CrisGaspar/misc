@@ -103,14 +103,20 @@ def split_to_year_and_property_name(str, default_year, sheet_name):
 def is_user_allowed(current_user, target_user):
     return (current_user.username == target_user) or current_user.is_superuser
 
+def _create_json_response(dict):
+    # dict contains (name, object) pairs to be in the JSON response
+    return JsonResponse(dict)
+
 def error_response(error_msg):
-    return JsonResponse({'success': 'false', 'error_message' : 'ERROR: ' + error_msg})
+    dict = {'success': 'false', 'error_message' : 'ERROR: ' + error_msg}
+    return _create_json_response(dict)
 
-def success_response():
-    return JsonResponse({'success': 'true', 'error_message': ''})
-
-def login_success_response(is_superuser):
-    return JsonResponse({'success': 'true', 'error_message': '', 'is_superuser': is_superuser})
+def success_response(dict = None):
+    if dict is None:
+        dict = {}
+    dict['success'] = 'true'
+    dict['error_message'] = ''
+    return _create_json_response(dict)
 
 def _json_object_hook(d): return namedtuple('X', d.keys())(*d.values())
 def json2obj(data): return json.loads(data, object_hook=_json_object_hook)
@@ -120,6 +126,24 @@ def json2obj(data): return json.loads(data, object_hook=_json_object_hook)
 def index(request):
     # TODO: IMPLEMENT THIS!
     return HttpResponse("Hello, world. You're at the BMA index.")
+
+def login(request):
+    try:
+        user_id = request.GET['userid']
+        password = request.GET['password']
+        user = authenticate(username = user_id, password = password)
+    except MultiValueDictKeyError as e:
+        user = None
+
+    if user is not None:
+        django_login(request, user)
+        return success_response({'is_superuser': user.is_superuser})
+
+    return error_response(ERROR_USER_AUTHENTICATION_FAILED)
+
+def logout(request):
+    django_logout(request)
+    return success_response()
 
 # PRE condition: user logged in
 def get_municipalities_for_user(userID):
@@ -131,7 +155,7 @@ def get_municipalities_for_user(userID):
     municipalities = []
     for entry in entries:
         municipalities.append(entry.municipality_name)
-    return JsonResponse({ "municipalities" : municipalities})
+    return municipalities
 
 # PRE condition: user logged in
 def store_municipalities_for_user(user_id, municipality_list):
@@ -142,40 +166,9 @@ def store_municipalities_for_user(user_id, municipality_list):
         user.save()
     return
 
-
-def municipalities(request):
+def all_municipalities(request):
     if request.user is None or not request.user.is_authenticated:
         return error_response(ERROR_USER_NOT_AUTHENTICATED)
-
-    if request.method == 'GET' and 'userid' in request.GET:
-        user_id = request.GET['userid']
-        if user_id:
-            if not is_user_allowed(request.user, user_id):
-                return error_response(ERROR_USER_NOT_ALLOWED_OPERATION)
-
-            return get_municipalities_for_user(user_id)
-        else:
-            return error_response(ERROR_MISSING_USERID_VALUE)
-
-    if request.method == 'POST' and 'userid' in request.GET:
-        user_id = request.GET['userid']
-
-        if user_id:
-            if not is_user_allowed(request.user, user_id):
-                return error_response(ERROR_USER_NOT_ALLOWED_OPERATION)
-
-            try:
-                json_object = json.loads(request.body)
-                municipality_list = json_object['municipalities']
-                store_municipalities_for_user(user_id, municipality_list)
-                return success_response()
-            except EndUser.DoesNotExist as e:
-                logging.error("ERROR: Userid {userid} does not exist")
-                return error_response(ERROR_USERID_DOES_NOT_EXIST)
-            except json.JSONDecodeError as e:
-                return error_response(ERROR_JSON_DECODING_FAILED)
-        else:
-            return error_response(ERROR_MISSING_USERID_VALUE)
 
     if request.method == 'GET':
         try:
@@ -184,9 +177,9 @@ def municipalities(request):
             #TODO: Fix to return the full info 3-tuple (name, study_location, population_band)
             for entry in municipalities:
                 municipality_list.append(entry.name)
-            return JsonResponse({'municipalities': municipality_list})
+            return success_response({'municipalities': municipality_list})
         except Municipality.DoesNotExist:
-                return JsonResponse({'municipalities': []})
+            return success_response({'municipalities': []})
 
     if request.method == 'POST':
         if not request.user.is_superuser:
@@ -208,25 +201,39 @@ def municipalities(request):
 
     return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
 
-def login(request):
-    try:
-        user_id = request.GET['userid']
-        password = request.GET['password']
-        user = authenticate(username = user_id, password = password)
-    except MultiValueDictKeyError as e:
-        user = None
 
-    if user is not None:
-        django_login(request, user)
-        return login_success_response(user.is_superuser)
+def municipalities(request):
+    if request.user is None or not request.user.is_authenticated:
+        return error_response(ERROR_USER_NOT_AUTHENTICATED)
 
-    return error_response(ERROR_USER_AUTHENTICATION_FAILED)
+    user_id = request.user.username
 
-def logout(request):
-    django_logout(request)
-    return success_response()
+    if request.method == 'GET':
+        if user_id:
+            municipality_list = get_municipalities_for_user(user_id)
+            return success_response({'municipalities':municipality_list})
+        else:
+            return error_response(ERROR_MISSING_USERID_VALUE)
 
-def municipality_data(request):
+    if request.method == 'POST':
+        if user_id:
+            try:
+                json_object = json.loads(request.body)
+                municipality_list = json_object['municipalities']
+                store_municipalities_for_user(user_id, municipality_list)
+                return success_response()
+            except EndUser.DoesNotExist as e:
+                logging.error("Userid {userid} does not exist")
+                return error_response(ERROR_USERID_DOES_NOT_EXIST)
+            except json.JSONDecodeError as e:
+                return error_response(ERROR_JSON_DECODING_FAILED)
+        else:
+            return error_response(ERROR_MISSING_USERID_VALUE)
+
+    return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
+
+
+def old_municipality_data(request):
     if request.user is None or not request.user.is_authenticated:
         return error_response(ERROR_USER_NOT_AUTHENTICATED)
 
@@ -271,7 +278,7 @@ def get_municipality_data(userid, year):
     # and now dump to JSON
     json_output = json.dumps(actual_data)
 
-    return JsonResponse({'data':json_output})
+    return success_response({'data':json_output})
 
 
 def municipality_data_new(request):

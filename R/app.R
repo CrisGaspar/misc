@@ -10,12 +10,19 @@ library(splus2R)
 library(miscTools)
 library(rlist)
 
+# TODO: 
+# 1. Add more resiliancy and error checing. Add try/catch like blocks as necessary
+# 2. Login HTTP POST should have hashed password
+# 3. REFACTOR API CALLS TO BE PRIVATE !!!!
+#    Have separate public get/set data methods for all endpoints instead of so many call_API* methods
+
 setwd("~/Downloads/")
 source_filename <-"bmaDataSample.xls"
 
 api_server_url <- 'http://localhost:8000/bmaapp/'
 login_endpoint <- 'login'
 municipalities_endpoint <- 'municipalities'
+all_municipalities_endpoint <- 'all_municipalities'
 data_endpoint <- 'data'
 
 non_numeric_cols_count <- 1
@@ -23,7 +30,6 @@ export_filename <-"bmaExport.xls"
 
 # Errors
 kErrorTitleFailedToLoadData = 'Failed to Load from Excel File'
-
 
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 oldest_year <- 1992L
@@ -112,9 +118,8 @@ get_stats <- function(data_frame) {
   df
 }
 
-# Login given credentials
+# Call API login endpoint with given credentials to authenticate user
 call_login_endpoint <- function(userid, password) {
-  # call appropriate login endpoing
   url <- paste(api_server_url, login_endpoint, "?", "userid", "=", userid, "&", "password", "=", password, sep="")
   call_success <- httr::GET(url)
   call_success_text <- content(call_success, "text")
@@ -122,36 +127,95 @@ call_login_endpoint <- function(userid, password) {
   print(call_success_final)
 }
 
-# Call API given specified API endpoint. Userids passed in (if needed)
-# Municipality list passed in when needed to store new selection of municipalities.
-call_API <- function(endpoint, userid=NULL, municipalities = NULL, data_frames = NULL, year = NULL) {
-  if (!is.null(userid)) {
-    url <-paste(api_server_url, endpoint, "?", "userid", "=", userid, sep="")
+call_API_municipalities_endpoint <- function(method = httr::GET, municipalities = NULL) {
+  call_API_municipalities_helper(municipalities_endpoint, method = method, municipalities = municipalities)
+}
+
+call_API_all_municipalities_endpoint <- function(method = httr::GET, municipalities = NULL) {
+  call_API_municipalities_helper(all_municipalities_endpoint, method = method, municipalities = municipalities)
+}
+
+call_API_municipalities_helper <- function(endpoint, method = httr::GET, municipalities = NULL) {
+  url <-paste(api_server_url, endpoint, sep="")
+
+  error <- NULL  
+  if (identical(method, httr::GET)) {
+    if (!is.null(municipalities)) {
+      error <- "Attempt to call API municipalities endpoint with GET but municipalities should not be passed in"
+    }
+    else {
+      # Valid parameters. No request body needed
+      requestBody <- NULL  
+    }
   }
-  else if (!is.null(year)) {
-    url <-paste(api_server_url, endpoint, "?", "year", "=", year, sep="")
+  else if (identical(method, httr::POST)) {
+    if (!is.null(municipalities)) {
+      # Valid parameters
+      # Pass municipalities in the body as JSON
+      requestBody <- paste('{"municipalities":', toJSON(municipalities),'}')
+    }
+    else {
+      error <- "Attempt to call API municipalities endpoint with POST but no municipalities set"
+    }
   }
   else {
-    url <-paste(api_server_url, endpoint, sep="")
+    error <- "Attempt to call API municipalities endpoint with unsupported HTTP method"
   }
-
-  if (!is.null(municipalities)) {
-    method <- httr::POST
-    requestBody <- paste('{"municipalities":', toJSON(municipalities),'}')
+  
+  if (!is.null(error)) {
+    print(error)
+    result = list(success = "false", error_message = error)
+    print(result)
+    return
   }
-  else if (!is.null(data_frames)) {
-    method <- httr::POST
-    print(rjson::toJSON(data_frames))
-    requestBody <- paste('{"data":',  rjson::toJSON(data_frames), '}')
-  }
-  else {
-    method <- httr::GET
-    requestBody <- NULL
-  }
-
+  
   call_success <- method(url, body=requestBody)
   call_success_text <- content(call_success, "text")
+  
+  # Get API response (succesful or unsuccesful)
+  call_success_final <- fromJSON(call_success_text)
+  print(call_success_final)
+}
 
+# Call data read/write endpoint
+call_API_data_endpoint <- function(method = httr::GET, municipalities = NULL, year = NULL, data_frames = NULL) {
+  if (identical(method, httr::GET)) {
+    # GET is called for data read with a year parameter and a list of municipalities as JSON body
+
+    if ((!is.null(municipalities)) && (!is.null(year))) {
+      url <-paste(api_server_url, data_endpoint, "?year=", year, sep="")
+      requestBody <- paste('{"municipalities":', toJSON(municipalities),'}')
+    }
+    else {
+      err <- paste("Cannot call API data endpoint with GET because either municipalities: ", municipalities, " or year: ", year, " are NULL");
+      print(err)
+      return
+    }
+  }
+  else if (identical(method, httr:POST)) {
+    # POST is called with list of data_frames in JSON format in body
+    
+    if ((!is.null(data_frames)) && (!is.null(year))) {
+      url <-paste(api_server_url, data_endpoint, "?year=", year, sep="")
+      print(rjson::toJSON(data_frames))
+      requestBody <- paste('{"data":',  rjson::toJSON(data_frames), '}')
+    }
+    else {
+      err <- paste("Cannot call API data endpoint with POST because either data_frames is NULL or year ", year, " is NULL")
+      print(err)
+      return
+    }
+  }
+  else {
+    print("API data endpoint called with unsupported HTTP method")
+    return
+  }
+  
+  print(url)
+  
+  call_success <- method(url, body=requestBody)
+  call_success_text <- content(call_success, "text")
+  
   # Get API response (succesful or unsuccesful)
   call_success_final <- fromJSON(call_success_text)
   print(call_success_final)
@@ -210,8 +274,13 @@ server <- function(input, output, session) {
                     selectize = FALSE,
                     size = 10),
 
-        # TODO: Show fileInput and dataload year selector ONLY IF this is a superuser
-        selectInput(inputId = "dataload_year_selector",
+        selectInput(inputId = "data_display_year_selector",
+                    label="Select Year for Data Display",
+                    choices = years_all_options,
+                    selected = current_year,
+                    selectize = TRUE),
+        
+        selectInput(inputId = "data_load_year_selector",
                     label="Select Year for Data Load",
                     choices = years_all_options,
                     selected = current_year,
@@ -263,6 +332,12 @@ server <- function(input, output, session) {
                     multiple = TRUE,
                     selectize = FALSE,
                     size = 10),
+        
+        selectInput(inputId = "data_display_year_selector",
+                    label="Select Year for Data Display",
+                    choices = years_all_options,
+                    selected = current_year,
+                    selectize = TRUE),
         
         # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
         #  actionButton(inputId = "save", label = "Save"),
@@ -336,7 +411,7 @@ server <- function(input, output, session) {
 
     # Read all data and send to API to save
     data_sheets <- read_excel_allsheets(filename)
-    result <- call_API(data_endpoint, data_frames = data_sheets, year = input$dataload_year_selector)
+    result <- call_API_data_endpoint(method = httr::POST, data_frames = data_sheets, year = input$data_load_year_selector)
 
     print(result)
 
@@ -347,10 +422,9 @@ server <- function(input, output, session) {
     else {
       # Handle error
       print("Data loading failed!")
-      err <- result$err
       showModal(modalDialog(
         title = kErrorTitleFailedToLoadData,
-        err,
+        result$error_message,
         easyClose = TRUE,
         footer = NULL))
 
@@ -361,7 +435,7 @@ server <- function(input, output, session) {
   #
   # Municipality Selection
   observeEvent(input$municipalitySelector, {
-    # Refresh data frame filtered to newly selected municipalities
+    # Refresh data frame filtered to selected municipalities and selected year
     data_frame <- get_data(source_filename, input$municipalitySelector)
 
     # Render data and stats tables in UI
@@ -369,12 +443,27 @@ server <- function(input, output, session) {
     data_frame_stats <- get_stats(data_frame)
     output$data_stats <- renderDT_formatted(data_frame_stats, no_table_header = T)
   })
+  
+  # Year Selection
+  observeEvent(input$data_display_year_selector, {
+    # Refresh data frame filtered to selected municipalities and selected year
+    result <- call_API_data_endpoint(method = httr::GET, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    print (result)
+    # TODO CHECK RESULT for errors
+    #TODO: Uncomment!!
+    #data_frame <- result$data
+    
+    # Render data and stats tables in UI
+    #output$data <- renderDT_formatted(data_frame)
+    #data_frame_stats <- get_stats(data_frame)
+    #output$data_stats <- renderDT_formatted(data_frame_stats, no_table_header = T)
+  })
 
   # Button to save currently selected municipalities
   observeEvent(input$saveMunicipalitiesButton, {
     tryCatch(
       # Call API to store the selected municipalities
-      result <- call_API(municipalities_endpoint, userid, municipalities=input$municipalitySelector),
+      result <- call_API_municipalities_endpoint(method = httr::POST, municipalities=input$municipalitySelector),
       error = function(err) {
         showModal(modalDialog(
           title = "Failed to Save Settings",
@@ -425,18 +514,40 @@ server <- function(input, output, session) {
 
   observeEvent(input$login_button, {
     login_result <- call_login_endpoint(input$user_name, input$password)
-    print(login_result)
 
     if (login_result$success == "true") {
       user_input$authenticated <- TRUE
       user_input$is_superuser <- (login_result$is_superuser == 'TRUE')
 
       # Get full list of Municipalities
-      municipality_choices$all <- call_API(municipalities_endpoint)$municipalities
+      result <- call_API_all_municipalities_endpoint(method = httr::GET)
 
-      # Get municipalities that current user is interested in
-      municipality_choices$selected <- unlist(call_API(municipalities_endpoint, input$user_name))
-    } else {
+      if (result$success == 'false') {
+        showModal(modalDialog(
+          title = "Failed to get full list of municipalities",
+          result$error_message,
+          easyClose = TRUE,
+          footer = NULL))
+        return
+      }
+    
+      municipality_choices$all <- result$municipalities
+
+      # Get municipalities subset preferred by current user
+      result <- call_API_municipalities_endpoint(method = httr::GET)
+      
+      if (result$success == 'false') {
+        showModal(modalDialog(
+          title = "Failed to get your preferred list of municipalities",
+          result$error_message,
+          easyClose = TRUE,
+          footer = NULL))
+        return
+      }
+      
+      municipality_choices$selected <- result$municipalities
+    } 
+    else {
       user_input$authenticated <- FALSE
       user_input$error_message <- login_result$error_message
     }
