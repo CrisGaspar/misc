@@ -10,7 +10,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.db.utils import IntegrityError
 
 import datetime
-import json
+import simplejson as json
 import logging
 
 from bmaapp.models import EndUser, Municipality, MunicipalityData
@@ -116,21 +116,9 @@ def municipalities(request):
 
     return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
 
-
 def municipality_data(request):
     if request.user is None or not request.user.is_authenticated:
         return error_response(ERROR_USER_NOT_AUTHENTICATED)
-
-    user_id = request.user.username
-
-    if user_id is None:
-        return error_response(ERROR_MISSING_USERID_VALUE)
-
-    if request.method == 'GET':
-        year = request.GET.get('year')
-        json_object = json.loads(request.body)
-        municipality_list = json_object['municipalities']
-        return get_municipality_data(municipalities, year)
 
     if request.method == 'POST':
         if not request.user.is_superuser:
@@ -142,13 +130,22 @@ def municipality_data(request):
                 return error_response(ERROR_MISSING_YEAR_PARAMETER)
             year = int(year)
 
-            data_by_municipality_and_year = {}
             json_object = json.loads(request.body)
-            data_to_write = json_object['data']
-            print(data_to_write)
+
+            municipalities = json_object.get('municipalities')
+            if municipalities is not None:
+                # Need to return the data for given municipalities for given year
+                return get_municipality_data(municipalities, year)
+
+            # cHeck if this a store-data request
+            data_to_write = json_object.get('data')
+
+            if data_to_write is None:
+                return error_response(ERROR_BAD_REQUEST_DATA_ENDPOINT)
+
+            data_by_municipality_and_year = {}
 
             for sheet_name, sheet_data in data_to_write.items():
-                print(sheet_name)
                 # each sheet can have different municipalities so reset
                 municipalities = []
 
@@ -157,9 +154,6 @@ def municipality_data(request):
                     # ignore
                     continue
                 for column_name, column_data in sheet_data.items():
-                    print(column_name)
-                    print(column_data)
-
                     if column_name == "Municipality":
                         municipalities = column_data
                     elif not municipalities:
@@ -189,13 +183,8 @@ def municipality_data(request):
                                             column_name, sheet_name, year_to_use, year))
                             data_entry[property_name] = clean(val)
 
-            print(data_by_municipality_and_year)
-
             # Now save each MunicipalityData to DB
             for (municipality, data_year), data in data_by_municipality_and_year.items():
-                print (municipality, data_year)
-                print (data)
-
                 db_data = MunicipalityData()
                 db_data.load(data)
 
@@ -233,14 +222,14 @@ def municipality_data(request):
 def get_municipality_data(municipalities, year):
     dataset_for_year = MunicipalityData.objects.filter(year=year).filter(name__in=municipalities)
 
-    # this gives you a list of dicts
-    raw_data = serializers.serialize('python', dataset_for_year)
-    # now extract the inner `fields` dicts
-    actual_data = [d['fields'] for d in raw_data]
-    # and now dump to JSON
-    json_output = json.dumps(actual_data)
-
-    return success_response({'data': json_output})
+    # Store data as list of dict: one dict per each entry
+    data = []
+    for data_entry in dataset_for_year:
+        data_dict = {}
+        data_entry.store(data_dict)
+        data.append(data_dict)
+        print(data_dict)
+    return success_response({'data': data})
 
 # PRE condition: user logged in
 def get_municipalities_for_user(userID):
@@ -268,11 +257,11 @@ def store_municipalities_for_user(user_id, municipality_list):
 # Helper methods
 #-----------------------------------------------------------------------------------------------------------------------
 
-def clean(str):
+def clean(val):
     # convert "NA" to None
-    if str == NA_VALUE:
+    if val == NA_VALUE:
         return None
-    return str
+    return val
 
 
 def split_to_year_and_property_name(str, default_year, sheet_name):
@@ -312,6 +301,7 @@ def is_user_allowed(current_user, target_user):
 
 def _create_json_response(dict):
     # dict contains (name, object) pairs to be in the JSON response
+    print(dict)
     return JsonResponse(dict)
 
 
@@ -351,10 +341,11 @@ ERROR_USER_NOT_AUTHENTICATED = 'User not authenticated. Call login endpoint firs
 ERROR_USER_NOT_ALLOWED_OPERATION = 'User is not allowed to perform this operation'
 ERROR_MISSING_USERID_VALUE = 'Missing userid value'
 ERROR_JSON_DECODING_FAILED = 'JSON decoding failed for request body'
-ERROR_USERID_DOES_NOT_EXIST = ' Userid does not exist'
+ERROR_USERID_DOES_NOT_EXIST = 'Userid does not exist'
 ERROR_UNSUPPORTED_HTTP_OPERATION = 'Endpoint supports only GET and POST'
 ERROR_USER_AUTHENTICATION_FAILED = 'Invalid userid or invalid password'
 ERROR_MISSING_YEAR_PARAMETER = 'Missing year parameter'
+ERROR_BAD_REQUEST_DATA_ENDPOINT = 'Bad request to data endpoint. No municipalities nor data objects in JSON body'
 
 EXPECTED_SHEET_NAMES = [
     "Population", "Density and Land Area", "Assessment Information", "Assessment Composition",
@@ -381,4 +372,3 @@ EXPECTED_SHEET_NAMES = [
 
     "Net Expenditures per Capita"
 ]
-
