@@ -11,9 +11,16 @@ library(miscTools)
 library(rlist)
 
 # TODO: 
-# 1. Add more resiliancy and error checing. Add try/catch like blocks as necessary
-# 2. Login HTTP POST should have hashed password
-# 3. REFACTOR API CALLS TO BE PRIVATE !!!!
+# 0. Fix last 3 column values in Population selection
+# 0. Fix ordering in dataframe to match order in list
+# 0. FIx to update based on sub_tab selection
+# 1. Fix length of columns to be the same for both data and summary tables.
+# 2. Fix number formatting: currency vs population vs percent
+# 3. Fix export
+# 4. Login HTTP POST should have hashed password
+# Nice to have:
+# 4. Add more resiliancy and error checing. Add try/catch like blocks as necessary
+# 5. REFACTOR API CALLS TO BE PRIVATE !!!!
 #    Have separate public get/set data methods for all endpoints instead of so many call_API* methods
 
 setwd("~/Downloads/")
@@ -84,8 +91,59 @@ SUB_TAB_COMBINED_COSTS <- "Combined costs"
 SUB_TAB_TAXES_PERCENT_INCOME <- "Taxes as a % of Income"
 SUB_TAB_NET_EXPENDITURES_PER_CAPITA <- "Net Expenditures per Capita"
 
-#COLUMN_NAME_MUNICIPALITY = 'Municipality'
-#COLUMN_NAME_YEAR = 'Year'
+subtab_name_to_constant_name <- list(
+  "Population" = "SUB_TAB_POPULATION", 
+  "Density and Land Area" = "SUB_TAB_DENSITY_LAND_AREA", 
+  "Assessment Information" = "SUB_TAB_ASSESSMENT_INFO", 
+  "Assessment Composition" = "SUB_TAB_ASSESSMENT_COMPOSITION", 
+  "Building Permit Activity" = "SUB_TAB_BUILDING_PERMIT_ACTIVITY", 
+  "Total Levy" = "SUB_TAB_TOTAL_LEYY", 
+  "Upper Tier Levy" = "SUB_TAB_UPPER_TIER_LEVY", 
+  "Lower Tier Levy" = "SUB_TAB_LOWER_TIER_LEVY", 
+  "Tax Asset Consumption Ratio" = "SUB_TAB_TAX_ASSET_CONSUMPTION_RATIO", 
+  "Financial Position per Capita" = "SUB_TAB_FINANCIAL_POSITION_PER_CAPITA", 
+  "Tax Dis Res as % OSR" = "SUB_TAB_TAX_DIS_RES_PERCENT_OSR", 
+  "Tax Reserves as % of Taxation" = "SUB_TAB_TAX_RESERVES_PERCENT_TAXATION", 
+  "Tax Res per Capita" = "SUB_TAB_TAX_RES_PER_CAPITA", 
+  "Tax Debt Int % OSR" = "SUB_TAB_TAX_DEBT_INT_PERCENT_OSR", 
+  "Tax Debt Charges as % OSR" = "SUB_TAB_TAX_DEBT_CHARGES_PERCENT_OSR", 
+  "Total Debt Out per Capita" = "SUB_TAB_TOTAL_TAX_DEBT_OUT_PER_CAPITA", 
+  "Tax Debt Out per Capita" = "SUB_TAB_TAX_DEBT_OUT_PER_CAPITA", 
+  "Debt to Reserve Ratio" = "SUB_TAB_DEBT_TO_RESERVE_RATIO", 
+  "Tax Receivable as % Tax" = "SUB_TAB_TAX_RECEIVABLE_PERCENT_TAX", 
+  "Rates Coverage Ratio" = "SUB_TAB_RATES_COVERAGE_RATIO", 
+  "Net Fin Liab Ratio" = "SUB_TAB_NET_FIN_LIAB_RATIO", 
+  "Development Charges" = "SUB_TAB_DEVELOPMENT_CHARGES", 
+  "Building Permit Fees" = "SUB_TAB_BUILDING_PERMIT_FEES", 
+  "Tax Ratios" = "SUB_TAB_TAX_RATIOS", 
+  "Optional Class" = "SUB_TAB_OPTIONAL_CLASS", 
+  "Total Tax Rates" = "SUB_TAB_TOTAL_TAX_RATES", 
+  "Municipal Tax Rates" = "SUB_TAB_MUNICIPAL_TAX_RATES", 
+  "Education Tax Rates" = "SUB_TAB_EDUCATIONL_TAX_RATES", 
+  "Residential" = "SUB_TAB_RESIDENTIAL", 
+  "Multi-Residential" = "SUB_TAB_MULTI_RESIDENTIAL", 
+  "Commercial" = "SUB_TAB_COMMERCIAL", 
+  "Industrial" = "SUB_TAB_INDUSTRIAL", 
+  "Water&Sewer Costs" = "SUB_TAB_WATER_AND_SEWER_COSTS", 
+  "Water Asset Consumption" = "SUB_TAB_WATER_ASSET_CONSUMPTION", 
+  "Wastewater Asset Consumption" = "SUB_TAB_WASTE_WATER_ASSET_CONSUMPTION", 
+  "Water Res as % OSR" = "SUB_TAB_WATER_RES_PERCENT_OSR", 
+  "Wastewater Res as % OSR" = "SUB_TAB_WASTE_WATER_RES_PERCENT_OSR", 
+  "Water Res as % Acum Amort" = "SUB_TAB_WATER_RES_PERCENT_ACUM_AMORT", 
+  "Wastewater Res as % Acum Amort" = "SUB_TAB_WASTE_WATER_RES_PERCENT_ACUM_AMORT", 
+  "Water Debt Int Cover" = "SUB_TAB_WATER_DEBT_INT_COVER", 
+  "Wastewater Debt Int Cover" = "SUB_TAB_WASTE_WATER_DEBT_INT_COVER", 
+  "Water Net Fin Liab" = "SUB_TAB_WATER_NET_FIN_LIAB", 
+  "Wastewater Net Fin Liab" = "SUB_TAB_WASTE_WATER_NET_FIN_LIAB", 
+  "Average Household Income" = "SUB_TAB_AVG_HOUSEHOLD_INCOME", 
+  "Average Value of Dwelling" = "SUB_TAB_AVG_VALUE_DWELLING", 
+  "Combined costs" = "SUB_TAB_COMBINED_COSTS", 
+  "Taxes as a % of Income" = "SUB_TAB_TAXES_PERCENT_INCOME", 
+  "Net Expenditures per Capita" = "SUB_TAB_NET_EXPENDITURES_PER_CAPITA"
+)
+
+COLUMN_NAME_MUNICIPALITY = 'Municipality'
+COLUMN_NAME_YEAR = 'Year'
 COLUMN_NAME_POPULATION = 'Population'
 COLUMN_NAME_POPULATION_DENSITY = 'Population Density per sq. km.'
 COLUMN_NAME_POPULATION_INCREASE = 'Population Increase'
@@ -354,15 +412,25 @@ read_excel_allsheets <- function(filename) {
   x
 }
 
+# Initialize data_frame global variable to NULL.
+# It will be population by refresh_data call.
+global_data_frame <- NULL
+
+# Convert data_frame to numeric columns except the first 1 column which is the municipalities names
 convert_to_numeric <- function(data_frame) {
-  cols <- non_numeric_cols_count+1:ncol(data_frame)
+  cols <- (non_numeric_cols_count+1):ncol(data_frame)
   data_frame[cols] <- lapply(data_frame[cols], as.numeric)
   data_frame
 }
 
-convert_to_numeric2 <- function(data_frame) {
-  cols <- non_numeric_cols_count+1:ncol(data_frame)
-  data_frame[, cols] <- lapply(cols, function(x) as.numeric(data_frame[[x]]))
+get_filter_columns <- function(selected_subtab) {
+  subtab_constant <- subtab_name_to_constant_name[[selected_subtab]]
+  column_names <- column_names_per_sub_tab_selection[[subtab_constant]]
+  column_names <- append(list(COLUMN_NAME_MUNICIPALITY, COLUMN_NAME_YEAR), column_names) 
+}
+
+filter_dataframe <- function(data_frame, filter_columns) {
+  filtered_data_frame <- data_frame[, colnames(data_frame) %in% filter_columns]
 }
 
 # Create stats data frame for given data frame with min, max, average, and median
@@ -491,7 +559,22 @@ renderDT_formatted <- function(data_frame, no_table_header = F) {
   }
 }
 
-refresh_data_display <- function(output, municipalities=list(), year=current_year) {
+filter_and_display <- function(output, data_frame, selected_subtab) {
+  if (!is.null(data_frame)) {
+    filter_columns <- get_filter_columns(selected_subtab)
+    print(filter_columns)
+    
+    filtered_data_frame <- filter_dataframe(data_frame, filter_columns)
+    print(filtered_data_frame)
+    
+    # Render data and stats tables in UI
+    output$data <- renderDT_formatted(filtered_data_frame)
+    filtered_data_frame_stats <- get_stats(filtered_data_frame)
+    output$data_stats <- renderDT_formatted(filtered_data_frame_stats, no_table_header = T)
+  }
+} 
+
+refresh_data_display <- function(output, selected_subtab, municipalities=list(), year=current_year) {
   # Refresh data frame filtered to selected municipalities and selected year
   result <- call_API_data_endpoint(municipalities = municipalities, year = year)
 
@@ -511,16 +594,16 @@ refresh_data_display <- function(output, municipalities=list(), year=current_yea
   }
   else {
     data_frame <- result$data
-    convert_to_numeric(data_frame)
+    data_frame <- convert_to_numeric(data_frame)
     print(data_frame)
     
-    # Render data and stats tables in UI
-    output$data <- renderDT_formatted(data_frame)
-    data_frame_stats <- get_stats(data_frame)
-    output$data_stats <- renderDT_formatted(data_frame_stats, no_table_header = T)
+    # Store data_frame in global variable so that it's accessible to the observeEvent code that is triggered 
+    # when another sub-tab is selected in the UI
+    global_data_frame <- data_frame
+
+    filter_and_display(output, data_frame, selected_subtab)
   }
 }
-
 
 
 #
@@ -719,17 +802,18 @@ server <- function(input, output, session) {
   # Municipality Selection
   observeEvent(input$municipalitySelector, {
     # Refresh data frame filtered to selected municipalities and selected year
-    refresh_data_display(output, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
   })
   
   # Year Selection
   observeEvent(input$data_display_year_selector, {
     # Refresh data frame filtered to selected municipalities and selected year
-    refresh_data_display(output,municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
   })
   
   observeEvent(input$navbar_page, {
-    print(input$navbar_page)
+    selected_sub_tab = input$navbar_page
+    filter_and_display(output, global_data_frame, selected_subtab)
   })
 
   # Button to save currently selected municipalities
