@@ -14,7 +14,8 @@ library(rlist)
 # 0. Fix last 3 column values in Population selection
 # 1. Fix length of columns to be the same for both data and summary tables.
 # 2. Fix number formatting: currency vs population vs percent
-# 3. Fix export
+# 3. Fix export to include statistics?
+# 3. Make sure the superuser and regular user UI branches are the same for their common elements
 # 4. Login HTTP POST should have hashed password
 # Nice to have:
 # 4. Add more resiliancy and error checing. Add try/catch like blocks as necessary
@@ -563,6 +564,9 @@ filter_and_display <- function(output, data_frame, selected_sub_tab) {
     output$data <- renderDT_formatted(filtered_data_frame)
     filtered_data_frame_stats <- get_stats(filtered_data_frame)
     output$data_stats <- renderDT_formatted(filtered_data_frame_stats, no_table_header = T)
+    
+    # return the filtered_data_frame
+    filtered_data_frame
   }
 } 
 
@@ -588,8 +592,8 @@ refresh_data_display <- function(output, selected_sub_tab, municipalities=list()
     data_frame <- result$data
     data_frame <- convert_to_numeric(data_frame)
 
-    filter_and_display(output, data_frame, selected_sub_tab)
-    data_frame
+    filtered_data_frame <- filter_and_display(output, data_frame, selected_sub_tab)
+    list(data_frame, filtered_data_frame)
   }
 }
 
@@ -652,6 +656,7 @@ server <- function(input, output, session) {
         tags$hr(),
         DTOutput("data"),
         DTOutput("data_stats"),
+        downloadButton(export_filename, "Download"),
         # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
         #  actionButton(inputId = "save", label = "Save"),
 
@@ -699,6 +704,11 @@ server <- function(input, output, session) {
         
         # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
         #  actionButton(inputId = "save", label = "Save"),
+        
+        tags$hr(),
+        DTOutput("data"),
+        DTOutput("data_stats"),
+        downloadButton(export_filename, "Download"),
         
         # Main panel for displaying outputs ----
         mainPanel(
@@ -786,7 +796,7 @@ server <- function(input, output, session) {
     }
   })
 
-  municipal_data <- reactiveValues(data_frame = NULL)
+  municipal_data <- reactiveValues(data_frame_all_columns = NULL, data_frame_filtered_columns = NULL)
   
   #
   # Municipality Selection
@@ -794,20 +804,24 @@ server <- function(input, output, session) {
     # Refresh data frame filtered to selected municipalities and selected year
     # Store data_frame so that it's accessible to the observeEvent code that is triggered 
     # when another sub-tab is selected in the UI
-    municipal_data$data_frame <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    data_frames_list <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    municipal_data$data_frame_all_columns <- data_frames_list[[1]]
+    municipal_data$data_frame_filtered_columns <- data_frames_list[[2]]
   })
   
   # Year Selection
   observeEvent(input$data_display_year_selector, {
     # Refresh data frame filtered to selected municipalities and selected year
     # Store data_frame so that it's accessible to the observeEvent code that is triggered 
-    # when another sub-tab is selected in the UI  
-    municipal_data$data_frame <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    # when another sub-tab is selected in the UI
+    data_frames_list <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    municipal_data$data_frame_all_columns <- data_frames_list[[1]]
+    municipal_data$data_frame_filtered_columns <- data_frames_list[[2]]
   })
   
   observeEvent(input$navbar_page, {
     selected_sub_tab <- input$navbar_page
-    filter_and_display(output, municipal_data$data_frame, selected_sub_tab)
+    municipal_data$data_frame_filtered_columns <- filter_and_display(output, municipal_data$data_frame_all_columns, selected_sub_tab)
   })
 
   # Button to save currently selected municipalities
@@ -855,7 +869,8 @@ server <- function(input, output, session) {
     contentType = "text/xls",
     content = function(file) {
       print(file)
-      write_xlsx(data_frame, file)
+      print(municipal_data$data_frame_filtered_columns)
+      write_xlsx(municipal_data$data_frame_filtered_columns, file)
     }
   )
 
