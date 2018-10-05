@@ -12,8 +12,6 @@ library(rlist)
 
 # TODO: 
 # 0. Fix last 3 column values in Population selection
-# 0. Fix ordering in dataframe to match order in list
-# 0. FIx to update based on sub_tab selection
 # 1. Fix length of columns to be the same for both data and summary tables.
 # 2. Fix number formatting: currency vs population vs percent
 # 3. Fix export
@@ -412,10 +410,6 @@ read_excel_allsheets <- function(filename) {
   x
 }
 
-# Initialize data_frame global variable to NULL.
-# It will be population by refresh_data call.
-global_data_frame <- NULL
-
 # Convert data_frame to numeric columns except the first 1 column which is the municipalities names
 convert_to_numeric <- function(data_frame) {
   cols <- (non_numeric_cols_count+1):ncol(data_frame)
@@ -423,14 +417,14 @@ convert_to_numeric <- function(data_frame) {
   data_frame
 }
 
-get_filter_columns <- function(selected_subtab) {
-  subtab_constant <- subtab_name_to_constant_name[[selected_subtab]]
+get_filter_columns <- function(selected_sub_tab) {
+  subtab_constant <- subtab_name_to_constant_name[[selected_sub_tab]]
   column_names <- column_names_per_sub_tab_selection[[subtab_constant]]
   column_names <- append(list(COLUMN_NAME_MUNICIPALITY, COLUMN_NAME_YEAR), column_names) 
 }
 
-filter_dataframe <- function(data_frame, filter_columns) {
-  filtered_data_frame <- data_frame[, colnames(data_frame) %in% filter_columns]
+filter_data_frame <- function(data_frame, filter_columns) {
+  filtered_data_frame <- data_frame[unlist(filter_columns, use.name=FALSE)]
 }
 
 # Create stats data frame for given data frame with min, max, average, and median
@@ -559,12 +553,10 @@ renderDT_formatted <- function(data_frame, no_table_header = F) {
   }
 }
 
-filter_and_display <- function(output, data_frame, selected_subtab) {
+filter_and_display <- function(output, data_frame, selected_sub_tab) {
   if (!is.null(data_frame)) {
-    filter_columns <- get_filter_columns(selected_subtab)
-    print(filter_columns)
-    
-    filtered_data_frame <- filter_dataframe(data_frame, filter_columns)
+    filter_columns <- get_filter_columns(selected_sub_tab)
+    filtered_data_frame <- filter_data_frame(data_frame, filter_columns)
     print(filtered_data_frame)
     
     # Render data and stats tables in UI
@@ -574,7 +566,7 @@ filter_and_display <- function(output, data_frame, selected_subtab) {
   }
 } 
 
-refresh_data_display <- function(output, selected_subtab, municipalities=list(), year=current_year) {
+refresh_data_display <- function(output, selected_sub_tab, municipalities=list(), year=current_year) {
   # Refresh data frame filtered to selected municipalities and selected year
   result <- call_API_data_endpoint(municipalities = municipalities, year = year)
 
@@ -595,13 +587,9 @@ refresh_data_display <- function(output, selected_subtab, municipalities=list(),
   else {
     data_frame <- result$data
     data_frame <- convert_to_numeric(data_frame)
-    print(data_frame)
-    
-    # Store data_frame in global variable so that it's accessible to the observeEvent code that is triggered 
-    # when another sub-tab is selected in the UI
-    global_data_frame <- data_frame
 
-    filter_and_display(output, data_frame, selected_subtab)
+    filter_and_display(output, data_frame, selected_sub_tab)
+    data_frame
   }
 }
 
@@ -798,22 +786,28 @@ server <- function(input, output, session) {
     }
   })
 
+  municipal_data <- reactiveValues(data_frame = NULL)
+  
   #
   # Municipality Selection
   observeEvent(input$municipalitySelector, {
     # Refresh data frame filtered to selected municipalities and selected year
-    refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    # Store data_frame so that it's accessible to the observeEvent code that is triggered 
+    # when another sub-tab is selected in the UI
+    municipal_data$data_frame <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
   })
   
   # Year Selection
   observeEvent(input$data_display_year_selector, {
     # Refresh data frame filtered to selected municipalities and selected year
-    refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    # Store data_frame so that it's accessible to the observeEvent code that is triggered 
+    # when another sub-tab is selected in the UI  
+    municipal_data$data_frame <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
   })
   
   observeEvent(input$navbar_page, {
-    selected_sub_tab = input$navbar_page
-    filter_and_display(output, global_data_frame, selected_subtab)
+    selected_sub_tab <- input$navbar_page
+    filter_and_display(output, municipal_data$data_frame, selected_sub_tab)
   })
 
   # Button to save currently selected municipalities
