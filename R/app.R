@@ -622,65 +622,69 @@ server <- function(input, output, session) {
           )
         )
       )
-    } else if (user_input$is_superuser) {
+    } 
+    else if (user_input$is_superuser) {
       #### App's UI code goes here!
       fluidPage(
-        selectInput(inputId = "municipalitySelector",
-                    label="Custom Grouping",
-                    choices = municipality_choices$all,
-                    selected = municipality_choices$selected,
-                    multiple = TRUE,
-                    selectize = FALSE,
-                    size = 10),
+        sidebarLayout(
+          sidebarPanel(
+            width = 2,
+            selectInput(inputId = "municipalitySelector",
+                        label="Custom Grouping",
+                        choices = municipality_choices$all,
+                        selected = municipality_choices$selected,
+                        multiple = TRUE,
+                        selectize = FALSE,
+                        size = 10),
+            
+            selectInput(inputId = "data_display_year_selector",
+                        label="Year",
+                        choices = years_all_options,
+                        selected = current_year,
+                        selectize = TRUE),
+            
+            # Horizontal line ----
+            tags$hr(),
+            
+            selectInput(inputId = "data_load_year_selector",
+                        label="Year for Data Import",
+                        choices = years_all_options,
+                        selected = current_year,
+                        selectize = TRUE),
 
-        selectInput(inputId = "data_display_year_selector",
-                    label="Select Year for Data Display",
-                    choices = years_all_options,
-                    selected = current_year,
-                    selectize = TRUE),
-        
-        selectInput(inputId = "data_load_year_selector",
-                    label="Select Year for Data Load",
-                    choices = years_all_options,
-                    selected = current_year,
-                    selectize = TRUE),
-
-        # Horizontal line ----
-        tags$hr(),
-
-        # Input: Select a file ----
-        fileInput(inputId = "load_file", "Choose Excel File",
-                  multiple = FALSE,
-                  accept = c("text/xls")),
-        
-        tags$hr(),
-        DTOutput("data"),
-        DTOutput("data_stats"),
-        downloadButton(export_filename, "Download"),
-        # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
-        #  actionButton(inputId = "save", label = "Save"),
-
-        # Main panel for displaying outputs ----
-        mainPanel(
-          # Output: Tabset w/ plot, summary, and table ----
-#          tabsetPanel(type = "tabs",
-#                      tabPanel("Data",
-#                        DTOutput("data"),
-#                        DTOutput("data_stats")
-                        #  actionButton(inputId="exportButton", label ="Export"),
-                        # Button
-                        #downloadButton(export_filename, "Download"),
-#                      ),
-#                      tabPanel("Summary", verbatimTextOutput("summary"))
-#          )
-          # Generate the navigation menu
-          # Create menu tabs using menu_tabs_text for titles
-          # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
-          do.call(navbarPage, c(title = "Datasets", id='navbar_page', lapply(1:length(menu_sub_tabs_text), function(i) {
-            do.call(navbarMenu, c(title = menu_tabs_text[[i]], lapply(1:length(menu_sub_tabs_text[[i]]), function(j) {
-                  tabPanel(menu_sub_tabs_text[[i]][j], menu_sub_tabs_text[[i]][j])
-            })))
-          })))
+            # Input: Select a file ----
+            fileInput(inputId = "load_file", "Choose Excel File",
+                      multiple = FALSE,
+                      accept = c("text/xls"))
+          ),
+          mainPanel(
+            width = 10,
+            # Generate the navigation menu
+            # Create menu tabs using menu_tabs_text for titles
+            # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
+            do.call(navbarPage, c(title = "Data Sets", id='navbar_page', lapply(1:length(menu_sub_tabs_text), function(i) {
+              do.call(navbarMenu, c(title = menu_tabs_text[[i]], lapply(1:length(menu_sub_tabs_text[[i]]), function(j) {
+                tabPanel(menu_sub_tabs_text[[i]][j], menu_sub_tabs_text[[i]][j])
+              })))
+            }))),
+            DTOutput("data"),
+            DTOutput("data_stats"),
+            downloadButton(export_filename, "Download")
+            # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
+            #  actionButton(inputId = "save", label = "Save"),
+            
+            # Output: Tabset w/ plot, summary, and table ----
+            #          tabsetPanel(type = "tabs",
+            #                      tabPanel("Data",
+            #                        DTOutput("data"),
+            #                        DTOutput("data_stats")
+            #  actionButton(inputId="exportButton", label ="Export"),
+            # Button
+            #downloadButton(export_filename, "Download"),
+            #                      ),
+            #                      tabPanel("Summary", verbatimTextOutput("summary"))
+            #          )
+          )
         )
       )
     }
@@ -702,9 +706,6 @@ server <- function(input, output, session) {
                     selected = current_year,
                     selectize = TRUE),
         
-        # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
-        #  actionButton(inputId = "save", label = "Save"),
-        
         tags$hr(),
         DTOutput("data"),
         DTOutput("data_stats"),
@@ -712,20 +713,6 @@ server <- function(input, output, session) {
         
         # Main panel for displaying outputs ----
         mainPanel(
-          # Output: Tabset w/ plot, summary, and table ----
-          #          tabsetPanel(type = "tabs",
-          #                      tabPanel("Data",
-          #                        DTOutput("data"),
-          #                        DTOutput("data_stats")
-          #  actionButton(inputId="exportButton", label ="Export"),
-          # Button
-          #downloadButton(export_filename, "Download"),
-          #                      ),
-          #                      tabPanel("Summary", verbatimTextOutput("summary"))
-          #          )
-          # Generate the navigation menu
-          # Create menu tabs using menu_tabs_text for titles
-          # Create menu tab i. its subtabs use menu_sub_tabs_text[[i]] for titles
           do.call(navbarPage, c(title = "Datasets", id="navbar_page", lapply(1:length(menu_sub_tabs_text), function(i) {
             do.call(navbarMenu, c(title = menu_tabs_text[[i]], id = "tabs", lapply(1:length(menu_sub_tabs_text[[i]]), function(j) {
               tabPanel(menu_sub_tabs_text[[i]][j], menu_sub_tabs_text[[i]][j])
