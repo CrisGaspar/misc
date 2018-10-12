@@ -14,14 +14,20 @@ library(rlist)
 # -1. Make sure the superuser and regular user UI branches are the same for their common elements
 # 0. Login HTTP POST should have hashed password
 # 1. Fix last 3 column values in Population selection
-# 2. Fix length of columns to be the same for both data and summary tables.
-# 3. Save municipalities and year selection per user
-# 4. Save full list of municipalities in DB via all_municipalities endpoint
+# 2. Fix columns like Year + Metric e.g.: 2011 Population etc
+# 3. Fix length of columns to be the same for both data and summary tables.
+# 4. Save municipalities and year selection per user
+# 5. Save full list of municipalities in DB via all_municipalities endpoint
+
 # Nice to have:
 # 3. Fix export to include statistics?
 # 4. Add more resiliancy and error checing. Add try/catch like blocks as necessary
 # 5. REFACTOR API CALLS TO BE PRIVATE !!!!
 #    Have separate public get/set data methods for all endpoints instead of so many call_API* methods
+
+# Data load spreadsheeet issues
+# -2: Fix 2016 Building COnstruction Value per Capita and 2017 Weigthed Median Value Dwelling - values don't match. 2017 Unweighted Assessment Per Capita - missing
+
 
 setwd("~/Downloads/")
 
@@ -398,6 +404,9 @@ column_names_per_sub_tab_selection <- list(
                                              COLUMN_NAME_GENERAL_GOVERNMENT, COLUMN_NAME_CONSERVATION_AUTHORITY, COLUMN_NAME_AMBULANCE, COLUMN_NAME_CEMETERIES)
 )
 
+ALL_COLUMN_NAMES_LIST <- unique(append(list(COLUMN_NAME_MUNICIPALITY, COLUMN_NAME_YEAR),
+                                       list.flatten(column_names_per_sub_tab_selection)))
+
 FORMAT_SETTINGS_CURRENCY_DEFAULT = list("SYMBOL" = "$", "SEPARATOR" = ",", "DECIMALS" = 0)
 FORMAT_SETTINGS_CURRENCY_2_DECIMALS = list("SYMBOL" = "$", "SEPARATOR" = ",", "DECIMALS" = 2)
 FORMAT_SETTINGS_COUNTER = list("SYMBOL" = "", "SEPARATOR" = ",", "DECIMALS" = 0)
@@ -659,11 +668,18 @@ filter_and_display <- function(output, data_frame, selected_sub_tab) {
   }
 } 
 
+get_empty_data_frame <- function() {
+  df <- data.frame(matrix(ncol = length(ALL_COLUMN_NAMES_LIST), nrow = 0))
+  colnames(df) <- ALL_COLUMN_NAMES_LIST
+  df
+}
+
 refresh_data_display <- function(output, selected_sub_tab, municipalities=list(), year=current_year) {
   # Refresh data frame filtered to selected municipalities and selected year
   result <- call_API_data_endpoint(municipalities = municipalities, year = year)
 
   if (result$success == "false") {
+    data_frame <- get_empty_data_frame()
     showModal(modalDialog(
       title = "Failed to Get Data",
       result$error_message,
@@ -671,6 +687,7 @@ refresh_data_display <- function(output, selected_sub_tab, municipalities=list()
       footer = NULL))
   }
   else if (is.null(result$data) || length(result$data) == 0 || result$data == "[]") {
+    data_frame <- get_empty_data_frame()
     showModal(modalDialog(
       title = "No Data Found For Selected Year and Selected Municipalities",
       result$error_message,
@@ -679,11 +696,12 @@ refresh_data_display <- function(output, selected_sub_tab, municipalities=list()
   }
   else {
     data_frame <- result$data
-    data_frame <- convert_to_numeric(data_frame)
-
-    filtered_data_frame <- filter_and_display(output, data_frame, selected_sub_tab)
-    list(data_frame, filtered_data_frame)
   }
+  
+  data_frame <- convert_to_numeric(data_frame)
+
+  filtered_data_frame <- filter_and_display(output, data_frame, selected_sub_tab)
+  list(data_frame, filtered_data_frame)
 }
 
 
@@ -860,6 +878,13 @@ server <- function(input, output, session) {
     # TODO: Add error handling for the REST endpoint connection fails
     if (result$success == "true") {
       print("Data loading successful")
+      
+      # Refresh data frame filtered to selected municipalities and selected year
+      # Store data_frame so that it's accessible to the observeEvent code that is triggered 
+      # when another sub-tab is selected in the UI
+      data_frames_list <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+      municipal_data$data_frame_all_columns <- data_frames_list[[1]]
+      municipal_data$data_frame_filtered_columns <- data_frames_list[[2]]
     }
     else {
       # Handle error

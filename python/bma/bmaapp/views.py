@@ -12,6 +12,7 @@ from django.db.utils import IntegrityError
 import datetime
 import simplejson as json
 import logging
+import re
 
 from bmaapp.models import EndUser, Municipality, MunicipalityData
 from bmaapp.models import COLUMN_NAME_MULTI_RESIDENTIAL, COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL
@@ -265,11 +266,13 @@ def clean(val):
 
 
 def split_to_year_and_property_name(str, default_year, sheet_name):
-    # if str starts with a valid year, return (year,rest_of_str) tuple
+    # remove leading and trailing whitespace. replace repeated whitespace with single whitespace
+    str = re.sub(' +', ' ', str.strip())
+
+    # if str starts with a valid year, return (year, rest_of_str) tuple
     # if it does not, return (default_year, str) tuple
 
-    # remove leading and trailing whitespace
-    property_name = str.strip()
+    property_name = str
     year_to_use = default_year
 
     print('str = {} default_year = {} sheet_name = {}'.format(str, default_year, sheet_name))
