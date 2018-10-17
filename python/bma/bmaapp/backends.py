@@ -6,10 +6,6 @@ import logging
 class HashedPasswordAuthBackend(ModelBackend):
     def authenticate(self, request = None, username=None, password=None):
         try:
-            print("u: {} p: {}".format(username, password))
-            print("ASDAD")
-            logging.info("ASSA")
-
             return User.objects.get(username=username, password=password)
         except User.DoesNotExist:
             return None

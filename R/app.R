@@ -45,6 +45,7 @@ export_filename <-"bmaExport.xls"
 kErrorTitleFailedToLoadData = 'Failed to Load from Excel File'
 
 current_year <- as.integer(format(Sys.Date(), "%Y"))
+default_selected_year <- 2017
 oldest_year <- 1992L
 years_all_options <- oldest_year: current_year
 
@@ -675,7 +676,7 @@ get_empty_data_frame <- function() {
   df
 }
 
-refresh_data_display <- function(output, selected_sub_tab, municipalities=list(), year=current_year) {
+refresh_data_display <- function(output, selected_sub_tab, municipalities=list(), year=default_selected_year) {
   # Refresh data frame filtered to selected municipalities and selected year
   result <- call_API_data_endpoint(municipalities = municipalities, year = year)
 
@@ -748,7 +749,7 @@ server <- function(input, output, session) {
             selectInput(inputId = "data_display_year_selector",
                         label="Year",
                         choices = years_all_options,
-                        selected = current_year,
+                        selected = default_selected_year,
                         selectize = TRUE),
             actionButton(inputId="saveUserSelectionButton", label ="Save"),
             
@@ -758,7 +759,7 @@ server <- function(input, output, session) {
             selectInput(inputId = "data_load_year_selector",
                         label="Year for Data Import",
                         choices = years_all_options,
-                        selected = current_year,
+                        selected = default_selected_year,
                         selectize = TRUE),
 
             # Input: Select a file ----
@@ -812,7 +813,7 @@ server <- function(input, output, session) {
         selectInput(inputId = "data_display_year_selector",
                     label="Select Year for Data Display",
                     choices = years_all_options,
-                    selected = current_year,
+                    selected = default_selected_year,
                     selectize = TRUE),
         
         tags$hr(),
