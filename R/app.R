@@ -13,20 +13,21 @@ library(rlist)
 # TODO: 
 # -1. Make sure the superuser and regular user UI branches are the same for their common elements
 # 0. Login HTTP POST should have hashed password
-# 1. Fix last 3 column values in Population selection
-# 2. Fix columns like Year + Metric e.g.: 2011 Population etc
-# 3. Fix length of columns to be the same for both data and summary tables.
-# 4. Save municipalities and year selection per user
-# 5. Save full list of municipalities in DB via all_municipalities endpoint
+# 1. Fix columns like Year + Metric e.g.: 2011 Population etc
+# 2. Fix length of columns to be the same for both data and summary tables.
+# 3. Save municipalities and year selection per user
+# 4. Save full list of municipalities in DB via all_municipalities endpoint
+# 5. Color stats row differently to stand out
 
 # Nice to have:
 # 3. Fix export to include statistics?
 # 4. Add more resiliancy and error checing. Add try/catch like blocks as necessary
 # 5. REFACTOR API CALLS TO BE PRIVATE !!!!
 #    Have separate public get/set data methods for all endpoints instead of so many call_API* methods
+# Contants file
 
 # Data load spreadsheeet issues
-# -2: Fix 2016 Building COnstruction Value per Capita and 2017 Weigthed Median Value Dwelling - values don't match. 2017 Unweighted Assessment Per Capita - missing
+# -2: Fix 2016 Building COnstruction Value per Capita and 2017 Weigthed Median Value Dwelling - values don't match.
 
 
 setwd("~/Downloads/")
@@ -749,6 +750,7 @@ server <- function(input, output, session) {
                         choices = years_all_options,
                         selected = current_year,
                         selectize = TRUE),
+            actionButton(inputId="saveUserSelectionButton", label ="Save"),
             
             # Horizontal line ----
             tags$hr(),
@@ -777,7 +779,7 @@ server <- function(input, output, session) {
             DTOutput("data"),
             DTOutput("data_stats"),
             downloadButton(export_filename, "Download")
-            # actionButton(inputId="saveMunicipalitiesButton", label ="Save"),
+            # actionButton(inputId="saveUserSelectionButton", label ="Save"),
             #  actionButton(inputId = "save", label = "Save"),
             
             # Output: Tabset w/ plot, summary, and table ----
@@ -926,7 +928,7 @@ server <- function(input, output, session) {
   })
 
   # Button to save currently selected municipalities
-  observeEvent(input$saveMunicipalitiesButton, {
+  observeEvent(input$saveUserSelectionButton, {
     tryCatch(
       # Call API to store the selected municipalities
       result <- call_API_municipalities_endpoint(method = httr::POST, municipalities=input$municipalitySelector),
