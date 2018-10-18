@@ -11,6 +11,19 @@ read_excel_allsheets <- function(filename) {
   x
 }
 
+merge_data_frames_vertically_export <- function(df, df_stats) {
+  # Create data_frame with 1 empty row
+  empty_row_df <- data.frame(matrix(ncol = ncol(df), nrow = 1))
+  colnames(empty_row_df) <- colnames(df)
+  
+  # In stats data_frame replace Inf and Nan values to NA
+  clean_df_stats <- do.call(data.frame, lapply(df_stats, function(x) replace(x, is.infinite(x) || is.nan(x), NA)))
+  colnames(clean_df_stats) <- colnames(df)
+
+  # Merge vertically with the empty row beween the 2 data_frames
+  final_df <-rbind(df, empty_row_df, clean_df_stats)
+}
+
 # Convert data_frame to numeric columns except the first 1 column which is the municipalities names
 convert_to_numeric <- function(data_frame) {
   cols <- (non_numeric_cols_count+1):ncol(data_frame)
@@ -28,22 +41,24 @@ filter_data_frame <- function(data_frame, filter_columns) {
   filtered_data_frame <- data_frame[unlist(filter_columns, use.name=FALSE)]
 }
 
-# Create stats data frame for given data frame with min, max, average, and median
-# for each of numeric column in given data frame
+# Create stats data frame for given data frame with min, max, average, and median for each numeric column in given data frame
 get_stats <- function(data_frame) {
   data_frame_only_numeric <- data_frame[,-non_numeric_cols_count]
   
   # Create empty data frame that will store the stats
-  df <- data.frame(matrix(ncol = ncol(data_frame)-non_numeric_cols_count, nrow = 0))
+  df <- data.frame(matrix(ncol = ncol(data_frame), nrow = 0))
+  colnames(df) <- colnames(data_frame)
   
-  # Copy non-numeric column names
-  colnames(df) <- colnames(data_frame_only_numeric)
-  
-  df["Min",] <- colMins(data_frame_only_numeric, na.rm = TRUE)
-  df["Max",] <- colMaxs(data_frame_only_numeric, na.rm = TRUE)
-  df["Average",] <- colMeans(data_frame_only_numeric, na.rm = TRUE)
+  ncol <- ncol(df)
+  df[1,1] <- "Min"
+  df[1,2:ncol] <- colMins(data_frame_only_numeric, na.rm = TRUE)
+  df[2,1] <- "Max"
+  df[2,2:ncol] <- colMaxs(data_frame_only_numeric, na.rm = TRUE)
+  df[3,1] <- "Average"
+  df[3,2:ncol] <- colMeans(data_frame_only_numeric, na.rm = TRUE)
   # Note: using colMedians from miscTools package because splus2R package implementation does not work with NA values
-  df["Median",] <- splus2R::colMedians(data_frame_only_numeric, na.rm = TRUE)
+  df[4,1] <- "Median"
+  df[4,2:ncol] <- splus2R::colMedians(data_frame_only_numeric, na.rm = TRUE)
   df
 }
 
@@ -197,7 +212,7 @@ filter_and_display <- function(output, data_frame, selected_sub_tab) {
     output$data_stats <- renderDT_formatted(filtered_data_frame_stats, no_table_header = T)
     
     # return the filtered_data_frame
-    filtered_data_frame
+    list(filtered_data_frame, filtered_data_frame_stats)
   }
 } 
 
@@ -233,6 +248,9 @@ refresh_data_display <- function(output, selected_sub_tab, municipalities=list()
   
   data_frame <- convert_to_numeric(data_frame)
   
-  filtered_data_frame <- filter_and_display(output, data_frame, selected_sub_tab)
-  list(data_frame, filtered_data_frame)
+  data_frames_list <- filter_and_display(output, data_frame, selected_sub_tab)
+  filtered_data_frame <- data_frames_list[[1]]
+  filtered_data_frame_stats <- data_frames_list[[2]]
+  
+  list(data_frame, filtered_data_frame, filtered_data_frame_stats)
 }

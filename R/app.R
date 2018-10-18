@@ -91,7 +91,7 @@ server <- function(input, output, session) {
             # Input: Select a file ----
             fileInput(inputId = "load_file", "Choose Excel File",
                       multiple = FALSE,
-                      accept = c("text/xls"))
+                      accept = c("text/xls","text/xlsx"))
           ),
           mainPanel(
             width = 10,
@@ -105,7 +105,7 @@ server <- function(input, output, session) {
             }))),
             DTOutput("data"),
             DTOutput("data_stats"),
-            downloadButton(export_filename, "Download")
+            downloadButton("downloadData", "Download")
             # actionButton(inputId="saveUserSelectionButton", label ="Save"),
             #  actionButton(inputId = "save", label = "Save"),
             
@@ -114,7 +114,6 @@ server <- function(input, output, session) {
             #                      tabPanel("Data",
             #                        DTOutput("data"),
             #                        DTOutput("data_stats")
-            #  actionButton(inputId="exportButton", label ="Export"),
             # Button
             #downloadButton(export_filename, "Download"),
             #                      ),
@@ -214,6 +213,7 @@ server <- function(input, output, session) {
       data_frames_list <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
       municipal_data$data_frame_all_columns <- data_frames_list[[1]]
       municipal_data$data_frame_filtered_columns <- data_frames_list[[2]]
+      municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[3]]
     }
     else {
       # Handle error
@@ -226,7 +226,8 @@ server <- function(input, output, session) {
     }
   })
 
-  municipal_data <- reactiveValues(data_frame_all_columns = NULL, data_frame_filtered_columns = NULL)
+  municipal_data <- reactiveValues(data_frame_all_columns = NULL, data_frame_filtered_columns = NULL, 
+                                   data_frame_filtered_columns_stats = NULL)
   
   # Municipality Selection
   observeEvent(input$municipalitySelector, {
@@ -236,6 +237,8 @@ server <- function(input, output, session) {
     data_frames_list <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
     municipal_data$data_frame_all_columns <- data_frames_list[[1]]
     municipal_data$data_frame_filtered_columns <- data_frames_list[[2]]
+    municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[3]]
+    
   })
   
   # Year Selection
@@ -246,12 +249,15 @@ server <- function(input, output, session) {
     data_frames_list <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
     municipal_data$data_frame_all_columns <- data_frames_list[[1]]
     municipal_data$data_frame_filtered_columns <- data_frames_list[[2]]
+    municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[3]]
   })
  
   # Sub-tab/Dataset Selection 
   observeEvent(input$navbar_page, {
     selected_sub_tab <- input$navbar_page
-    municipal_data$data_frame_filtered_columns <- filter_and_display(output, municipal_data$data_frame_all_columns, selected_sub_tab)
+    data_frames_list <- filter_and_display(output, municipal_data$data_frame_all_columns, selected_sub_tab)
+    municipal_data$data_frame_filtered_columns <- data_frames_list[[1]]
+    municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[2]]
   })
 
   # Button to save currently selected municipalities
@@ -283,24 +289,16 @@ server <- function(input, output, session) {
     }
   })
 
-  # Datatable Export
-  observeEvent(input$exportButton, {
-    write_xlsx(data_frame, export_filename)
-
-    showModal(modalDialog(
-      title = paste("Exported to file: ", export_filename),
-      easyClose = TRUE,
-      footer = NULL))
-  })
-
   # Data Load
-  output$bmaExport.xls <- downloadHandler(
-    filename = export_filename,
-    contentType = "text/xls",
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste("data-", Sys.time(), ".xlsx", sep="")
+    },
+    contentType = "text/xlsx",
     content = function(file) {
-      print(file)
-      print(municipal_data$data_frame_filtered_columns)
-      write_xlsx(municipal_data$data_frame_filtered_columns, file)
+      merged_df <- merge_data_frames_vertically_export(municipal_data$data_frame_filtered_columns, 
+                                                       municipal_data$data_frame_filtered_columns_stats)
+      write_xlsx(merged_df, file)
     }
   )
 
