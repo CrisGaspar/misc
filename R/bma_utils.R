@@ -155,49 +155,42 @@ call_API_data_endpoint <- function(municipalities = NULL, year = NULL, data_fram
 # UI rendering of data frame as a data table
 renderDT_formatted <- function(data_frame, no_table_header = F) {
   column_names <- colnames(data_frame)
+  width_options = list(
+    autoWidth = TRUE,
+    columnDefs = list(list(width = '200px', targets = "_all"))
+  )
   
   if (no_table_header) {
     # show only table (no column sorting)
-    # Before rendering format the numbers to display in currency format
-    renderDT(datatable(data_frame, options = list(dom = 't', bSort = FALSE), colnames = NULL) %>% 
-               formatCurrency(intersect(COLUMNS_COUNTER, column_names), currency = FORMAT_SETTINGS_COUNTER$SYMBOL, mark = FORMAT_SETTINGS_COUNTER$SEPARATOR, digits = FORMAT_SETTINGS_COUNTER$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_CURRENCY_0_DECIMALS, column_names), currency = FORMAT_SETTINGS_CURRENCY_DEFAULT$SYMBOL, mark = FORMAT_SETTINGS_CURRENCY_DEFAULT$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_CURRENCY_DEFAULT$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_CURRENCY_2_DECIMALS, column_names), currency = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_PERCENT_1_DECIMAL, column_names), currency = FORMAT_SETTINGS_PERCENT_1_DECIMAL$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_1_DECIMAL$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_PERCENT_1_DECIMAL$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_PERCENT_2_DECIMALS, column_names), currency = FORMAT_SETTINGS_PERCENT_2_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_2_DECIMALS$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_PERCENT_2_DECIMALS$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_PERCENT_4_DECIMALS, column_names), currency = FORMAT_SETTINGS_PERCENT_4_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_4_DECIMALS$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_PERCENT_4_DECIMALS$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_PERCENT_5_DECIMALS, column_names), currency = FORMAT_SETTINGS_PERCENT_5_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_5_DECIMALS$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_PERCENT_5_DECIMALS$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_PERCENT_6_DECIMALS, column_names), currency = FORMAT_SETTINGS_PERCENT_6_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_6_DECIMALS$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_PERCENT_6_DECIMALS$DECIMALS), 
-             selection = 'none', server = F)
+    options_list <- list(dom = 't', bSort = FALSE)
+    display_column_names <- NULL
   }
   else {
-    # Do not show search box
-    # Before rendering format the numbers to display in currency format
-    renderDT(datatable(data_frame, options = list(searching = FALSE)) %>% 
-               formatCurrency(intersect(COLUMNS_COUNTER, column_names), currency = FORMAT_SETTINGS_COUNTER$SYMBOL, mark = FORMAT_SETTINGS_COUNTER$SEPARATOR, digits = FORMAT_SETTINGS_COUNTER$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_CURRENCY_0_DECIMALS, column_names), currency = FORMAT_SETTINGS_CURRENCY_DEFAULT$SYMBOL, mark = FORMAT_SETTINGS_CURRENCY_DEFAULT$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_CURRENCY_DEFAULT$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_CURRENCY_2_DECIMALS, column_names), currency = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_PERCENT_1_DECIMAL, column_names), currency = FORMAT_SETTINGS_PERCENT_1_DECIMAL$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_1_DECIMAL$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_PERCENT_1_DECIMAL$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_PERCENT_2_DECIMALS, column_names), currency = FORMAT_SETTINGS_PERCENT_2_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_2_DECIMALS$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_PERCENT_2_DECIMALS$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_PERCENT_4_DECIMALS, column_names), currency = FORMAT_SETTINGS_PERCENT_4_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_4_DECIMALS$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_PERCENT_4_DECIMALS$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_PERCENT_5_DECIMALS, column_names), currency = FORMAT_SETTINGS_PERCENT_5_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_5_DECIMALS$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_PERCENT_5_DECIMALS$DECIMALS) %>% 
-               formatCurrency(intersect(COLUMNS_PERCENT_6_DECIMALS, column_names), currency = FORMAT_SETTINGS_PERCENT_6_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_6_DECIMALS$SEPARATOR, 
-                              digits = FORMAT_SETTINGS_PERCENT_6_DECIMALS$DECIMALS), 
-             selection = 'none', server = F)
+    # Full header row but do not show search box
+    options_list = list(searching = FALSE)
+    display_column_names <- column_names
   }
+  #options_list <- append(options_list, width_options)
+  
+  # Before rendering format the numbers to display in currency format
+  renderDT(datatable(data_frame, options = options_list, colnames = display_column_names) %>% 
+             formatCurrency(intersect(COLUMNS_COUNTER, column_names), currency = FORMAT_SETTINGS_COUNTER$SYMBOL, mark = FORMAT_SETTINGS_COUNTER$SEPARATOR, digits = FORMAT_SETTINGS_COUNTER$DECIMALS) %>% 
+             formatCurrency(intersect(COLUMNS_CURRENCY_0_DECIMALS, column_names), currency = FORMAT_SETTINGS_CURRENCY_DEFAULT$SYMBOL, mark = FORMAT_SETTINGS_CURRENCY_DEFAULT$SEPARATOR, 
+                            digits = FORMAT_SETTINGS_CURRENCY_DEFAULT$DECIMALS) %>% 
+             formatCurrency(intersect(COLUMNS_CURRENCY_2_DECIMALS, column_names), currency = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$SEPARATOR, 
+                            digits = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$DECIMALS) %>% 
+             formatCurrency(intersect(COLUMNS_PERCENT_1_DECIMAL, column_names), currency = FORMAT_SETTINGS_PERCENT_1_DECIMAL$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_1_DECIMAL$SEPARATOR, 
+                            digits = FORMAT_SETTINGS_PERCENT_1_DECIMAL$DECIMALS) %>% 
+             formatCurrency(intersect(COLUMNS_PERCENT_2_DECIMALS, column_names), currency = FORMAT_SETTINGS_PERCENT_2_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_2_DECIMALS$SEPARATOR, 
+                            digits = FORMAT_SETTINGS_PERCENT_2_DECIMALS$DECIMALS) %>% 
+             formatCurrency(intersect(COLUMNS_PERCENT_4_DECIMALS, column_names), currency = FORMAT_SETTINGS_PERCENT_4_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_4_DECIMALS$SEPARATOR, 
+                            digits = FORMAT_SETTINGS_PERCENT_4_DECIMALS$DECIMALS) %>% 
+             formatCurrency(intersect(COLUMNS_PERCENT_5_DECIMALS, column_names), currency = FORMAT_SETTINGS_PERCENT_5_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_5_DECIMALS$SEPARATOR, 
+                            digits = FORMAT_SETTINGS_PERCENT_5_DECIMALS$DECIMALS) %>% 
+             formatCurrency(intersect(COLUMNS_PERCENT_6_DECIMALS, column_names), currency = FORMAT_SETTINGS_PERCENT_6_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_6_DECIMALS$SEPARATOR, 
+                            digits = FORMAT_SETTINGS_PERCENT_6_DECIMALS$DECIMALS) %>%
+             formatStyle(columns = column_names, width='5px'), 
+           selection = 'none', server = F)
 }
 
 filter_and_display <- function(output, data_frame, selected_sub_tab) {

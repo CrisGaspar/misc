@@ -103,9 +103,9 @@ server <- function(input, output, session) {
                 tabPanel(menu_sub_tabs_text[[i]][j], menu_sub_tabs_text[[i]][j])
               })))
             }))),
+            downloadButton("downloadData", "Download"),
             DTOutput("data"),
-            DTOutput("data_stats"),
-            downloadButton("downloadData", "Download")
+            DTOutput("data_stats")
             # actionButton(inputId="saveUserSelectionButton", label ="Save"),
             #  actionButton(inputId = "save", label = "Save"),
             
