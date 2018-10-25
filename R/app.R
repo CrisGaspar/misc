@@ -11,6 +11,7 @@ library(miscTools)
 library(rlist)
 
 # TODO: 
+# -2: Fix missing 'per Capita' coluumn
 # -1. Make sure the superuser and regular user UI branches are the same for their common elements
 # 0. Login HTTP POST should have hashed password
 # 1. Fix columns like Year + Metric e.g.: 2011 Population etc
@@ -96,11 +97,10 @@ server <- function(input, output, session) {
           mainPanel(
             width = 10,
             # Generate the navigation menu
-            # Create menu tabs using menu_tabs_text for titles
             # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
-            do.call(navbarPage, c(title = "Data Sets", id='navbar_page', lapply(1:length(menu_sub_tabs_text), function(i) {
-              do.call(navbarMenu, c(title = menu_tabs_text[[i]], lapply(1:length(menu_sub_tabs_text[[i]]), function(j) {
-                tabPanel(menu_sub_tabs_text[[i]][j], menu_sub_tabs_text[[i]][j])
+            do.call(navbarPage, c(title = "Data Sets", id='navbar_page', lapply(names(menu_sub_tabs_text), function(sub_tab_name) {
+              do.call(navbarMenu, c(title = sub_tab_name, lapply(1:length(menu_sub_tabs_text[[sub_tab_name]]), function(j) {
+                tabPanel(menu_sub_tabs_text[[sub_tab_name]][j], menu_sub_tabs_text[[sub_tab_name]][j])
               })))
             }))),
             downloadButton("downloadData", "Download"),
@@ -148,9 +148,9 @@ server <- function(input, output, session) {
         
         # Main panel for displaying outputs ----
         mainPanel(
-          do.call(navbarPage, c(title = "Datasets", id="navbar_page", lapply(1:length(menu_sub_tabs_text), function(i) {
-            do.call(navbarMenu, c(title = menu_tabs_text[[i]], id = "tabs", lapply(1:length(menu_sub_tabs_text[[i]]), function(j) {
-              tabPanel(menu_sub_tabs_text[[i]][j], menu_sub_tabs_text[[i]][j])
+          do.call(navbarPage, c(title = "Data Sets", id='navbar_page', lapply(names(menu_sub_tabs_text), function(sub_tab_name) {
+            do.call(navbarMenu, c(title = sub_tab_name, lapply(1:length(menu_sub_tabs_text[[sub_tab_name]]), function(j) {
+              tabPanel(menu_sub_tabs_text[[sub_tab_name]][j], menu_sub_tabs_text[[sub_tab_name]][j])
             })))
           })))
         )
@@ -181,7 +181,7 @@ server <- function(input, output, session) {
     missing_sheets <- setdiff(data_set_names, sheet_names_read)
 
     if (length(missing_sheets) > 0) {
-      err <- paste("Missing sheets in uploaded file: ", paste(data_set_names, collapse=", "))
+      err <- paste("Missing sheets in uploaded file: ", paste(missing_sheets, collapse=", "))
 
       showModal(modalDialog(
         title = kErrorTitleFailedToLoadData,
@@ -195,12 +195,12 @@ server <- function(input, output, session) {
     # Check and log any new sheets but still continue to upload
     new_sheets <- setdiff(sheet_names_read, data_set_names)
     if (length(new_sheets) > 0) {
-      info <- paste("New sheets in uploaded file: ", paste(new_sheets, collapse=", "))
+      info <- paste("Ignoring new sheets in uploaded file: ", paste(new_sheets, collapse=", "))
       print(info)
     }
 
-    # Read all data and send to API to save
-    data_sheets <- read_excel_allsheets(filename)
+    # Read only datasheets we wanted/expected and send to API to save
+    data_sheets <- read_excel_sheets(filename, data_set_names)
     result <- call_API_data_endpoint(data_frames = data_sheets, year = input$data_load_year_selector)
 
     # TODO: Add error handling for the REST endpoint connection fails

@@ -4,8 +4,10 @@ excel_sheet_names <- function(filename) {
   readxl::excel_sheets(filename)
 }
 
-read_excel_allsheets <- function(filename) {
-  sheets <- readxl::excel_sheets(filename)
+read_excel_sheets <- function(filename, sheets = NULL) {
+  if (is.null(sheets)) {
+    sheets <- readxl::excel_sheets(filename)
+  }
   x <- lapply(sheets, function(X) readxl::read_excel(filename, sheet = X))
   names(x) <- sheets
   x
