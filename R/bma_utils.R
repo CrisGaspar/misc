@@ -34,8 +34,7 @@ convert_to_numeric <- function(data_frame) {
 }
 
 get_filter_columns <- function(selected_sub_tab) {
-  subtab_constant <- subtab_name_to_constant_name[[selected_sub_tab]]
-  column_names <- column_names_per_sub_tab_selection[[subtab_constant]]
+  column_names <- column_names_per_sub_tab_selection[[selected_sub_tab]]
   column_names <- append(list(COLUMN_NAME_MUNICIPALITY, COLUMN_NAME_YEAR), column_names) 
 }
 
