@@ -16,16 +16,12 @@ library(rlist)
 # 0. Login HTTP POST should have hashed password
 # 1. Fix columns like Year + Metric e.g.: 2011 Population etc
 # 2. Fix length of columns to be the same for both data and summary tables.
-# 3. Save municipalities and year selection per user
 # 4. Save full list of municipalities in DB via all_municipalities endpoint
-# 5. Color stats row differently to stand out
+# 5. Save user groupings
+# 6. Color stats row differently to stand out
 
 # Nice to have:
-# 3. Fix export to include statistics?
 # 4. Add more resiliancy and error checing. Add try/catch like blocks as necessary
-# 5. REFACTOR API CALLS TO BE PRIVATE !!!!
-#    Have separate public get/set data methods for all endpoints instead of so many call_API* methods
-# Contants file
 
 # Data load spreadsheeet issues
 # -2: Fix 2016 Building COnstruction Value per Capita and 2017 Weigthed Median Value Dwelling - values don't match.
@@ -68,7 +64,7 @@ server <- function(input, output, session) {
             selectInput(inputId = "municipalitySelector",
                         label="Custom Grouping",
                         choices = municipality_choices$all,
-                        selected = municipality_choices$selected,
+                        selected = municipality_choices$all,
                         multiple = TRUE,
                         selectize = FALSE,
                         size = 10),
@@ -78,8 +74,7 @@ server <- function(input, output, session) {
                         choices = years_all_options,
                         selected = default_selected_year,
                         selectize = TRUE),
-            actionButton(inputId="saveUserSelectionButton", label ="Save"),
-            
+
             # Horizontal line ----
             tags$hr(),
             

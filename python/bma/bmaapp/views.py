@@ -57,32 +57,14 @@ def all_municipalities(request):
 
     if request.method == 'GET':
         try:
-            municipalities = Municipality.objects.all()
+            municipalities_from_db = MunicipalityData.objects.values_list('name', flat=True)
             municipality_list = []
-            # TODO: Fix to return the full info 3-tuple (name, study_location, population_band)
-            for entry in municipalities:
-                municipality_list.append(entry.name)
+            for municipality in municipalities_from_db:
+                municipality_list.append(municipality)
+            municipality_list = list(sorted(set(municipality_list)))
             return success_response({'municipalities': municipality_list})
         except Municipality.DoesNotExist:
             return success_response({'municipalities': []})
-
-    if request.method == 'POST':
-        if not request.user.is_superuser:
-            return error_response(ERROR_USER_NOT_ALLOWED_OPERATION)
-
-        try:
-            json_object = json.loads(request.body)
-            municipality_list = json_object['municipalities']
-
-            # Delete previous entries
-            Municipality.objects.all().delete()
-            # TODO: Fix to store the full info 3-tuple (name, study_location, population_band)
-            for municipality_name in municipality_list:
-                municipality = Municipality(name=municipality_name)
-                municipality.save()
-        except json.JSONDecodeError as e:
-            return error_response(ERROR_JSON_DECODING_FAILED)
-        return success_response()
 
     return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
 
@@ -223,7 +205,7 @@ def municipality_data(request):
 def get_municipality_data(municipalities, year):
     dataset_for_year = MunicipalityData.objects.filter(year=year).filter(name__in=municipalities)
 
-    # Store data as list of dict: one dict per each entry
+    # Store data as list of dictionaries: one per each entry
     data = []
     for data_entry in dataset_for_year:
         data_dict = {}
