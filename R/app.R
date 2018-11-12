@@ -9,6 +9,7 @@ library(dplyr)
 library(splus2R)
 library(miscTools)
 library(rlist)
+library(shinydashboard)
 
 # TODO: 
 # -2: Fix missing 'per Capita' coluumn
@@ -33,7 +34,11 @@ source("bma_utils.R", local=TRUE)
 #
 # UI definition
 #
-ui <- uiOutput("ui")
+ui = dashboardPage(
+  dashboardHeader(title = "Login Page"),
+  dashboardSidebar(disable = F),
+  dashboardBody(uiOutput("ui"))
+)
 
 #
 # Server function sets up how the UI works
@@ -45,22 +50,18 @@ server <- function(input, output, session) {
   output$ui <- renderUI({
     if (user_input$authenticated == FALSE) {
       ##### UI code for login page
-      fluidPage(
-        fluidRow(
           column(width = 2, offset = 5,
                  br(), br(), br(), br(),
                  uiOutput("uiLogin"),
                  uiOutput("pass")
           )
-        )
-      )
     } 
     else if (user_input$is_superuser) {
       #### App's UI code goes here!
-      fluidPage(
-        sidebarLayout(
-          sidebarPanel(
-            width = 2,
+      dashboardPage(
+        dashboardHeader(title = "Basic dashboard"),
+        dashboardSidebar(
+            collapsed = FALSE,
             selectInput(inputId = "municipalitySelector",
                         label="Custom Grouping",
                         choices = municipality_choices$all,
@@ -87,33 +88,43 @@ server <- function(input, output, session) {
             # Input: Select a file ----
             fileInput(inputId = "load_file", "Choose Excel File",
                       multiple = FALSE,
-                      accept = c("text/xls","text/xlsx"))
-          ),
-          mainPanel(
-            width = 10,
+                      accept = c("text/xls","text/xlsx")),
+            
             # Generate the navigation menu
             # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
-            do.call(navbarPage, c(title = "Data Sets", id='navbar_page', lapply(names(menu_sub_tabs_text), function(sub_tab_name) {
-              do.call(navbarMenu, c(title = sub_tab_name, lapply(1:length(menu_sub_tabs_text[[sub_tab_name]]), function(j) {
-                tabPanel(menu_sub_tabs_text[[sub_tab_name]][j], menu_sub_tabs_text[[sub_tab_name]][j])
+            do.call(sidebarMenu, c(id='sidebar_menu', lapply(names(menu_sub_tabs_text), function(tab_name) {
+              do.call(menuItem, c(tab_name, tabName=tab_name, lapply(1:length(menu_sub_tabs_text[[tab_name]]), function(j) {
+                if ((j == 1) && (tab_name == 'Socio Economic Indicators')) {
+                  # this is the Population sub-tab in Socio Economic Indicators tab. Set this as the initial selection
+                  select = TRUE
+                }
+                else {
+                  select = FALSE
+                }
+                menuSubItem(menu_sub_tabs_text[[tab_name]][j], tabName=menu_sub_tabs_text[[tab_name]][j], selected = select)
               })))
-            }))),
-            downloadButton("downloadData", "Download"),
-            DTOutput("data"),
-            DTOutput("data_stats")
-            # actionButton(inputId="saveUserSelectionButton", label ="Save"),
-            #  actionButton(inputId = "save", label = "Save"),
-            
-            # Output: Tabset w/ plot, summary, and table ----
-            #          tabsetPanel(type = "tabs",
-            #                      tabPanel("Data",
-            #                        DTOutput("data"),
-            #                        DTOutput("data_stats")
-            # Button
-            #downloadButton(export_filename, "Download"),
-            #                      ),
-            #                      tabPanel("Summary", verbatimTextOutput("summary"))
-            #          )
+            })))
+        ),
+        dashboardBody(
+          fluidRow(
+            box(
+              downloadButton("downloadData", "Download"),
+              DTOutput("data"),
+              DTOutput("data_stats")
+              # actionButton(inputId="saveUserSelectionButton", label ="Save"),
+              #  actionButton(inputId = "save", label = "Save"),
+              
+              # Output: Tabset w/ plot, summary, and table ----
+              #          tabsetPanel(type = "tabs",
+              #                      tabPanel("Data",
+              #                        DTOutput("data"),
+              #                        DTOutput("data_stats")
+              # Button
+              #downloadButton(export_filename, "Download"),
+              #                      ),
+              #                      tabPanel("Summary", verbatimTextOutput("summary"))
+              #          )
+            )
           )
         )
       )
@@ -205,7 +216,7 @@ server <- function(input, output, session) {
       # Refresh data frame filtered to selected municipalities and selected year
       # Store data_frame so that it's accessible to the observeEvent code that is triggered 
       # when another sub-tab is selected in the UI
-      data_frames_list <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+      data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
       municipal_data$data_frame_all_columns <- data_frames_list[[1]]
       municipal_data$data_frame_filtered_columns <- data_frames_list[[2]]
       municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[3]]
@@ -229,7 +240,7 @@ server <- function(input, output, session) {
     # Refresh data frame filtered to selected municipalities and selected year
     # Store data_frame so that it's accessible to the observeEvent code that is triggered 
     # when another sub-tab is selected in the UI
-    data_frames_list <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
     municipal_data$data_frame_all_columns <- data_frames_list[[1]]
     municipal_data$data_frame_filtered_columns <- data_frames_list[[2]]
     municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[3]]
@@ -241,15 +252,15 @@ server <- function(input, output, session) {
     # Refresh data frame filtered to selected municipalities and selected year
     # Store data_frame so that it's accessible to the observeEvent code that is triggered 
     # when another sub-tab is selected in the UI
-    data_frames_list <- refresh_data_display(output, input$navbar_page, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
     municipal_data$data_frame_all_columns <- data_frames_list[[1]]
     municipal_data$data_frame_filtered_columns <- data_frames_list[[2]]
     municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[3]]
   })
  
   # Sub-tab/Dataset Selection 
-  observeEvent(input$navbar_page, {
-    selected_sub_tab <- input$navbar_page
+  observeEvent(input$sidebar_menu, {
+    selected_sub_tab <- input$sidebar_menu
     data_frames_list <- filter_and_display(output, municipal_data$data_frame_all_columns, selected_sub_tab)
     municipal_data$data_frame_filtered_columns <- data_frames_list[[1]]
     municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[2]]
@@ -335,6 +346,7 @@ server <- function(input, output, session) {
       }
       
       municipality_choices$selected <- result$municipalities
+      user_input$error_message <- NULL
     } 
     else {
       user_input$authenticated <- FALSE

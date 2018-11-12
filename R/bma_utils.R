@@ -163,17 +163,18 @@ renderDT_formatted <- function(data_frame, no_table_header = F) {
   
   if (no_table_header) {
     # show only table (no column sorting)
-    options_list <- list(dom = 't', bSort = FALSE)
+    options_list <- list(dom = 't', bSort = FALSE, scrollX = T)
     display_column_names <- NULL
   }
   else {
     # Full header row but do not show search box
-    options_list = list(searching = FALSE)
+    options_list = list(searching = FALSE, scrollX = T)
     display_column_names <- column_names
   }
+  #TODO: FIX THIS!!
   #options_list <- append(options_list, width_options)
   
-  # Before rendering format the numbers to display in currency format
+  # Before rendering: format the numbers for display
   renderDT(datatable(data_frame, options = options_list, colnames = display_column_names) %>% 
              formatCurrency(intersect(COLUMNS_COUNTER, column_names), currency = FORMAT_SETTINGS_COUNTER$SYMBOL, mark = FORMAT_SETTINGS_COUNTER$SEPARATOR, digits = FORMAT_SETTINGS_COUNTER$DECIMALS) %>% 
              formatCurrency(intersect(COLUMNS_CURRENCY_0_DECIMALS, column_names), currency = FORMAT_SETTINGS_CURRENCY_DEFAULT$SYMBOL, mark = FORMAT_SETTINGS_CURRENCY_DEFAULT$SEPARATOR, 
@@ -217,6 +218,10 @@ get_empty_data_frame <- function() {
 }
 
 refresh_data_display <- function(output, selected_sub_tab, municipalities=list(), year=default_selected_year) {
+  if (is.null(selected_sub_tab)) {
+    selected_sub_tab <- SUB_TAB_POPULATION
+  }
+
   # Refresh data frame filtered to selected municipalities and selected year
   result <- call_API_data_endpoint(municipalities = municipalities, year = year)
   
