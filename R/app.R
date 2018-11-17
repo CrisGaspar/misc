@@ -11,7 +11,9 @@ library(miscTools)
 library(rlist)
 library(shinydashboard)
 
-# TODO: 
+# TODO:
+# -1: Fix crash on Building Permit activity subtab
+# -2: FIX Subtabs names to not contain % nor &
 # -2: Fix missing 'per Capita' coluumn
 # 0. Login HTTP POST should have hashed password
 # 1. Fix columns like Year + Metric e.g.: 2011 Population etc
@@ -34,12 +36,15 @@ source("bma_utils.R", local=TRUE)
 # UI definition
 #
 ui <- dashboardPage(
-  dashboardHeader(title = "BMA Municipal Study"),
-  dashboardSidebar(uiOutput("sidebarpanel")),
-  dashboardBody(uiOutput("body"))
+  dashboardHeader(title = "BMA Municipal Study", titleWidth = 275),
+  dashboardSidebar(width = 275, uiOutput("sidebarpanel")),
+  dashboardBody(tags$head(tags$style(
+    HTML('.wrapper {height: auto !important; position:relative; overflow-x:hidden; overflow-y:hidden}')
+  )), uiOutput("body"))
 )
 
 login <- box(
+  width = 3,
   title = "Login",
   textInput("userName", "Username"),
   passwordInput("passwd", "Password"),
@@ -113,7 +118,12 @@ server <- function(input, output, session) {
             user_input$error_message <- login_result$error_message
             
             if (!is.null(user_input$error_message)) {
-              h5(strong(paste0("Failed to login. Incorrect credentials.\n"), style = "color:red"), align = "center")
+              showModal(modalDialog(
+                title = "Failed to login!",
+                div(tags$b("Incorrect username or password", style = "color: red;")),
+                size = "s",
+                easyClose = TRUE,
+                footer = NULL))
             } 
             else {
               ""
@@ -134,6 +144,22 @@ server <- function(input, output, session) {
             isolate(input$userName),
             subtitle = a(icon("usr"), "Logout", href = login.page)
           ),
+          # Generate the navigation menu
+          # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
+          do.call(sidebarMenu, c(id='sidebar_menu',
+            lapply(names(menu_sub_tabs_text), function(tab_name) {
+              do.call(menuItem, c(tab_name, tabName=tab_name, lapply(1:length(menu_sub_tabs_text[[tab_name]]), function(j) {
+                if ((j == 1) && (tab_name == 'Socio Economic Indicators')) {
+                  # this is the Population sub-tab in Socio Economic Indicators tab. Set this as the initial selection
+                  select = TRUE
+                }
+                else {
+                  select = FALSE
+                }
+                menuSubItem(menu_sub_tabs_text[[tab_name]][j], tabName=menu_sub_tabs_text[[tab_name]][j], selected = select)
+              })))
+          }))),
+          
           selectInput(inputId = "municipalitySelector",
                       label="Custom Grouping",
                       choices = municipality_choices$all,
@@ -146,77 +172,63 @@ server <- function(input, output, session) {
                       choices = years_all_options,
                       selected = default_selected_year,
                       selectize = TRUE),
+          
           # Horizontal line ----
           tags$hr(),
+          
           selectInput(inputId = "data_load_year_selector",
-                        label="Year for Data Import",
-                        choices = years_all_options,
-                        selected = default_selected_year,
-                        selectize = TRUE),
+                      label="Year for Data Import",
+                      choices = years_all_options,
+                      selected = default_selected_year,
+                      selectize = TRUE),
           
-            # Input: Select a file ----
-            fileInput(inputId = "load_file", "Choose Excel File",
-                      multiple = FALSE,
-                      accept = c("text/xls","text/xlsx")),
-          
-          # Generate the navigation menu
-          # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
-          do.call(sidebarMenu, c(id='sidebar_menu', lapply(names(menu_sub_tabs_text), function(tab_name) {
-            do.call(menuItem, c(tab_name, tabName=tab_name, lapply(1:length(menu_sub_tabs_text[[tab_name]]), function(j) {
-              if ((j == 1) && (tab_name == 'Socio Economic Indicators')) {
-                # this is the Population sub-tab in Socio Economic Indicators tab. Set this as the initial selection
-                select = TRUE
-              }
-              else {
-                select = FALSE
-              }
-              menuSubItem(menu_sub_tabs_text[[tab_name]][j], tabName=menu_sub_tabs_text[[tab_name]][j], selected = select)
-            })))
-          })))
+          # Input: Select a file ----
+          fileInput(inputId = "load_file", "Choose Excel File",
+                    multiple = FALSE,
+                    accept = c("text/xls","text/xlsx"))
         )
       }
       else {
-          div(
-            sidebarUserPanel(
-              isolate(input$userName),
-              subtitle = a(icon("usr"), "Logout", href = login.page)
-            ),
-            selectInput(inputId = "municipalitySelector",
-                        label="Custom Grouping",
-                        choices = municipality_choices$all,
-                        selected = municipality_choices$all,
-                        multiple = TRUE,
-                        selectize = FALSE,
-                        size = 10),
-            selectInput(inputId = "data_display_year_selector",
-                        label="Year",
-                        choices = years_all_options,
-                        selected = default_selected_year,
-                        selectize = TRUE),
-            # Horizontal line ----
-            tags$hr(),
-            # Generate the navigation menu
-            # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
-            do.call(sidebarMenu, c(id='sidebar_menu', lapply(names(menu_sub_tabs_text), function(tab_name) {
-              do.call(menuItem, c(tab_name, tabName=tab_name, lapply(1:length(menu_sub_tabs_text[[tab_name]]), function(j) {
-                if ((j == 1) && (tab_name == 'Socio Economic Indicators')) {
-                  # this is the Population sub-tab in Socio Economic Indicators tab. Set this as the initial selection
-                  select = TRUE
-                }
-                else {
-                  select = FALSE
-                }
-                menuSubItem(menu_sub_tabs_text[[tab_name]][j], tabName=menu_sub_tabs_text[[tab_name]][j], selected = select)
-              })))
-            })))
-          )
+        div(
+          sidebarUserPanel(
+            isolate(input$userName),
+            subtitle = a(icon("usr"), "Logout", href = login.page)
+          ),
+          # Generate the navigation menu
+          # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
+          do.call(sidebarMenu, c(id='sidebar_menu',
+                                 lapply(names(menu_sub_tabs_text), function(tab_name) {
+                                   do.call(menuItem, c(tab_name, tabName=tab_name, lapply(1:length(menu_sub_tabs_text[[tab_name]]), function(j) {
+                                     if ((j == 1) && (tab_name == 'Socio Economic Indicators')) {
+                                       # this is the Population sub-tab in Socio Economic Indicators tab. Set this as the initial selection
+                                       select = TRUE
+                                     }
+                                     else {
+                                       select = FALSE
+                                     }
+                                     menuSubItem(menu_sub_tabs_text[[tab_name]][j], tabName=menu_sub_tabs_text[[tab_name]][j], selected = select)
+                                   })))
+                                 }))),
+          
+          selectInput(inputId = "municipalitySelector",
+                      label="Custom Grouping",
+                      choices = municipality_choices$all,
+                      selected = municipality_choices$all,
+                      multiple = TRUE,
+                      selectize = FALSE,
+                      size = 10),
+          selectInput(inputId = "data_display_year_selector",
+                      label="Year",
+                      choices = years_all_options,
+                      selected = default_selected_year,
+                      selectize = TRUE)
+        )
       }
     }
   })
   output$body <- renderUI({
-    if (user_input$authenticated == TRUE) {    
+    if (user_input$authenticated == TRUE) {
       fluidRow(
-        box(
           downloadButton("downloadData", "Download"),
           DTOutput("data"),
           DTOutput("data_stats")
@@ -233,7 +245,6 @@ server <- function(input, output, session) {
           #                      ),
           #                      tabPanel("Summary", verbatimTextOutput("summary"))
           #          )
-        )
       )
     } 
     else {
