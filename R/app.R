@@ -12,7 +12,6 @@ library(rlist)
 library(shinydashboard)
 
 # TODO:
-# 2. Fix length of columns to be the same for both data and summary tables.
 # 3. Implement HTTPS
 # 3. Login HTTP POST should have hashed password
 

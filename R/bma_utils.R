@@ -159,7 +159,7 @@ call_API_data_endpoint <- function(municipalities = NULL, year = NULL, data_fram
 renderDT_formatted <- function(data_frame, no_table_header = F) {
   column_names <- colnames(data_frame)
   width_options = list(
-    autoWidth = TRUE,
+    autoWidth = FALSE,
     columnDefs = list(list(width = '200px', targets = "_all"))
   )
   
@@ -173,8 +173,7 @@ renderDT_formatted <- function(data_frame, no_table_header = F) {
     options_list = list(searching = FALSE, scrollX = T)
     display_column_names <- column_names
   }
-  #TODO: FIX THIS!!
-  #options_list <- append(options_list, width_options)
+  options_list <- append(options_list, width_options)
   
   # Before rendering: format the numbers for display
   renderDT(datatable(data_frame, options = options_list, colnames = display_column_names) %>% 
@@ -206,7 +205,7 @@ filter_and_display <- function(output, data_frame, selected_sub_tab) {
     # Render data and stats tables in UI
     output$data <- renderDT_formatted(filtered_data_frame)
     filtered_data_frame_stats <- get_stats(filtered_data_frame)
-    output$data_stats <- renderDT_formatted(filtered_data_frame_stats, no_table_header = T)
+    output$data_stats <- renderDT_formatted(filtered_data_frame_stats, no_table_header = F)
     
     # return the filtered_data_frame
     list(filtered_data_frame, filtered_data_frame_stats)
