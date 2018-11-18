@@ -39,6 +39,8 @@ get_filter_columns <- function(selected_sub_tab) {
 }
 
 filter_data_frame <- function(data_frame, filter_columns) {
+  print(filter_columns)
+  print(colnames(data_frame))
   filtered_data_frame <- data_frame[unlist(filter_columns, use.name=FALSE)]
 }
 

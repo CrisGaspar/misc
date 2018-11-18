@@ -12,21 +12,19 @@ library(rlist)
 library(shinydashboard)
 
 # TODO:
-# -1: Fix crash on Building Permit activity subtab
-# -2: FIX Subtabs names to not contain % nor &
-# -2: Fix missing 'per Capita' coluumn
-# 0. Login HTTP POST should have hashed password
-# 1. Fix columns like Year + Metric e.g.: 2011 Population etc
 # 2. Fix length of columns to be the same for both data and summary tables.
-# 4. Save full list of municipalities in DB via all_municipalities endpoint
-# 5. Save user groupings
+# 3. Implement HTTPS
+# 3. Login HTTP POST should have hashed password
+
+# 4. Fix columns like Year + Metric e.g.: 2011 Population etc
+# 5. Implement custom municipality groupings
 # 6. Color stats row differently to stand out
 
 # Nice to have:
 # 4. Add more resiliancy and error checing. Add try/catch like blocks as necessary
 
 # Data load spreadsheeet issues
-# -2: Fix 2016 Building COnstruction Value per Capita and 2017 Weigthed Median Value Dwelling - values don't match.
+# 1. 2016 Building COnstruction Value per Capita and 2017 Weigthed Median Value Dwelling - values don't match.
 
 # Load constants
 source("bma_constants.R", local=TRUE)
@@ -44,7 +42,7 @@ ui <- dashboardPage(
 )
 
 login <- box(
-  width = 3,
+  width = 5,
   title = "Login",
   textInput("userName", "Username"),
   passwordInput("passwd", "Password"),
