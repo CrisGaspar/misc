@@ -35,7 +35,7 @@ convert_to_numeric <- function(data_frame) {
 
 get_filter_columns <- function(selected_sub_tab) {
   column_names <- column_names_per_sub_tab_selection[[selected_sub_tab]]
-  column_names <- append(list(COLUMN_NAME_MUNICIPALITY, COLUMN_NAME_YEAR), column_names) 
+  column_names <- append(list(COLUMN_NAME_MUNICIPALITY), column_names) 
 }
 
 filter_data_frame <- function(data_frame, filter_columns) {
@@ -170,7 +170,7 @@ renderDT_formatted <- function(data_frame) {
   options_list <- append(options_list, width_options)
   
   # Before rendering: format the numbers for display
-  renderDT(datatable(data_frame, options = options_list, colnames = display_column_names) %>% 
+  renderDT(datatable(data_frame, rownames= FALSE, options = options_list, colnames = display_column_names) %>% 
              formatCurrency(intersect(COLUMNS_COUNTER, column_names), currency = FORMAT_SETTINGS_COUNTER$SYMBOL, mark = FORMAT_SETTINGS_COUNTER$SEPARATOR, digits = FORMAT_SETTINGS_COUNTER$DECIMALS) %>% 
              formatCurrency(intersect(COLUMNS_CURRENCY_0_DECIMALS, column_names), currency = FORMAT_SETTINGS_CURRENCY_DEFAULT$SYMBOL, mark = FORMAT_SETTINGS_CURRENCY_DEFAULT$SEPARATOR, 
                             digits = FORMAT_SETTINGS_CURRENCY_DEFAULT$DECIMALS) %>% 
