@@ -156,23 +156,17 @@ call_API_data_endpoint <- function(municipalities = NULL, year = NULL, data_fram
 }
 
 # UI rendering of data frame as a data table
-renderDT_formatted <- function(data_frame, no_table_header = F) {
+renderDT_formatted <- function(data_frame) {
   column_names <- colnames(data_frame)
   width_options = list(
     autoWidth = FALSE,
     columnDefs = list(list(width = '200px', targets = "_all"))
   )
-  
-  if (no_table_header) {
-    # show only table (no column sorting)
-    options_list <- list(dom = 't', bSort = FALSE, scrollX = T)
-    display_column_names <- NULL
-  }
-  else {
-    # Full header row but do not show search box
-    options_list = list(searching = FALSE, scrollX = T)
-    display_column_names <- column_names
-  }
+
+  # Full header row but do not show search box
+  options_list = list(searching = FALSE, info = F, scrollX = T, bPaginate = F)
+  display_column_names <- column_names
+
   options_list <- append(options_list, width_options)
   
   # Before rendering: format the numbers for display
@@ -205,7 +199,7 @@ filter_and_display <- function(output, data_frame, selected_sub_tab) {
     # Render data and stats tables in UI
     output$data <- renderDT_formatted(filtered_data_frame)
     filtered_data_frame_stats <- get_stats(filtered_data_frame)
-    output$data_stats <- renderDT_formatted(filtered_data_frame_stats, no_table_header = F)
+    output$data_stats <- renderDT_formatted(filtered_data_frame_stats)
     
     # return the filtered_data_frame
     list(filtered_data_frame, filtered_data_frame_stats)
