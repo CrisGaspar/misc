@@ -375,13 +375,17 @@ server <- function(input, output, session) {
   # Data Load
   output$downloadData <- downloadHandler(
     filename = function() {
-      paste("data-", Sys.time(), ".xlsx", sep="")
+      paste("data-", Sys.Date(), ".xlsx", sep="")
     },
     contentType = "text/xlsx",
     content = function(file) {
       merged_df <- merge_data_frames_vertically_export(municipal_data$data_frame_filtered_columns, 
                                                        municipal_data$data_frame_filtered_columns_stats)
-      write_xlsx(merged_df, file)
+      df_list = list()
+      display_year = input$data_display_year_selector
+      df_list[[display_year]] = merged_df
+      
+      write_xlsx(df_list, file)
     }
   )
 }
