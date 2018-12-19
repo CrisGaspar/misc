@@ -320,9 +320,17 @@ get_municipality_data <- function(municipalities, year, population_by_year = F, 
 }
 
 
+is_single_string <- function(input) {
+  is.character(input) & length(input) == 1
+}
+
 refresh_data_display <- function(output, selected_sub_tab, municipalities=list(), year=default_selected_year) {
   if (is.null(selected_sub_tab)) {
     selected_sub_tab <- SUB_TAB_POPULATION
+  }
+  
+  if (is_single_string(municipalities)) {
+    municipalities <- list(municipalities)
   }
 
   # Refresh data frame filtered to selected municipalities and selected year
