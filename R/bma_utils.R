@@ -51,19 +51,25 @@ get_stats <- function(data_frame) {
   data_frame_only_numeric <- data_frame[,-non_numeric_cols_count]
   
   # Create empty data frame that will store the stats
-  df <- data.frame(matrix(ncol = ncol(data_frame), nrow = 0))
+  num_columns <- ncol(data_frame)
+  df <- data.frame(matrix(ncol = num_columns, nrow = 0))
   colnames(df) <- colnames(data_frame)
   
-  ncol <- ncol(df)
   df[1,1] <- "Min"
-  df[1,2:ncol] <- colMins(data_frame_only_numeric, na.rm = TRUE)
+  df[1,2:num_columns] <- colMins(data_frame_only_numeric, na.rm = TRUE)
   df[2,1] <- "Max"
-  df[2,2:ncol] <- colMaxs(data_frame_only_numeric, na.rm = TRUE)
+  df[2,2:num_columns] <- colMaxs(data_frame_only_numeric, na.rm = TRUE)
   df[3,1] <- "Average"
-  df[3,2:ncol] <- colMeans(data_frame_only_numeric, na.rm = TRUE)
+  if (is.vector(data_frame_only_numeric)) {
+    df[3,2:num_columns] <- mean(data_frame_only_numeric, na.rm = TRUE)
+  }
+  else {
+    # colMeans does not work for vectors. use mean instead
+    df[3,2:num_columns] <- colMeans(data_frame_only_numeric, na.rm = TRUE)
+  }
   # Note: using colMedians from miscTools package because splus2R package implementation does not work with NA values
   df[4,1] <- "Median"
-  df[4,2:ncol] <- splus2R::colMedians(data_frame_only_numeric, na.rm = TRUE)
+  df[4,2:num_columns] <- splus2R::colMedians(data_frame_only_numeric, na.rm = TRUE)
   df
 }
 
@@ -303,12 +309,9 @@ get_municipality_data <- function(municipalities, year, population_by_year = F, 
       footer = NULL))
   }
   else if (is.null(result$data) || length(result$data) == 0 || result$data == "[]") {
+    print(paste("No Data Found For Selected Year:", year, "or Years: ", years, "and Selected Municipalities: ", municipalities, 
+                " Error message from data server: ", result$error_message))
     data_frame <- get_empty_data_frame(years = years, by_year_columns = by_year_columns)
-    showModal(modalDialog(
-      title = "No Data Found For Selected Year and Selected Municipalities",
-      result$error_message,
-      easyClose = TRUE,
-      footer = NULL))
   }
   else {
     data_frame <- result$data

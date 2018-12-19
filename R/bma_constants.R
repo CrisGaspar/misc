@@ -5,6 +5,7 @@ all_municipalities_endpoint <- 'all_municipalities'
 data_endpoint <- 'data'
 columns_by_years_endpoint <- 'data_subset_by_years'
 
+# Only Municipality column is non-numeric
 non_numeric_cols_count <- 1
 export_filename <-"bmaExport.xls"
 
@@ -18,12 +19,21 @@ get_recent_years <- function(selected_year) {
 
 get_population_years <- function(selected_year) {
   year <- as.numeric(selected_year)
+
   # Census is every 5 years. Start from 2006
-  population_years <- seq(from = 2006, to = year, by = 5)
+  start_year = 2006
+  if (year <= start_year) {
+    population_years <- list(year)
+  }
+  else {
+    population_years <- seq(from = start_year, to = year, by = 5)
+  }
+
   # selected year must always be the last element. add only if it's not already there
   if (tail(population_years, n = 1) != year) {
     population_years <- append(population_years, year)
   }
+  population_years
 }
 
 current_year <- as.integer(format(Sys.Date(), "%Y"))
