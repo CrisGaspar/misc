@@ -3,6 +3,7 @@ login_endpoint <- 'login'
 municipalities_endpoint <- 'municipalities'
 all_municipalities_endpoint <- 'all_municipalities'
 data_endpoint <- 'data'
+columns_by_years_endpoint <- 'data_subset_by_years'
 
 non_numeric_cols_count <- 1
 export_filename <-"bmaExport.xls"
@@ -10,16 +11,35 @@ export_filename <-"bmaExport.xls"
 # Errors
 kErrorTitleFailedToLoadData = 'Failed to Load from Excel File'
 
+get_recent_years <- function(selected_year) {
+  year <- as.numeric(selected_year) 
+  (year-3):(year-1)
+}
+
+get_population_years <- function(selected_year) {
+  year <- as.numeric(selected_year)
+  # Census is every 5 years. Start from 2006
+  population_years <- seq(from = 2006, to = year, by = 5)
+  # selected year must always be the last element. add only if it's not already there
+  if (tail(population_years, n = 1) != year) {
+    population_years <- append(population_years, year)
+  }
+}
+
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 default_selected_year <- 2017
-oldest_year <- 1992L
+oldest_year <- 2002L
 years_all_options <- oldest_year: current_year
+recent_years <- get_recent_years(default_selected_year)
+population_years <- get_population_years(default_selected_year)
 
 SUB_TAB_POPULATION <- "Population"
+SUB_TAB_POPULATION_BY_YEAR <- "Population by Year"
 SUB_TAB_DENSITY_LAND_AREA <- "Density and Land Area"
 SUB_TAB_ASSESSMENT_INFO <- "Assessment Information"
 SUB_TAB_ASSESSMENT_COMPOSITION <- "Assessment Composition"
 SUB_TAB_BUILDING_PERMIT_ACTIVITY <- "Building Permit Activity"
+SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR <- "Building Permit Activity by Year"
 SUB_TAB_TOTAL_LEYY <- "Total Levy"
 SUB_TAB_UPPER_TIER_LEVY <- "Upper Tier Levy"
 SUB_TAB_LOWER_TIER_LEVY <- "Lower Tier Levy"
@@ -242,7 +262,8 @@ COLUMN_NAME_AMBULANCE = 'Ambulance'
 COLUMN_NAME_CEMETERIES = 'Cemeteries'
 
 menu_sub_tabs_text <- list(
-  "Socio Economic Indicators" = list(SUB_TAB_POPULATION, SUB_TAB_DENSITY_LAND_AREA, SUB_TAB_ASSESSMENT_INFO, SUB_TAB_ASSESSMENT_COMPOSITION, SUB_TAB_BUILDING_PERMIT_ACTIVITY),
+  "Socio Economic Indicators" = list(SUB_TAB_POPULATION, SUB_TAB_POPULATION_BY_YEAR, SUB_TAB_DENSITY_LAND_AREA, SUB_TAB_ASSESSMENT_INFO, 
+                                     SUB_TAB_ASSESSMENT_COMPOSITION, SUB_TAB_BUILDING_PERMIT_ACTIVITY, SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR),
   
   "Municipal Financial Indicators" = list(SUB_TAB_TOTAL_LEYY, SUB_TAB_UPPER_TIER_LEVY, SUB_TAB_LOWER_TIER_LEVY, SUB_TAB_TAX_ASSET_CONSUMPTION_RATIO, SUB_TAB_FINANCIAL_POSITION_PER_CAPITA,
        SUB_TAB_TAX_DIS_RES_PERCENT_OSR, SUB_TAB_TAX_RESERVES_PERCENT_TAXATION, SUB_TAB_TAX_RES_PER_CAPITA, SUB_TAB_TAX_DEBT_INT_PERCENT_OSR,

@@ -15,7 +15,7 @@ import logging
 import re
 
 from bmaapp.models import EndUser, Municipality, MunicipalityData
-from bmaapp.models import COLUMN_NAME_MULTI_RESIDENTIAL, COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL
+from bmaapp.models import COLUMN_NAME_MUNICIPALITY, COLUMN_NAME_MULTI_RESIDENTIAL, COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL
 from bmaapp.models import COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX, \
     COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA
 
@@ -104,9 +104,6 @@ def municipality_data(request):
         return error_response(ERROR_USER_NOT_AUTHENTICATED)
 
     if request.method == 'POST':
-        if not request.user.is_superuser:
-            return error_response(ERROR_USER_NOT_ALLOWED_OPERATION)
-
         try:
             year = request.GET.get('year')
             if year is None:
@@ -120,11 +117,15 @@ def municipality_data(request):
                 # Need to return the data for given municipalities for given year
                 return get_municipality_data(municipalities, year)
 
-            # cHeck if this a store-data request
+            # check if this a store-data request
             data_to_write = json_object.get('data')
 
             if data_to_write is None:
                 return error_response(ERROR_BAD_REQUEST_DATA_ENDPOINT)
+
+            # municipality data writes are allowed only for superusers
+            if not request.user.is_superuser:
+                return error_response(ERROR_USER_NOT_ALLOWED_OPERATION)
 
             data_by_municipality_and_year = {}
 
@@ -198,12 +199,44 @@ def municipality_data(request):
     return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
 
 
+def municipality_data_by_years(request):
+    if request.user is None or not request.user.is_authenticated:
+        return error_response(ERROR_USER_NOT_AUTHENTICATED)
+
+    if request.method == 'POST':
+        try:
+            json_object = json.loads(request.body)
+
+            municipalities = json_object.get('municipalities')
+            years = json_object.get('years')
+            data_columns = json_object.get('columns')
+
+            if municipalities is None:
+                return error_response(ERROR_BAD_REQUEST_DATA_NO_MUNICIPALITIES)
+
+            if years is None:
+                return error_response(ERROR_BAD_REQUEST_DATA_NO_YEARS)
+
+            if data_columns is None:
+                return error_response(ERROR_BAD_REQUEST_DATA_NO_COLUMNS)
+
+            # Need to return the data for given municipalities for given year
+            return get_municipality_data_by_years(municipalities, years, data_columns)
+        except json.JSONDecodeError as e:
+            return error_response(ERROR_JSON_DECODING_FAILED)
+        except Exception as e:
+            logging.error(e, exc_info=True)
+            return error_response("Encountered exception {}".format(str(e)))
+        return success_response()
+    return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Data methods
 #-----------------------------------------------------------------------------------------------------------------------
 
-def get_municipality_data(municipalities, year):
-    dataset_for_year = MunicipalityData.objects.filter(year=year).filter(name__in=municipalities)
+def get_municipality_data(municipalities_list, year):
+    dataset_for_year = MunicipalityData.objects.filter(year=year).filter(name__in=municipalities_list)
 
     # Store data as list of dictionaries: one per each entry
     data = []
@@ -211,7 +244,41 @@ def get_municipality_data(municipalities, year):
         data_dict = {}
         data_entry.store(data_dict)
         data.append(data_dict)
-        print(data_dict)
+    return success_response({'data': data})
+
+def create_empty_municipal_data_entry(municipality, years, data_columns):
+    municipality_entry = { COLUMN_NAME_MUNICIPALITY: municipality }
+    for column_name in data_columns:
+        for year in years:
+            column_name_with_year = str(year) + " " + column_name
+            municipality_entry[column_name_with_year] = None
+    return municipality_entry
+
+
+def get_municipality_data_by_years(municipalities_list, years, data_columns):
+    dataset = MunicipalityData.objects.filter(year__in=years).filter(name__in=municipalities_list).order_by('year')
+
+    # Store data as list of dictionaries: one per each entry
+    data = []
+    data_dict_by_municipality = {}
+
+    for data_entry in dataset:
+        municipality = data_entry.name
+        if municipality in data_dict_by_municipality:
+            municipality_entry =  data_dict_by_municipality[municipality]
+        else:
+            # new entry
+            municipality_entry = create_empty_municipal_data_entry(municipality, years, data_columns)
+            data_dict_by_municipality[municipality] = municipality_entry
+
+        year = data_entry.year
+
+        for column_name in data_columns:
+            column_name_with_year = str(year) + " " + column_name
+            municipality_entry[column_name_with_year] = data_entry.get_column_value(column_name)
+
+    for name, data_dict in data_dict_by_municipality.items():
+        data.append(data_dict)
     return success_response({'data': data})
 
 # PRE condition: user logged in
@@ -256,8 +323,6 @@ def split_to_year_and_property_name(str, default_year, sheet_name):
 
     property_name = str
     year_to_use = default_year
-
-    print('str = {} default_year = {} sheet_name = {}'.format(str, default_year, sheet_name))
 
     if len(str) >= 5 and str[4] == ' ':
         try:
@@ -331,6 +396,10 @@ ERROR_UNSUPPORTED_HTTP_OPERATION = 'Endpoint supports only GET and POST'
 ERROR_USER_AUTHENTICATION_FAILED = 'Invalid userid or invalid password'
 ERROR_MISSING_YEAR_PARAMETER = 'Missing year parameter'
 ERROR_BAD_REQUEST_DATA_ENDPOINT = 'Bad request to data endpoint. No municipalities nor data objects in JSON body'
+ERROR_BAD_REQUEST_DATA_NO_MUNICIPALITIES = 'Bad request to data_subset_by_years endpoint. No municipalities in JSON body'
+ERROR_BAD_REQUEST_DATA_NO_YEARS = 'Bad request to data_subset_by_years endpoint. No year list in JSON body'
+ERROR_BAD_REQUEST_DATA_NO_COLUMNS = 'Bad request to data_subset_by_years endpoint. No data columns list in JSON body'
+
 
 EXPECTED_SHEET_NAMES = [
     "Population", "Density and Land Area", "Assessment Information", "Assessment Composition",

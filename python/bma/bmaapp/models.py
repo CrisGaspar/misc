@@ -796,3 +796,14 @@ class MunicipalityData(models.Model):
         self.conservation_authority = dict.get(COLUMN_NAME_CONSERVATION_AUTHORITY)
         self.ambulance = dict.get(COLUMN_NAME_AMBULANCE)
         self.cemeteries = dict.get(COLUMN_NAME_CEMETERIES)
+
+    def get_column_value(self, column_name):
+        if column_name == COLUMN_NAME_POPULATION:
+            return self.population
+        elif column_name == COLUMN_NAME_BUILDING_CONSTRUCTION_VALUE:
+            return self.building_construction_value
+        elif column_name == COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX:
+            return self.building_construction_per_capita_value
+        else:
+            return None
+

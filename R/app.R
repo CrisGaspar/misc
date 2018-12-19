@@ -11,20 +11,6 @@ library(miscTools)
 library(rlist)
 library(shinydashboard)
 
-# TODO:
-# 3. Implement HTTPS
-# 3. Login HTTP POST should have hashed password
-
-# 4. Fix columns like Year + Metric e.g.: 2011 Population etc
-# 5. Implement custom municipality groupings
-# 6. Color stats row differently to stand out
-
-# Nice to have:
-# 4. Add more resiliancy and error checing. Add try/catch like blocks as necessary
-
-# Data load spreadsheeet issues
-# 1. 2016 Building COnstruction Value per Capita and 2017 Weigthed Median Value Dwelling - values don't match.
-
 # Load constants
 source("bma_constants.R", local=TRUE)
 source("bma_utils.R", local=TRUE)
@@ -226,7 +212,7 @@ server <- function(input, output, session) {
   output$body <- renderUI({
     if (user_input$authenticated == TRUE) {
       fluidRow(
-          downloadButton("downloadData", "Download"),
+          downloadButton("exportToExcel", "View in Excel"),
           DTOutput("data"),
           DTOutput("data_stats")
           # actionButton(inputId="saveUserSelectionButton", label ="Save"),
@@ -251,6 +237,17 @@ server <- function(input, output, session) {
 
   ################### APP SERVER CODE #####################################################
 
+  set_municipal_data <- function(data_frames_list, only_filtered = F) {
+    municipal_data$data_frame_filtered_columns <- data_frames_list[[1]]
+    municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[2]]    
+    
+    if (!only_filtered) {
+      municipal_data$data_frame_all_columns <- data_frames_list[[3]]
+      municipal_data$data_frame_population_by_year <- data_frames_list[[4]]
+      municipal_data$data_frame_building_permit_activity_by_year <- data_frames_list[[5]]
+    }
+  }
+  
   #
   # UI event handling
   #
@@ -294,9 +291,7 @@ server <- function(input, output, session) {
       # Store data_frame so that it's accessible to the observeEvent code that is triggered 
       # when another sub-tab is selected in the UI
       data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
-      municipal_data$data_frame_all_columns <- data_frames_list[[1]]
-      municipal_data$data_frame_filtered_columns <- data_frames_list[[2]]
-      municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[3]]
+      set_municipal_data(data_frames_list)
     }
     else {
       # Handle error
@@ -309,8 +304,8 @@ server <- function(input, output, session) {
     }
   })
 
-  municipal_data <- reactiveValues(data_frame_all_columns = NULL, data_frame_filtered_columns = NULL, 
-                                   data_frame_filtered_columns_stats = NULL)
+  municipal_data <- reactiveValues(data_frame_all_columns = NULL, data_frame_filtered_columns = NULL, data_frame_filtered_columns_stats = NULL, 
+                                   data_frame_population_by_year = NULL, data_frame_building_permit_activity_by_year = NULL)
   
   # Municipality Selection
   observeEvent(input$municipalitySelector, {
@@ -318,10 +313,7 @@ server <- function(input, output, session) {
     # Store data_frame so that it's accessible to the observeEvent code that is triggered 
     # when another sub-tab is selected in the UI
     data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
-    municipal_data$data_frame_all_columns <- data_frames_list[[1]]
-    municipal_data$data_frame_filtered_columns <- data_frames_list[[2]]
-    municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[3]]
-    
+    set_municipal_data(data_frames_list)
   })
   
   # Year Selection
@@ -330,17 +322,23 @@ server <- function(input, output, session) {
     # Store data_frame so that it's accessible to the observeEvent code that is triggered 
     # when another sub-tab is selected in the UI
     data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
-    municipal_data$data_frame_all_columns <- data_frames_list[[1]]
-    municipal_data$data_frame_filtered_columns <- data_frames_list[[2]]
-    municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[3]]
+    set_municipal_data(data_frames_list)
   })
  
   # Sub-tab/Dataset Selection 
   observeEvent(input$sidebar_menu, {
     selected_sub_tab <- input$sidebar_menu
-    data_frames_list <- filter_and_display(output, municipal_data$data_frame_all_columns, selected_sub_tab)
-    municipal_data$data_frame_filtered_columns <- data_frames_list[[1]]
-    municipal_data$data_frame_filtered_columns_stats <- data_frames_list[[2]]
+    
+    data_frame_to_display <- municipal_data$data_frame_all_columns
+    if (selected_sub_tab == SUB_TAB_POPULATION_BY_YEAR) {
+      data_frame_to_display <- municipal_data$data_frame_population_by_year
+    }
+    else if (selected_sub_tab == SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR)
+    {
+      data_frame_to_display <- municipal_data$data_frame_building_permit_activity_by_year
+    }
+    data_frames_list <- filter_and_display(output, data_frame_to_display, selected_sub_tab)
+    set_municipal_data(data_frames_list, only_filtered = T)
   })
 
   # Button to save currently selected municipalities
@@ -373,7 +371,7 @@ server <- function(input, output, session) {
   })
 
   # Data Load
-  output$downloadData <- downloadHandler(
+  output$exportToExcel <- downloadHandler(
     filename = function() {
       paste("data-", Sys.Date(), ".xlsx", sep="")
     },

@@ -8,5 +8,6 @@ urlpatterns = [
     path('logout', views.logout, name='logout'),
     path('municipalities', views.municipalities, name='municipalities'),
     path('all_municipalities', views.all_municipalities, name='all_municipalities'),
-    path('data', views.municipality_data, name='municipality_data')
+    path('data', views.municipality_data, name='municipality_data'),
+    path('data_subset_by_years', views.municipality_data_by_years, name='municipality_data_by_years')
 ]
