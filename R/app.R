@@ -256,7 +256,8 @@ server <- function(input, output, session) {
     filename = input$load_file$datapath
     sheet_names_read <- excel_sheet_names(filename)
     print(sheet_names_read)
-
+    print(data_set_names)
+    
     # We check for missing sheets.
     missing_sheets <- setdiff(data_set_names, sheet_names_read)
 
@@ -269,7 +270,7 @@ server <- function(input, output, session) {
         easyClose = TRUE,
         footer = NULL))
 
-      return
+      return()
     }
 
     # Check and log any new sheets but still continue to upload

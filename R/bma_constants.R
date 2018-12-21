@@ -271,6 +271,8 @@ COLUMN_NAME_CONSERVATION_AUTHORITY = 'Conservation Authority'
 COLUMN_NAME_AMBULANCE = 'Ambulance'
 COLUMN_NAME_CEMETERIES = 'Cemeteries'
 
+SHEET_NET_EXPENDITURES_PER_CAPITA <- "Net Expenditures per Capita"
+
 menu_sub_tabs_text <- list(
   "Socio Economic Indicators" = list(SUB_TAB_POPULATION, SUB_TAB_POPULATION_BY_YEAR, SUB_TAB_DENSITY_LAND_AREA, SUB_TAB_ASSESSMENT_INFO, 
                                      SUB_TAB_ASSESSMENT_COMPOSITION, SUB_TAB_BUILDING_PERMIT_ACTIVITY, SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR),
@@ -291,8 +293,10 @@ menu_sub_tabs_text <- list(
        SUB_TAB_WASTE_WATER_RES_PERCENT_OSR, SUB_TAB_WATER_RES_PERCENT_ACUM_AMORT, SUB_TAB_WASTE_WATER_RES_PERCENT_ACUM_AMORT, SUB_TAB_WATER_DEBT_INT_COVER,
        SUB_TAB_WASTE_WATER_DEBT_INT_COVER, SUB_TAB_WATER_NET_FIN_LIAB, SUB_TAB_WASTE_WATER_NET_FIN_LIAB),
   
-  "Taxes as a % of Income" = list(SUB_TAB_AVG_HOUSEHOLD_INCOME, SUB_TAB_AVG_VALUE_DWELLING, SUB_TAB_COMBINED_COSTS, SUB_TAB_TAXES_PERCENT_INCOME),
-  "Net Expenditures per Capita" = list(
+  "Taxes as a % of Income" = list(SUB_TAB_AVG_HOUSEHOLD_INCOME, SUB_TAB_AVG_VALUE_DWELLING, SUB_TAB_COMBINED_COSTS, SUB_TAB_TAXES_PERCENT_INCOME)
+)
+
+menu_sub_tabs_text[[SHEET_NET_EXPENDITURES_PER_CAPITA]] = list(
     SUB_TAB_NET_EXPENDITURES_PER_CAPITA_FIRE, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_ROADS_PAVED, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_BRIDGES_CULVERTS, 
     SUB_TAB_NET_EXPENDITURES_PER_CAPITA_TRAFFIC, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WINTER_ROADS, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WINTER_SIDEWALKS, 
     SUB_TAB_NET_EXPENDITURES_PER_CAPITA_TRANSIT, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PARKING, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WASTE_COLLECTION, 
@@ -304,9 +308,26 @@ menu_sub_tabs_text <- list(
     SUB_TAB_NET_EXPENDITURES_PER_CAPITA_MUSEUM, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CULTURAL, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PLANNING, 
     SUB_TAB_NET_EXPENDITURES_PER_CAPITA_COMM_IND, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_GENERAL_GOVERNMENT, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CONSERVATION_AUTHORITY, 
     SUB_TAB_NET_EXPENDITURES_PER_CAPITA_AMBULANCE, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CEMETERIES)
-)
 
 data_set_names <- list.flatten(menu_sub_tabs_text)
+data_set_exclusions <- list(SUB_TAB_POPULATION_BY_YEAR, SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR)
+data_set_percent_character_exclusions <-list(SUB_TAB_TAX_DIS_RES_PERCENT_OSR, SUB_TAB_TAX_RESERVES_PERCENT_TAXATION, SUB_TAB_TAX_DEBT_INT_PERCENT_OSR, 
+                                            SUB_TAB_TAX_DEBT_CHARGES_PERCENT_OSR, SUB_TAB_TAX_RECEIVABLE_PERCENT_TAX, SUB_TAB_WATER_RES_PERCENT_OSR, 
+                                            SUB_TAB_WASTE_WATER_RES_PERCENT_OSR, SUB_TAB_WATER_RES_PERCENT_ACUM_AMORT, SUB_TAB_WASTE_WATER_RES_PERCENT_ACUM_AMORT, 
+                                            SUB_TAB_TAXES_PERCENT_INCOME)
+data_set_percent_character_additions <- lapply(data_set_percent_character_exclusions, function(str) {
+  sub("Percent", "%", str)
+})
+data_set_and_character_exclusions <- list(SUB_TAB_WATER_AND_SEWER_COSTS)
+data_set_and_character_additions <- lapply(data_set_and_character_exclusions, function(str) {
+  sub(" and ", "&", str)
+})
+
+
+data_set_names <- unique(setdiff(
+  list.flatten(list.append(data_set_names, data_set_percent_character_additions, data_set_and_character_additions, SHEET_NET_EXPENDITURES_PER_CAPITA)), 
+  list.flatten(list.append(data_set_exclusions, data_set_percent_character_exclusions, data_set_and_character_exclusions, menu_sub_tabs_text[[SHEET_NET_EXPENDITURES_PER_CAPITA]])))
+)
 
 column_names_per_sub_tab_selection <- list()
 column_names_per_sub_tab_selection[[SUB_TAB_POPULATION]] = list(
