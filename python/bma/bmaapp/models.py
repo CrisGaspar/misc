@@ -8,15 +8,12 @@ default_max_string_length = 100
 COLUMN_NAME_MUNICIPALITY = 'Municipality'
 COLUMN_NAME_YEAR = 'Year'
 
-# TODO: Implement the following 4 fields
 # self.region_county_district = dict.get('region_county_district')
 # self.study_location = dict.get('study_location')
 # self.tier = dict.get('tier')
 # self.population_bands = dict.get('population_bands')
 
 COLUMN_NAME_POPULATION_DENSITY = 'Population Density per sq. km.'
-# TODO: FIX THIS in UI!
-# in some sheets Population column name is just the year
 COLUMN_NAME_POPULATION = 'Population'
 COLUMN_NAME_LAND_AREA = 'Land Area km2'
 # TODO: FIX THIS

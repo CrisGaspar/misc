@@ -255,9 +255,7 @@ server <- function(input, output, session) {
   observeEvent(input$load_file, {
     filename = input$load_file$datapath
     sheet_names_read <- excel_sheet_names(filename)
-    print(sheet_names_read)
-    print(data_set_names)
-    
+
     # We check for missing sheets.
     missing_sheets <- setdiff(data_set_names, sheet_names_read)
 
@@ -284,10 +282,7 @@ server <- function(input, output, session) {
     data_sheets <- read_excel_sheets(filename, data_set_names)
     result <- call_API_data_endpoint(data_frames = data_sheets, year = input$data_load_year_selector)
 
-    # TODO: Add error handling for the REST endpoint connection fails
     if (result$success == "true") {
-      print("Data loading successful")
-      
       # Refresh data frame filtered to selected municipalities and selected year
       # Store data_frame so that it's accessible to the observeEvent code that is triggered 
       # when another sub-tab is selected in the UI
@@ -296,7 +291,6 @@ server <- function(input, output, session) {
     }
     else {
       # Handle error
-      print("Data loading failed!")
       showModal(modalDialog(
         title = kErrorTitleFailedToLoadData,
         result$error_message,

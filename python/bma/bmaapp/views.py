@@ -21,13 +21,11 @@ from bmaapp.models import COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR
 
 # ---------------------------------------------------------------------------------------------------------------------
 # TODO:
-# 1. ADD LOGGING!!
-# 2. Add back CSFR in settings.py
+# 1. Add back CSFR in settings.py
 # ---------------------------------------------------------------------------------------------------------------------
 
 # Create your views here.
 def index(request):
-    # TODO: IMPLEMENT THIS!
     return HttpResponse("Hello, world. You're at the BMA index.")
 
 
@@ -350,8 +348,7 @@ def is_user_allowed(current_user, target_user):
 
 
 def _create_json_response(dict):
-    # dict contains (name, object) pairs to be in the JSON response
-    print(dict)
+    # dict contains (name, object) pairs to be sent in the JSON response
     return JsonResponse(dict)
 
 

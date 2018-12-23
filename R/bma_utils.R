@@ -41,8 +41,6 @@ get_filter_columns <- function(selected_sub_tab) {
 }
 
 filter_data_frame <- function(data_frame, filter_columns) {
-  print(filter_columns)
-  print(colnames(data_frame))
   filtered_data_frame <- data_frame[unlist(filter_columns, use.name=FALSE)]
 }
 
@@ -79,7 +77,6 @@ call_login_endpoint <- function(userid, password) {
   call_success <- httr::GET(url)
   call_success_text <- content(call_success, "text")
   call_success_final <- fromJSON(call_success_text)
-  print(call_success_final)
 }
 
 call_API_municipalities_endpoint <- function(method = httr::GET, municipalities = NULL) {
@@ -118,10 +115,9 @@ call_API_municipalities_helper <- function(endpoint, method = httr::GET, municip
   }
   
   if (!is.null(error)) {
-    print(error)
-    result = list(success = "false", error_message = error)
+    result <- list(success = "false", error_message = error)
     print(result)
-    return
+    return(result)
   }
   
   call_success <- method(url, body=requestBody)
@@ -129,7 +125,6 @@ call_API_municipalities_helper <- function(endpoint, method = httr::GET, municip
   
   # Get API response (succesful or unsuccesful)
   call_success_final <- fromJSON(call_success_text)
-  print(call_success_final)
 }
 
 call_API_columns_by_years_endpoint <- function(municipalities, years, by_year_columns) {
@@ -141,11 +136,9 @@ call_API_columns_by_years_endpoint <- function(municipalities, years, by_year_co
   
   call_success <- method(url, body=requestBody)
   call_success_text <- content(call_success, "text")
-  print(call_success_text)
-  
+
   # Get API response (succesful or unsuccesful)
   call_success_final <- jsonlite::fromJSON(call_success_text)
-  print(call_success_final)
 }
 
 # Call data read/write endpoint
@@ -159,7 +152,6 @@ call_API_data_endpoint <- function(municipalities = NULL, year = NULL, data_fram
   }
   else if ((!is.null(data_frames)) && (!is.null(year))) {
     # POST is called with list of data_frames in JSON format in body
-    # print(rjson::toJSON(data_frames))
     requestBody <- paste('{"data":',  rjson::toJSON(data_frames), '}')
   }
   else {
@@ -167,16 +159,15 @@ call_API_data_endpoint <- function(municipalities = NULL, year = NULL, data_fram
                  " no municicpalities = ", is.null(municipalities) || length(municipalities) == 0, 
                  " data_frames is NULL = ", is.null(data_frames))
     result <- list(success = 'false', error_message = err)
-    return
+    print(result)
+    return(result)
   }
   
   call_success <- method(url, body=requestBody)
   call_success_text <- content(call_success, "text")
-  print(call_success_text)
-  
+
   # Get API response (succesful or unsuccesful)
   call_success_final <- jsonlite::fromJSON(call_success_text)
-  print(call_success_final)
 }
 
 filter_column_names <- function(column_names, filtering_list) {
@@ -246,8 +237,7 @@ filter_and_display <- function(output, data_frame, selected_sub_tab) {
       filter_columns <- get_filter_columns(selected_sub_tab)
       filtered_data_frame <- filter_data_frame(data_frame, filter_columns)
     }
-    print(filtered_data_frame)
-    
+
     # Render data and stats tables in UI
     output$data <- renderDT_formatted(filtered_data_frame)
     filtered_data_frame_stats <- get_stats(filtered_data_frame)
@@ -262,7 +252,6 @@ get_empty_data_frame <- function(years = NULL, by_year_columns = NULL) {
   if (!is.null(years) && !is.null(by_year_columns)) {
     # empty dataframes with columns having all years and by_year_columns combinations. Plus Municipality as the 1st column
     num_columns <- length(years) * length(by_year_columns) + 1
-    print(paste("get_empty_data_frame: length(years) = ", length(years), " length(by_year_columns)  = ", length(by_year_columns)))
     df <- data.frame(matrix(ncol = num_columns, nrow = 0))
     column_names <- lapply(by_year_columns, function(column_name) {
       lapply(years, function(year) {
