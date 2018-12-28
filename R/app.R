@@ -10,6 +10,7 @@ library(splus2R)
 library(miscTools)
 library(rlist)
 library(shinydashboard)
+library(shinyjs)
 
 # Load constants
 source("bma_constants.R", local=TRUE)
@@ -20,7 +21,7 @@ source("bma_utils.R", local=TRUE)
 #
 ui <- dashboardPage(
   dashboardHeader(title = "BMA Municipal Study", titleWidth = 275),
-  dashboardSidebar(width = 275, uiOutput("sidebarpanel")),
+  dashboardSidebar(width = 275, useShinyjs(), uiOutput("sidebarpanel")),
   dashboardBody(tags$head(tags$style(
     HTML('.wrapper {height: auto !important; position:relative; overflow-x:hidden; overflow-y:hidden}')
   )), uiOutput("body"))
@@ -127,6 +128,21 @@ server <- function(input, output, session) {
             isolate(input$userName),
             subtitle = a(icon("usr"), "Logout", href = login.page)
           ),
+          
+          selectInput(inputId = "data_display_year_selector",
+                      label="Year",
+                      choices = years_all_options,
+                      selected = default_selected_year,
+                      selectize = TRUE),
+          
+          selectInput(inputId = "municipalitySelector",
+                      label="Custom Grouping",
+                      choices = municipality_choices$all,
+                      selected = municipality_choices$all,
+                      multiple = TRUE,
+                      selectize = FALSE,
+                      size = 10),
+          
           # Generate the navigation menu
           # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
           do.call(sidebarMenu, c(id='sidebar_menu',
@@ -142,19 +158,6 @@ server <- function(input, output, session) {
                 menuSubItem(menu_sub_tabs_text[[tab_name]][j], tabName=menu_sub_tabs_text[[tab_name]][j], selected = select)
               })))
           }))),
-          
-          selectInput(inputId = "municipalitySelector",
-                      label="Custom Grouping",
-                      choices = municipality_choices$all,
-                      selected = municipality_choices$all,
-                      multiple = TRUE,
-                      selectize = FALSE,
-                      size = 10),
-          selectInput(inputId = "data_display_year_selector",
-                      label="Year",
-                      choices = years_all_options,
-                      selected = default_selected_year,
-                      selectize = TRUE),
           
           # Horizontal line ----
           tags$hr(),
@@ -177,6 +180,21 @@ server <- function(input, output, session) {
             isolate(input$userName),
             subtitle = a(icon("usr"), "Logout", href = login.page)
           ),
+          
+          selectInput(inputId = "data_display_year_selector",
+                      label="Year",
+                      choices = years_all_options,
+                      selected = default_selected_year,
+                      selectize = TRUE),
+          
+          selectInput(inputId = "municipalitySelector",
+                      label="Custom Grouping",
+                      choices = municipality_choices$all,
+                      selected = municipality_choices$all,
+                      multiple = TRUE,
+                      selectize = FALSE,
+                      size = 10),
+          
           # Generate the navigation menu
           # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
           do.call(sidebarMenu, c(id='sidebar_menu',
@@ -191,20 +209,7 @@ server <- function(input, output, session) {
                                      }
                                      menuSubItem(menu_sub_tabs_text[[tab_name]][j], tabName=menu_sub_tabs_text[[tab_name]][j], selected = select)
                                    })))
-                                 }))),
-          
-          selectInput(inputId = "municipalitySelector",
-                      label="Custom Grouping",
-                      choices = municipality_choices$all,
-                      selected = municipality_choices$all,
-                      multiple = TRUE,
-                      selectize = FALSE,
-                      size = 10),
-          selectInput(inputId = "data_display_year_selector",
-                      label="Year",
-                      choices = years_all_options,
-                      selected = default_selected_year,
-                      selectize = TRUE)
+                                 })))
         )
       }
     }
@@ -212,22 +217,12 @@ server <- function(input, output, session) {
   output$body <- renderUI({
     if (user_input$authenticated == TRUE) {
       fluidRow(
+          h2(textOutput("selected_data_info"), align = "center"),
           downloadButton("exportToExcel", "View in Excel"),
           DTOutput("data"),
           DTOutput("data_stats")
           # actionButton(inputId="saveUserSelectionButton", label ="Save"),
-          #  actionButton(inputId = "save", label = "Save"),
-          
-          # Output: Tabset w/ plot, summary, and table ----
-          #          tabsetPanel(type = "tabs",
-          #                      tabPanel("Data",
-          #                        DTOutput("data"),
-          #                        DTOutput("data_stats")
-          # Button
-          #downloadButton(export_filename, "Download"),
-          #                      ),
-          #                      tabPanel("Summary", verbatimTextOutput("summary"))
-          #          )
+          #  actionButton(inputId = "save", label = "Save")
       )
     } 
     else {
@@ -247,6 +242,18 @@ server <- function(input, output, session) {
       municipal_data$data_frame_building_permit_activity_by_year <- data_frames_list[[5]]
     }
   }
+  
+  get_selected_data_info <- function() {
+    selected_sub_tab <- input$sidebar_menu
+    if (is.null(input$sidebar_menu)) {
+      selected_sub_tab <- SUB_TAB_POPULATION
+    }
+    paste(input$data_display_year_selector, selected_sub_tab)
+  }
+  
+  output$selected_data_info <- renderText({ 
+    get_selected_data_info()
+  })
   
   #
   # UI event handling
@@ -334,6 +341,8 @@ server <- function(input, output, session) {
     }
     data_frames_list <- filter_and_display(output, data_frame_to_display, selected_sub_tab)
     set_municipal_data(data_frames_list, only_filtered = T)
+    
+    shinyjs::runjs("window.scrollTo(0, 0)")
   })
 
   # Button to save currently selected municipalities

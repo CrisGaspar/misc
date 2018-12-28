@@ -102,8 +102,7 @@ call_API_municipalities_helper <- function(endpoint, method = httr::GET, municip
   }
   else if (identical(method, httr::POST)) {
     if (!is.null(municipalities)) {
-      # Valid parameters
-      # Pass municipalities in the body as JSON
+      # Valid parameters. Pass municipalities in the body as JSON
       requestBody <- paste('{"municipalities":', toJSON(municipalities),'}')
     }
     else {
