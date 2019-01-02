@@ -225,7 +225,16 @@ renderDT_formatted <- function(data_frame) {
            selection = 'none', server = F)
 }
 
-filter_and_display <- function(output, data_frame, selected_sub_tab) {
+prepend_year <- function(column_name, year) {
+  if (column_name != COLUMN_NAME_MUNICIPALITY) {
+    paste(year, column_name)
+  }
+  else {
+    column_name
+  }
+}
+
+filter_and_display <- function(output, data_frame, selected_sub_tab, selected_year) {
   if (!is.null(data_frame)) {
     if (selected_sub_tab == SUB_TAB_POPULATION_BY_YEAR 
         || selected_sub_tab == SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR) {
@@ -235,6 +244,7 @@ filter_and_display <- function(output, data_frame, selected_sub_tab) {
     else {
       filter_columns <- get_filter_columns(selected_sub_tab)
       filtered_data_frame <- filter_data_frame(data_frame, filter_columns)
+      colnames(filtered_data_frame) <- lapply(colnames(filtered_data_frame), prepend_year, year = selected_year)
     }
 
     # Render data and stats tables in UI
@@ -337,7 +347,7 @@ refresh_data_display <- function(output, selected_sub_tab, municipalities=list()
     data_frame_to_display <- data_frame_building_permit_activity_by_year
   }
 
-  data_frames_list <- filter_and_display(output, data_frame_to_display, selected_sub_tab)
+  data_frames_list <- filter_and_display(output, data_frame_to_display, selected_sub_tab, year)
   filtered_data_frame <- data_frames_list[[1]]
   filtered_data_frame_stats <- data_frames_list[[2]]
   

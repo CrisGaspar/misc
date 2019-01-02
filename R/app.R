@@ -288,8 +288,13 @@ server <- function(input, output, session) {
     # Read only datasheets we wanted/expected and send to API to save
     data_sheets <- read_excel_sheets(filename, data_set_names)
     result <- call_API_data_endpoint(data_frames = data_sheets, year = input$data_load_year_selector)
-
+    
     if (result$success == "true") {
+      showModal(modalDialog(
+        title = "Successfully Uploaded Data to Server",
+        easyClose = TRUE,
+        footer = NULL))
+    
       # Refresh data frame filtered to selected municipalities and selected year
       # Store data_frame so that it's accessible to the observeEvent code that is triggered 
       # when another sub-tab is selected in the UI
@@ -339,7 +344,7 @@ server <- function(input, output, session) {
     {
       data_frame_to_display <- municipal_data$data_frame_building_permit_activity_by_year
     }
-    data_frames_list <- filter_and_display(output, data_frame_to_display, selected_sub_tab)
+    data_frames_list <- filter_and_display(output, data_frame_to_display, selected_sub_tab, selected_year = input$data_load_year_selector)
     set_municipal_data(data_frames_list, only_filtered = T)
     
     shinyjs::runjs("window.scrollTo(0, 0)")

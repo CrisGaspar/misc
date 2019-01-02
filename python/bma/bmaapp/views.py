@@ -165,29 +165,36 @@ def municipality_data(request):
                                             column_name, sheet_name, year_to_use, year))
                             data_entry[property_name] = clean(val)
 
-            # Now save each MunicipalityData to DB
+            # Go through each received municipality data
             for (municipality, data_year), data in data_by_municipality_and_year.items():
-                db_data = MunicipalityData()
-                db_data.load(data)
+                # First get the data stored in DB for that municipality and year (if any)
+                dataset_for_year = MunicipalityData.objects.filter(year=data_year).filter(name=municipality)
 
-                if data_year != year:
-                    # Case: data where the column name indicates a year different from the user-specified year parameter
-                    try:
-                        # We will only insert the first time. we do not update if (municipality, year) row already exists
-                        # so that we don't erase data because most of the other fields are for the different user-specified year parameter
-                        # so they will empty/NA for this column specified year
-                        db_data.save(force_insert=True)
-                    except IntegrityError as e:
-                        # One of the cases this exception is thrown is if for this different year we already have a
-                        # (municipality, year) row.  In this case do not update.
-                        if not ERROR_DB_MUNICIPALITY_DATA_INSERT_UNIQUE_CONSTRAINT_FAIL in str(e):
-                            # log only if exception text is different unique constraint as expected
-                            logging.error(
-                                "Exception raised when saving the DB entry for {} {}".format(municipality, data_year))
-                            logging.error(e, exc_info=True)
-                else:
-                    # given-year data: fully overwrite corresponding DB model objects
-                    db_data.save()
+                existing_db_data = MunicipalityData()
+                new_db_data = MunicipalityData()
+                data_dict = {}
+
+                for data_entry in dataset_for_year:
+                    # should be at most 1 entry
+                    existing_db_data = data_entry
+
+                existing_db_data.store(data_dict)
+
+                # Add new data to existing data
+                for key, value in data.items():
+                    if value is not None:
+                        data_dict[key] = value
+
+                # Load the dictionary into municipality data object
+                new_db_data.load(data_dict)
+
+                try:
+                    # store to db. overwrite existing entry
+                    new_db_data.save()
+                except Exception as e:
+                    logging.error(
+                        "Exception raised when saving the DB entry for {} {}".format(municipality, data_year))
+                    logging.error(e, exc_info=True)
         except json.JSONDecodeError as e:
             return error_response(ERROR_JSON_DECODING_FAILED)
         except Exception as e:
@@ -234,7 +241,7 @@ def municipality_data_by_years(request):
 #-----------------------------------------------------------------------------------------------------------------------
 
 def get_municipality_data(municipalities_list, year):
-    dataset_for_year = MunicipalityData.objects.filter(year=year).filter(name__in=municipalities_list)
+    dataset_for_year = MunicipalityData.objects.filter(year=year).filter(name__in=municipalities_list).order_by('name')
 
     # Store data as list of dictionaries: one per each entry
     data = []
@@ -254,7 +261,7 @@ def create_empty_municipal_data_entry(municipality, years, data_columns):
 
 
 def get_municipality_data_by_years(municipalities_list, years, data_columns):
-    dataset = MunicipalityData.objects.filter(year__in=years).filter(name__in=municipalities_list).order_by('year')
+    dataset = MunicipalityData.objects.filter(year__in=years).filter(name__in=municipalities_list).order_by('year', 'name')
 
     # Store data as list of dictionaries: one per each entry
     data = []
