@@ -284,6 +284,8 @@ def get_municipality_data_by_years(municipalities_list, years, data_columns):
 
     for name, data_dict in data_dict_by_municipality.items():
         data.append(data_dict)
+
+    print(data)
     return success_response({'data': data})
 
 # PRE condition: user logged in
@@ -329,13 +331,20 @@ def split_to_year_and_property_name(str, default_year, sheet_name):
     property_name = str
     year_to_use = default_year
 
-    if len(str) >= 5 and str[4] == ' ':
+    if len(str) >= 5:
         try:
             year = int(str[0:4])
             if MIN_YEAR <= year <= MAX_YEAR:
-                # skip the whitespace
-                property_name = str[5:]
-                year_to_use = year
+                if str[4] == '-':
+                    year = int(str[5:9])
+                    if MIN_YEAR <= year <= MAX_YEAR:
+                        # skip the whitespace
+                        property_name = str[10:]
+                        year_to_use = year
+                elif str[4] == ' ':
+                    # skip the whitespace
+                    property_name = str[5:]
+                    year_to_use = year
         except ValueError as err:
             # str does not start with year
             pass

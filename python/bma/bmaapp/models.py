@@ -16,8 +16,6 @@ COLUMN_NAME_YEAR = 'Year'
 COLUMN_NAME_POPULATION_DENSITY = 'Population Density per sq. km.'
 COLUMN_NAME_POPULATION = 'Population'
 COLUMN_NAME_LAND_AREA = 'Land Area km2'
-# TODO: FIX THIS
-# Population increase column name is a range e.g.: 2011-2017
 COLUMN_NAME_POPULATION_INCREASE = 'Population Increase'
 COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA = 'Building Construction Value per Capita'
 COLUMN_NAME_ESTIMATED_AVG_HOUSEHOLD_INCOME = 'Estimated Average Household Income'
@@ -155,7 +153,7 @@ COLUMN_NAME_RECREATION_PROGRAMS = 'Recreation Programs'
 COLUMN_NAME_REC_FAC_GOLF = 'Rec Fac Golf'
 COLUMN_NAME_REC_FACILITIES_OTHER = 'Rec Facilities Other'
 COLUMN_NAME_LIBRARY = 'Library'
-COLUMN_NAME_MUSEUM = 'Museum'
+COLUMN_NAME_MUSEUMS = 'Museums'
 COLUMN_NAME_CULTURAL = 'Cultural'
 COLUMN_NAME_PLANNING = 'Planning'
 COLUMN_NAME_COMM_IND = 'Comm & Ind.'
@@ -617,7 +615,7 @@ class MunicipalityData(models.Model):
         dict[COLUMN_NAME_REC_FAC_GOLF] = self.rec_fac_golf
         dict[COLUMN_NAME_REC_FACILITIES_OTHER] = self.rec_facilities_other
         dict[COLUMN_NAME_LIBRARY] = self.library
-        dict[COLUMN_NAME_MUSEUM] = self.museums
+        dict[COLUMN_NAME_MUSEUMS] = self.museums
         dict[COLUMN_NAME_CULTURAL] = self.cultural
         dict[COLUMN_NAME_PLANNING] = self.planning
         dict[COLUMN_NAME_COMM_IND] = self.comm_and_ind
@@ -785,7 +783,7 @@ class MunicipalityData(models.Model):
         self.rec_fac_golf = dict.get(COLUMN_NAME_REC_FAC_GOLF)
         self.rec_facilities_other = dict.get(COLUMN_NAME_REC_FACILITIES_OTHER)
         self.library = dict.get(COLUMN_NAME_LIBRARY)
-        self.museums = dict.get(COLUMN_NAME_MUSEUM)
+        self.museums = dict.get(COLUMN_NAME_MUSEUMS)
         self.cultural = dict.get(COLUMN_NAME_CULTURAL)
         self.planning = dict.get(COLUMN_NAME_PLANNING)
         self.comm_and_ind = dict.get(COLUMN_NAME_COMM_IND)

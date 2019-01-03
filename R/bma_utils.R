@@ -183,6 +183,15 @@ filter_column_names <- function(column_names, filtering_list) {
         extracted_column_name <- substr(column_name, 6, nchar(column_name))
       }
     }
+    else if (fifth_char == '-') {
+      possible_year_range_start <- strtoi(first_4_chars, base = 10)
+      possible_year_range_end <- strtoi(substr(column_name, 6, 9), base = 10)
+ 
+      if ((!is.na(possible_year_range_start)) && (!is.na(possible_year_range_end))) {
+        extracted_column_name <- substr(column_name, 11, nchar(column_name))
+      }
+    }
+    
     extracted_column_name %in% filtering_list
   }))]
   
@@ -211,16 +220,14 @@ renderDT_formatted <- function(data_frame) {
                             digits = FORMAT_SETTINGS_CURRENCY_DEFAULT$DECIMALS) %>% 
              formatCurrency(filter_column_names(column_names, COLUMNS_CURRENCY_2_DECIMALS), currency = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$SEPARATOR, 
                             digits = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$DECIMALS) %>% 
-             formatCurrency(filter_column_names(column_names, COLUMNS_PERCENT_1_DECIMAL), currency = FORMAT_SETTINGS_PERCENT_1_DECIMAL$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_1_DECIMAL$SEPARATOR, 
-                            digits = FORMAT_SETTINGS_PERCENT_1_DECIMAL$DECIMALS) %>% 
-             formatCurrency(filter_column_names(column_names, COLUMNS_PERCENT_2_DECIMALS), currency = FORMAT_SETTINGS_PERCENT_2_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_2_DECIMALS$SEPARATOR, 
-                            digits = FORMAT_SETTINGS_PERCENT_2_DECIMALS$DECIMALS) %>% 
-             formatCurrency(filter_column_names(column_names, COLUMNS_PERCENT_4_DECIMALS), currency = FORMAT_SETTINGS_PERCENT_4_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_4_DECIMALS$SEPARATOR, 
-                            digits = FORMAT_SETTINGS_PERCENT_4_DECIMALS$DECIMALS) %>% 
-             formatCurrency(filter_column_names(column_names, COLUMNS_PERCENT_5_DECIMALS), currency = FORMAT_SETTINGS_PERCENT_5_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_5_DECIMALS$SEPARATOR, 
-                            digits = FORMAT_SETTINGS_PERCENT_5_DECIMALS$DECIMALS) %>% 
-             formatCurrency(filter_column_names(column_names, COLUMNS_PERCENT_6_DECIMALS), currency = FORMAT_SETTINGS_PERCENT_6_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_PERCENT_6_DECIMALS$SEPARATOR, 
-                            digits = FORMAT_SETTINGS_PERCENT_6_DECIMALS$DECIMALS) %>%
+             formatCurrency(filter_column_names(column_names, COLUMNS_PERCENT_1_DECIMAL), currency = FORMAT_SETTINGS_PERCENT_1_DECIMAL$SYMBOL, before = F, 
+                            mark = FORMAT_SETTINGS_PERCENT_1_DECIMAL$SEPARATOR, digits = FORMAT_SETTINGS_PERCENT_1_DECIMAL$DECIMALS) %>% 
+             formatCurrency(filter_column_names(column_names, COLUMNS_PERCENT_2_DECIMALS), currency = FORMAT_SETTINGS_PERCENT_2_DECIMALS$SYMBOL, before = F,
+                            mark = FORMAT_SETTINGS_PERCENT_2_DECIMALS$SEPARATOR, digits = FORMAT_SETTINGS_PERCENT_2_DECIMALS$DECIMALS) %>% 
+             formatCurrency(filter_column_names(column_names, COLUMNS_PERCENT_4_DECIMALS), currency = FORMAT_SETTINGS_PERCENT_4_DECIMALS$SYMBOL, before = F,
+                            mark = FORMAT_SETTINGS_PERCENT_4_DECIMALS$SEPARATOR, digits = FORMAT_SETTINGS_PERCENT_4_DECIMALS$DECIMALS) %>% 
+             formatCurrency(filter_column_names(column_names, COLUMNS_PERCENT_6_DECIMALS), currency = FORMAT_SETTINGS_PERCENT_6_DECIMALS$SYMBOL, before = F,
+                            mark = FORMAT_SETTINGS_PERCENT_6_DECIMALS$SEPARATOR, digits = FORMAT_SETTINGS_PERCENT_6_DECIMALS$DECIMALS) %>%
              formatStyle(columns = column_names, width='5px'), 
            selection = 'none', server = F)
 }
@@ -234,7 +241,7 @@ prepend_year <- function(column_name, year) {
   }
 }
 
-filter_and_display <- function(output, data_frame, selected_sub_tab, selected_year) {
+filter_and_display <- function(output, data_frame, selected_sub_tab, selected_year, population_data_frame = NULL, building_construction_data_frame = NULL) {
   if (!is.null(data_frame)) {
     if (selected_sub_tab == SUB_TAB_POPULATION_BY_YEAR 
         || selected_sub_tab == SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR) {
@@ -244,7 +251,26 @@ filter_and_display <- function(output, data_frame, selected_sub_tab, selected_ye
     else {
       filter_columns <- get_filter_columns(selected_sub_tab)
       filtered_data_frame <- filter_data_frame(data_frame, filter_columns)
+      
+      # prepend-year in front of column names
       colnames(filtered_data_frame) <- lapply(colnames(filtered_data_frame), prepend_year, year = selected_year)
+      
+      if (selected_sub_tab == SUB_TAB_POPULATION) {
+        # prepend population-by-year columns AND update the other 2 previous year columns
+        filtered_data_frame <- merge(population_data_frame, filtered_data_frame, by = "Municipality", all.y = TRUE)
+        previous_year_columns_data_frame <- get_municipality_data(municipalities = filtered_data_frame[COLUMN_NAME_MUNICIPALITY], 
+                                                                  year = selected_year, population_by_year = F, 
+                                                                  by_year_columns = list(COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA,
+                                                                                         COLUMN_NAME_ESTIMATED_AVG_HOUSEHOLD_INCOME), 
+                                                                  previous_year = T)
+        print(previous_year_columns_data_frame)
+        filtered_data_frame <- merge(filtered_data_frame, previous_year_columns_data_frame, by = "Municipality", all.x = TRUE)
+        
+        # update population increase column name
+        population_increase_old_name <- paste(selected_year, COLUMN_NAME_POPULATION_INCREASE)
+        population_increase_new_name <- paste("2011-", population_increase_old_name, sep = "")
+        colnames(filtered_data_frame)[colnames(filtered_data_frame) == population_increase_old_name] <- population_increase_new_name
+      }
     }
 
     # Render data and stats tables in UI
@@ -257,7 +283,7 @@ filter_and_display <- function(output, data_frame, selected_sub_tab, selected_ye
   }
 } 
 
-get_empty_data_frame <- function(years = NULL, by_year_columns = NULL) {
+create_empty_data_frame <- function(years = NULL, by_year_columns = NULL) {
   if (!is.null(years) && !is.null(by_year_columns)) {
     # empty dataframes with columns having all years and by_year_columns combinations. Plus Municipality as the 1st column
     num_columns <- length(years) * length(by_year_columns) + 1
@@ -278,19 +304,25 @@ get_empty_data_frame <- function(years = NULL, by_year_columns = NULL) {
   df
 }
 
-get_municipality_data <- function(municipalities, year, population_by_year = F, by_year_columns = NULL) {
+get_municipality_data <- function(municipalities, year, population_by_year = F, by_year_columns = NULL, previous_year = F) {
   if (is.null(by_year_columns) && !population_by_year) {
     # Get data frame filtered to selected municipalities and selected year
     result <- call_API_data_endpoint(municipalities = municipalities, year = year)
     years = NULL
   }
   else {
-    years = list()
-    if (population_by_year) {
-      years = get_population_years(year)
+    years <- list()
+    if (previous_year) {
+      year_num <- as.numeric(year)
+      years <- list(year_num - 1)
     }
-    else if (!is.null(by_year_columns)){
-      years = get_recent_years(year)
+    else {
+      if (population_by_year) {
+        years <- get_population_years(year)
+      }
+      else if (!is.null(by_year_columns)){
+        years <- get_recent_years(year)
+      }
     }
 
     # Get by-year data for selected municipalities, specific years and specified colum name 
@@ -298,7 +330,7 @@ get_municipality_data <- function(municipalities, year, population_by_year = F, 
   }
     
   if (result$success == "false") {
-    data_frame <- get_empty_data_frame(years = years, by_year_columns = by_year_columns)
+    data_frame <- create_empty_data_frame(years = years, by_year_columns = by_year_columns)
     
     showModal(modalDialog(
       title = "Failed to Get Data",
@@ -309,7 +341,7 @@ get_municipality_data <- function(municipalities, year, population_by_year = F, 
   else if (is.null(result$data) || length(result$data) == 0 || result$data == "[]") {
     print(paste("No Data Found For Selected Year:", year, "or Years: ", years, "and Selected Municipalities: ", municipalities, 
                 " Error message from data server: ", result$error_message))
-    data_frame <- get_empty_data_frame(years = years, by_year_columns = by_year_columns)
+    data_frame <- create_empty_data_frame(years = years, by_year_columns = by_year_columns)
   }
   else {
     data_frame <- result$data
@@ -347,7 +379,8 @@ refresh_data_display <- function(output, selected_sub_tab, municipalities=list()
     data_frame_to_display <- data_frame_building_permit_activity_by_year
   }
 
-  data_frames_list <- filter_and_display(output, data_frame_to_display, selected_sub_tab, year)
+  data_frames_list <- filter_and_display(output, data_frame_to_display, selected_sub_tab, year, data_frame_population_by_year, 
+                                         data_frame_building_permit_activity_by_year)
   filtered_data_frame <- data_frames_list[[1]]
   filtered_data_frame_stats <- data_frames_list[[2]]
   

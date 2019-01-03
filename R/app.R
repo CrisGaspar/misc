@@ -243,12 +243,12 @@ server <- function(input, output, session) {
     }
   }
   
-  get_selected_data_info <- function() {
+  get_selected_data_info <- function(separator = " ") {
     selected_sub_tab <- input$sidebar_menu
     if (is.null(input$sidebar_menu)) {
       selected_sub_tab <- SUB_TAB_POPULATION
     }
-    paste(input$data_display_year_selector, selected_sub_tab)
+    paste(input$data_display_year_selector, selected_sub_tab, sep = separator)
   }
   
   output$selected_data_info <- renderText({ 
@@ -337,6 +337,7 @@ server <- function(input, output, session) {
     selected_sub_tab <- input$sidebar_menu
     
     data_frame_to_display <- municipal_data$data_frame_all_columns
+    
     if (selected_sub_tab == SUB_TAB_POPULATION_BY_YEAR) {
       data_frame_to_display <- municipal_data$data_frame_population_by_year
     }
@@ -344,7 +345,8 @@ server <- function(input, output, session) {
     {
       data_frame_to_display <- municipal_data$data_frame_building_permit_activity_by_year
     }
-    data_frames_list <- filter_and_display(output, data_frame_to_display, selected_sub_tab, selected_year = input$data_load_year_selector)
+    data_frames_list <- filter_and_display(output, data_frame_to_display, selected_sub_tab, selected_year = input$data_load_year_selector,
+                                           municipal_data$data_frame_population_by_year, municipal_data$data_frame_building_permit_activity_by_year)
     set_municipal_data(data_frames_list, only_filtered = T)
     
     shinyjs::runjs("window.scrollTo(0, 0)")
@@ -382,15 +384,15 @@ server <- function(input, output, session) {
   # Data Load
   output$exportToExcel <- downloadHandler(
     filename = function() {
-      paste("data-", Sys.Date(), ".xlsx", sep="")
+      paste("data-", Sys.Date(), "-", get_selected_data_info(), ".xlsx", sep="")
     },
     contentType = "text/xlsx",
     content = function(file) {
       merged_df <- merge_data_frames_vertically_export(municipal_data$data_frame_filtered_columns, 
                                                        municipal_data$data_frame_filtered_columns_stats)
       df_list = list()
-      display_year = input$data_display_year_selector
-      df_list[[display_year]] = merged_df
+      selected_data_info = get_selected_data_info()
+      df_list[[selected_data_info]] = merged_df
       
       write_xlsx(df_list, file)
     }
