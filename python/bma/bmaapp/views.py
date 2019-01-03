@@ -447,3 +447,9 @@ EXPECTED_SHEET_NAMES = [
 
     "Net Expenditures per Capita"
 ]
+
+dataset_for_year = MunicipalityData.objects.filter(year="2018").filter(name="Barrie")
+for entry in dataset_for_year:
+    dict = {}
+    entry.store(dict)
+    print(dict)
