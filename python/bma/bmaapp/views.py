@@ -141,7 +141,7 @@ def municipality_data(request):
                     elif not municipalities:
                         # Municipalities has to be 1st column in sheet
                         return error_response(
-                            "First column in sheet {} is {}. All sheets must have Municipalities as 1st column".format(
+                            "First column in sheet {} is {}. All sheets must have Municipalities as first column".format(
                                 sheet_name, column_name))
                     else:
                         (property_name, year_to_use) = split_to_year_and_property_name(column_name, year, sheet_name)
@@ -161,7 +161,7 @@ def municipality_data(request):
                                     data_by_municipality_and_year[tuple_key] = data_entry
                                 else:
                                     return error_response(
-                                        "Column {} in sheet {} is for future year {} compared to year for the rest of the data ".format(
+                                        "Column {} in sheet {} is for future year {} while the data upload is for year {}".format(
                                             column_name, sheet_name, year_to_use, year))
                             data_entry[property_name] = clean(val)
 
@@ -180,6 +180,9 @@ def municipality_data(request):
 
                 existing_db_data.store(data_dict)
 
+                if municipality == 'Barrie' and data_year == 2017:
+                    print("existing_db: {} data: {}".format(data_dict, data))
+
                 # Add new data to existing data
                 for key, value in data.items():
                     if value is not None:
@@ -187,6 +190,9 @@ def municipality_data(request):
 
                 # Load the dictionary into municipality data object
                 new_db_data.load(data_dict)
+
+                if municipality == 'Barrie' and data_year == 2017:
+                    print("new_db: {}".format(data_dict))
 
                 try:
                     # store to db. overwrite existing entry
@@ -251,11 +257,14 @@ def get_municipality_data(municipalities_list, year):
         data.append(data_dict)
     return success_response({'data': data})
 
+def get_column_name_with_year(name, year):
+    return str(year) + " " + name
+
 def create_empty_municipal_data_entry(municipality, years, data_columns):
     municipality_entry = { COLUMN_NAME_MUNICIPALITY: municipality }
     for column_name in data_columns:
         for year in years:
-            column_name_with_year = str(year) + " " + column_name
+            column_name_with_year = get_column_name_with_year(column_name, year)
             municipality_entry[column_name_with_year] = None
     return municipality_entry
 
@@ -279,13 +288,12 @@ def get_municipality_data_by_years(municipalities_list, years, data_columns):
         year = data_entry.year
 
         for column_name in data_columns:
-            column_name_with_year = str(year) + " " + column_name
+            column_name_with_year = get_column_name_with_year(column_name, year)
             municipality_entry[column_name_with_year] = data_entry.get_column_value(column_name)
 
     for name, data_dict in data_dict_by_municipality.items():
         data.append(data_dict)
 
-    print(data)
     return success_response({'data': data})
 
 # PRE condition: user logged in

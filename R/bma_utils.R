@@ -256,14 +256,16 @@ filter_and_display <- function(output, data_frame, selected_sub_tab, selected_ye
       colnames(filtered_data_frame) <- lapply(colnames(filtered_data_frame), prepend_year, year = selected_year)
       
       if (selected_sub_tab == SUB_TAB_POPULATION) {
-        # prepend population-by-year columns AND update the other 2 previous year columns
+        # prepend population-by-year columns
         filtered_data_frame <- merge(population_data_frame, filtered_data_frame, by = "Municipality", all.y = TRUE)
-        previous_year_columns_data_frame <- get_municipality_data(municipalities = filtered_data_frame[COLUMN_NAME_MUNICIPALITY], 
+       
+        # get previous year columns
+        previous_year_columns_data_frame <- get_municipality_data(municipalities = as.list(filtered_data_frame[[COLUMN_NAME_MUNICIPALITY]]), 
                                                                   year = selected_year, population_by_year = F, 
                                                                   by_year_columns = list(COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA,
                                                                                          COLUMN_NAME_ESTIMATED_AVG_HOUSEHOLD_INCOME), 
                                                                   previous_year = T)
-        print(previous_year_columns_data_frame)
+      
         filtered_data_frame <- merge(filtered_data_frame, previous_year_columns_data_frame, by = "Municipality", all.x = TRUE)
         
         # update population increase column name
@@ -314,7 +316,7 @@ get_municipality_data <- function(municipalities, year, population_by_year = F, 
     years <- list()
     if (previous_year) {
       year_num <- as.numeric(year)
-      years <- list(year_num - 1)
+      years <- list(as.character(year_num - 1))
     }
     else {
       if (population_by_year) {
@@ -340,7 +342,7 @@ get_municipality_data <- function(municipalities, year, population_by_year = F, 
   }
   else if (is.null(result$data) || length(result$data) == 0 || result$data == "[]") {
     print(paste("No Data Found For Selected Year:", year, "or Years: ", years, "and Selected Municipalities: ", municipalities, 
-                " Error message from data server: ", result$error_message))
+                "\nError message from data server: ", result$error_message))
     data_frame <- create_empty_data_frame(years = years, by_year_columns = by_year_columns)
   }
   else {
