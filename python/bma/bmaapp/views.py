@@ -14,7 +14,7 @@ import simplejson as json
 import logging
 import re
 
-from bmaapp.models import EndUser, Municipality, MunicipalityData
+from bmaapp.models import EndUser, Municipality, MunicipalityData, MunicipalityGroup
 from bmaapp.models import COLUMN_NAME_MUNICIPALITY, COLUMN_NAME_MULTI_RESIDENTIAL, COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL
 from bmaapp.models import COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX, \
     COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA
@@ -61,8 +61,33 @@ def all_municipalities(request):
                 municipality_list.append(municipality)
             municipality_list = list(sorted(set(municipality_list)))
             return success_response({'municipalities': municipality_list})
-        except Municipality.DoesNotExist:
+        except MunicipalityData.DoesNotExist:
             return success_response({'municipalities': []})
+
+    return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
+
+def municipality_groups(request):
+    if request.user is None or not request.user.is_authenticated:
+        return error_response(ERROR_USER_NOT_AUTHENTICATED)
+
+    if request.method == 'GET':
+        try:
+            groups_from_db = MunicipalityGroup.objects.all()
+            groups_dict = {}
+            for group_entry in groups_from_db:
+                key = group_entry.group_name
+                value = group_entry.municipality_name
+                # get existing group entry or empty list if none
+                municipality_list = groups_dict.setdefault(key, [])
+                municipality_list.append(value)
+
+             # sort each municipality list
+            for group_name, municipality_list in groups_dict.items():
+                municipality_list.sort
+            print(groups_dict)
+            return success_response({'groups': groups_dict})
+        except Municipality.DoesNotExist:
+            return success_response({'groups': {}})
 
     return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
 
@@ -442,16 +467,17 @@ EXPECTED_SHEET_NAMES = [
     "Net Expenditures per Capita"
 ]
 
-from django.contrib.auth.models import User
 import pandas as pd
-creds_filename = "test.csv"
+filename = "2018_tier_groups.csv"
 
-def create_users(file):
+def create_groups(file):
     df = pd.read_csv(file, header = None)
     for index, row in df.iterrows():
-        current_username = row[0]
-        current_password = row[1]
-        user = User.objects.create_user(username=current_username,
-                                        password=current_password)
+        group_name = row[0]
+        municipality_name = row[1]
+        group = MunicipalityGroup()
+        group.group_name = group_name
+        group.muncipality_name = municipality_name
+        group.save()
 
-create_users(creds_filename)
+create_groups(filename)

@@ -175,6 +175,10 @@ class Municipality(models.Model):
     study_location = models.CharField(max_length=default_max_string_length, null=True)
     population_band = models.CharField(max_length=default_max_string_length, null=True)
 
+class MunicipalityGroup(models.Model):
+    group_name = models.CharField(max_length=default_max_string_length, null=True)
+    muncipality_name = models.CharField(max_length=default_max_string_length, null=True)
+
 
 class MunicipalityData(models.Model):
     # NOTE: Django does not allow a primary key with multiple columns despite the fact that mysql DB
