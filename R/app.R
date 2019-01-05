@@ -136,7 +136,7 @@ server <- function(input, output, session) {
                       selectize = TRUE),
           
           selectInput(inputId = "municipalitySelector",
-                      label="Custom Grouping",
+                      label="All Municipalities",
                       choices = municipality_choices$all,
                       selected = municipality_choices$all,
                       multiple = TRUE,
@@ -188,7 +188,7 @@ server <- function(input, output, session) {
                       selectize = TRUE),
           
           selectInput(inputId = "municipalitySelector",
-                      label="Custom Grouping",
+                      label="All Municipalities",
                       choices = municipality_choices$all,
                       selected = municipality_choices$all,
                       multiple = TRUE,
