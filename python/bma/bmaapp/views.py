@@ -180,9 +180,6 @@ def municipality_data(request):
 
                 existing_db_data.store(data_dict)
 
-                if municipality == 'Barrie' and data_year == 2017:
-                    print("existing_db: {} data: {}".format(data_dict, data))
-
                 # Add new data to existing data
                 for key, value in data.items():
                     if value is not None:
@@ -190,9 +187,6 @@ def municipality_data(request):
 
                 # Load the dictionary into municipality data object
                 new_db_data.load(data_dict)
-
-                if municipality == 'Barrie' and data_year == 2017:
-                    print("new_db: {}".format(data_dict))
 
                 try:
                     # store to db. overwrite existing entry
@@ -448,8 +442,16 @@ EXPECTED_SHEET_NAMES = [
     "Net Expenditures per Capita"
 ]
 
-dataset_for_year = MunicipalityData.objects.filter(year="2018").filter(name="Barrie")
-for entry in dataset_for_year:
-    dict = {}
-    entry.store(dict)
-    print(dict)
+from django.contrib.auth.models import User
+import pandas as pd
+creds_filename = "test.csv"
+
+def create_users(file):
+    df = pd.read_csv(file, header = None)
+    for index, row in df.iterrows():
+        current_username = row[0]
+        current_password = row[1]
+        user = User.objects.create_user(username=current_username,
+                                        password=current_password)
+
+create_users(creds_filename)
