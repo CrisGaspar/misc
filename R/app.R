@@ -338,10 +338,7 @@ server <- function(input, output, session) {
     
     data_frame_to_display <- municipal_data$data_frame_all_columns
     
-    if (selected_sub_tab == SUB_TAB_POPULATION_BY_YEAR) {
-      data_frame_to_display <- municipal_data$data_frame_population_by_year
-    }
-    else if (selected_sub_tab == SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR)
+    if (selected_sub_tab == SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR)
     {
       data_frame_to_display <- municipal_data$data_frame_building_permit_activity_by_year
     }

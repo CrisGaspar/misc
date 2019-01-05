@@ -33,8 +33,7 @@ convert_to_numeric <- function(data_frame) {
   data_frame
 }
 
-# NOTE: Caller must not call get_filter_columns if selected_sub_tab is one of the special by-year tabs like SUB_TAB_POPULATION_BY_YEAR 
-# or SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR
+# NOTE: Caller must not call get_filter_columns if selected_sub_tab is one of the special by-year tabs like SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR
 get_filter_columns <- function(selected_sub_tab) {
   column_names <- column_names_per_sub_tab_selection[[selected_sub_tab]]
   column_names <- append(list(COLUMN_NAME_MUNICIPALITY), column_names) 
@@ -243,8 +242,7 @@ prepend_year <- function(column_name, year) {
 
 filter_and_display <- function(output, data_frame, selected_sub_tab, selected_year, population_data_frame = NULL, building_construction_data_frame = NULL) {
   if (!is.null(data_frame)) {
-    if (selected_sub_tab == SUB_TAB_POPULATION_BY_YEAR 
-        || selected_sub_tab == SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR) {
+    if (selected_sub_tab == SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR) {
       # no need to filter. use all columns
       filtered_data_frame <- data_frame
     }
@@ -373,10 +371,7 @@ refresh_data_display <- function(output, selected_sub_tab, municipalities=list()
                                                                        by_year_columns = list(COLUMN_NAME_BUILDING_CONSTRUCTION_VALUE, 
                                                                                               COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX))
   data_frame_to_display <- data_frame
-  if (selected_sub_tab == SUB_TAB_POPULATION_BY_YEAR) {
-    data_frame_to_display <- data_frame_population_by_year
-  }
-  else if (selected_sub_tab == SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR)
+  if (selected_sub_tab == SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR)
   {
     data_frame_to_display <- data_frame_building_permit_activity_by_year
   }

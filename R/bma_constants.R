@@ -44,7 +44,6 @@ recent_years <- get_recent_years(default_selected_year)
 population_years <- get_population_years(default_selected_year)
 
 SUB_TAB_POPULATION <- "Population"
-SUB_TAB_POPULATION_BY_YEAR <- "Population by Year"
 SUB_TAB_DENSITY_LAND_AREA <- "Density and Land Area"
 SUB_TAB_ASSESSMENT_INFO <- "Assessment Information"
 SUB_TAB_ASSESSMENT_COMPOSITION <- "Assessment Composition"
@@ -274,7 +273,7 @@ COLUMN_NAME_CEMETERIES = 'Cemeteries'
 SHEET_NET_EXPENDITURES_PER_CAPITA <- "Net Expenditures per Capita"
 
 menu_sub_tabs_text <- list(
-  "Socio Economic Indicators" = list(SUB_TAB_POPULATION, SUB_TAB_POPULATION_BY_YEAR, SUB_TAB_DENSITY_LAND_AREA, SUB_TAB_ASSESSMENT_INFO, 
+  "Socio Economic Indicators" = list(SUB_TAB_POPULATION, SUB_TAB_DENSITY_LAND_AREA, SUB_TAB_ASSESSMENT_INFO, 
                                      SUB_TAB_ASSESSMENT_COMPOSITION, SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR),
   
   "Municipal Financial Indicators" = list(SUB_TAB_TOTAL_LEYY, SUB_TAB_UPPER_TIER_LEVY, SUB_TAB_LOWER_TIER_LEVY, SUB_TAB_TAX_ASSET_CONSUMPTION_RATIO, SUB_TAB_FINANCIAL_POSITION_PER_CAPITA,
@@ -310,7 +309,6 @@ menu_sub_tabs_text[[SHEET_NET_EXPENDITURES_PER_CAPITA]] = list(
     SUB_TAB_NET_EXPENDITURES_PER_CAPITA_AMBULANCE, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CEMETERIES)
 
 data_set_names <- list.flatten(menu_sub_tabs_text)
-data_set_exclusions <- list(SUB_TAB_POPULATION_BY_YEAR)
 data_set_percent_character_exclusions <-list(SUB_TAB_TAX_DIS_RES_PERCENT_OSR, SUB_TAB_TAX_RESERVES_PERCENT_TAXATION, SUB_TAB_TAX_DEBT_INT_PERCENT_OSR, 
                                             SUB_TAB_TAX_DEBT_CHARGES_PERCENT_OSR, SUB_TAB_TAX_RECEIVABLE_PERCENT_TAX, SUB_TAB_WATER_RES_PERCENT_OSR, 
                                             SUB_TAB_WASTE_WATER_RES_PERCENT_OSR, SUB_TAB_WATER_RES_PERCENT_ACUM_AMORT, SUB_TAB_WASTE_WATER_RES_PERCENT_ACUM_AMORT, 
@@ -326,7 +324,7 @@ data_set_and_character_additions <- lapply(data_set_and_character_exclusions, fu
 
 data_set_names <- unique(setdiff(
   list.flatten(list.append(data_set_names, data_set_percent_character_additions, data_set_and_character_additions, SHEET_NET_EXPENDITURES_PER_CAPITA)), 
-  list.flatten(list.append(data_set_exclusions, data_set_percent_character_exclusions, data_set_and_character_exclusions, menu_sub_tabs_text[[SHEET_NET_EXPENDITURES_PER_CAPITA]])))
+  list.flatten(list.append(data_set_percent_character_exclusions, data_set_and_character_exclusions, menu_sub_tabs_text[[SHEET_NET_EXPENDITURES_PER_CAPITA]])))
 )
 
 column_names_per_sub_tab_selection <- list()
