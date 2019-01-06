@@ -82,12 +82,13 @@ def municipality_groups(request):
                 municipality_list.append(value)
 
              # sort each municipality list
+            groups_list = []
             for group_name, municipality_list in groups_dict.items():
                 municipality_list.sort
-            print(groups_dict)
-            return success_response({'groups': groups_dict})
+                groups_list.append({'group_name': group_name, 'municipality_list': municipality_list})
+            return success_response({'groups': groups_list})
         except Municipality.DoesNotExist:
-            return success_response({'groups': {}})
+            return success_response({'groups': []})
 
     return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
 
@@ -468,7 +469,7 @@ EXPECTED_SHEET_NAMES = [
 ]
 
 import pandas as pd
-filename = "2018_tier_groups.csv"
+filename = "2018_pop_groups.csv"
 
 def create_groups(file):
     df = pd.read_csv(file, header = None)
@@ -480,4 +481,4 @@ def create_groups(file):
         group.muncipality_name = municipality_name
         group.save()
 
-create_groups(filename)
+#create_groups(filename)

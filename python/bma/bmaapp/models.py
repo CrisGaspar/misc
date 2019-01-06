@@ -177,7 +177,7 @@ class Municipality(models.Model):
 
 class MunicipalityGroup(models.Model):
     group_name = models.CharField(max_length=default_max_string_length, null=True)
-    muncipality_name = models.CharField(max_length=default_max_string_length, null=True)
+    municipality_name = models.CharField(max_length=default_max_string_length, null=True)
 
 
 class MunicipalityData(models.Model):

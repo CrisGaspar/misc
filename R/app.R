@@ -41,6 +41,7 @@ login <- box(
 #
 server <- function(input, output, session) {
   municipality_choices <- reactiveValues(all = list(), selected = list())
+  municipality_groups <- reactiveValues(all = list(), group_mappings = list())
   
   # To logout back to login page
   login.page = paste(
@@ -77,7 +78,7 @@ server <- function(input, output, session) {
                 result$error_message,
                 easyClose = TRUE,
                 footer = NULL))
-              return
+              return()
             }
             
             municipality_choices$all <- result$municipalities
@@ -91,10 +92,25 @@ server <- function(input, output, session) {
                 result$error_message,
                 easyClose = TRUE,
                 footer = NULL))
-              return
+              return()
             }
-            
             municipality_choices$selected <- result$municipalities
+            
+            # Get list of Custom Municipality Groups
+            result <- call_API_all_municipality_groups_endpoint(method = httr::GET)
+            
+            if (result$success == 'false') {
+              showModal(modalDialog(
+                title = "Failed to get list of municipality groups",
+                result$error_message,
+                easyClose = TRUE,
+                footer = NULL))
+              return()
+            }
+
+            municipality_groups$all <- get_all_group_names(result$groups)
+            municipality_groups$group_mappings <- result$groups
+            
             user_input$error_message <- NULL
           } 
           else {
@@ -138,7 +154,15 @@ server <- function(input, output, session) {
           selectInput(inputId = "municipalitySelector",
                       label="All Municipalities",
                       choices = municipality_choices$all,
-                      selected = municipality_choices$all,
+                      selected = NULL,
+                      multiple = TRUE,
+                      selectize = FALSE,
+                      size = 10),
+          
+          selectInput(inputId = "municipalityGroupSelector",
+                      label="Custom Municipality Groups",
+                      choices = municipality_groups$all,
+                      selected = NULL,
                       multiple = TRUE,
                       selectize = FALSE,
                       size = 10),
@@ -190,10 +214,18 @@ server <- function(input, output, session) {
           selectInput(inputId = "municipalitySelector",
                       label="All Municipalities",
                       choices = municipality_choices$all,
-                      selected = municipality_choices$all,
+                      selected = NULL,
                       multiple = TRUE,
                       selectize = FALSE,
                       size = 10),
+          
+          selectInput(inputId = "municipalityGroupSelector",
+                      label="Custom Municipality Groups",
+                      choices = municipality_groups$all,
+                      selected = NULL,
+                      multiple = TRUE,
+                      selectize = FALSE,
+                      size = 10),          
           
           # Generate the navigation menu
           # Create menu tab i it's subtabs use menu_sub_tabs_text[[i]] for titles
@@ -243,6 +275,41 @@ server <- function(input, output, session) {
     }
   }
   
+  get_selected_municipalities <- function(selectorID = NULL) {
+    if (!is.null(selectorID)) {
+      if (selectorID == "municipalitySelector") {
+        return(input$municipalitySelector)
+      }
+      else if (selectorID == "municipalityGroupSelector") {
+        # find the list of municipalities in this group
+        group_names <- input$municipalityGroupSelector
+        group_mappings <- municipality_groups$group_mappings
+        municipality_list <- get_municipality_list_for_groups(group_mappings, group_names)
+        return(municipality_list)
+      }
+      else {
+        return(NULL)
+      }
+    }
+    
+    # no explicit selector passed in. so try both
+    full_selector_val <- input$municipalitySelector
+
+    if (!is.null(full_selector_val)) {
+      return(full_selector_val)
+    }
+    else if (!is.null(input$municipalityGroupSelector)) {
+      # find the list of municipalities in this group
+      group_names <- input$municipalityGroupSelector
+      group_mappings <- municipality_groups$group_mappings
+      municipality_list <- get_municipality_list_for_groups(group_mappings, group_names)
+      return(municipality_list)
+    }
+    else {
+      return(NULL)
+    }
+  }
+  
   get_selected_data_info <- function(separator = " ") {
     selected_sub_tab <- input$sidebar_menu
     if (is.null(input$sidebar_menu)) {
@@ -254,6 +321,28 @@ server <- function(input, output, session) {
   output$selected_data_info <- renderText({ 
     get_selected_data_info()
   })
+  
+  get_all_group_names <- function(groups_info) {
+    lapply(groups_info, function(group_info) {
+      group_info$group_name
+    })
+  }
+  
+  get_municipality_list_for_groups <- function(groups_info, names) {
+    if (is_single_string(names)) {
+      names <- list(names)
+    }
+    
+    municipality_list <- lapply(groups_info, function(group_info) {
+      if (group_info$group_name %in% names) {
+        return(group_info$municipality_list)
+      }
+    })
+
+    municipality_list <- unique(unlist(municipality_list, recursive=FALSE))
+    municipality_list
+  }
+  
   
   #
   # UI event handling
@@ -298,7 +387,7 @@ server <- function(input, output, session) {
       # Refresh data frame filtered to selected municipalities and selected year
       # Store data_frame so that it's accessible to the observeEvent code that is triggered 
       # when another sub-tab is selected in the UI
-      data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+      data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = get_selected_municipalities(), year = input$data_display_year_selector)
       set_municipal_data(data_frames_list)
     }
     else {
@@ -314,12 +403,39 @@ server <- function(input, output, session) {
   municipal_data <- reactiveValues(data_frame_all_columns = NULL, data_frame_filtered_columns = NULL, data_frame_filtered_columns_stats = NULL, 
                                    data_frame_population_by_year = NULL, data_frame_building_permit_activity_by_year = NULL)
   
-  # Municipality Selection
+  # All municipality Selector 
   observeEvent(input$municipalitySelector, {
+    if (is.null(input$municipalitySelector)) {
+      # got reset due to clicking on municipality group selector. nothing to do
+      return() 
+    }
+    
+    # reset the other municipality selector to null
+    shinyjs::reset("municipalityGroupSelector")
+    
     # Refresh data frame filtered to selected municipalities and selected year
     # Store data_frame so that it's accessible to the observeEvent code that is triggered 
     # when another sub-tab is selected in the UI
-    data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    selected_municipalities <- get_selected_municipalities(selector = "municipalitySelector")
+    data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = selected_municipalities, year = input$data_display_year_selector)
+    set_municipal_data(data_frames_list)
+  })
+  
+  # Municipality group Selector 
+  observeEvent(input$municipalityGroupSelector, {
+    if (is.null(input$municipalityGroupSelector)) {
+      # got reset due to clicking on all municipality selector. nothing to do
+      return() 
+    }
+    
+    # reset the other municipality selector to null
+    shinyjs::reset("municipalitySelector")
+    
+    # Refresh data frame filtered to selected municipalities and selected year
+    # Store data_frame so that it's accessible to the observeEvent code that is triggered 
+    # when another sub-tab is selected in the UI
+    selected_municipalities <- get_selected_municipalities(selector = "municipalityGroupSelector")
+    data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = selected_municipalities, year = input$data_display_year_selector)
     set_municipal_data(data_frames_list)
   })
   
@@ -328,7 +444,7 @@ server <- function(input, output, session) {
     # Refresh data frame filtered to selected municipalities and selected year
     # Store data_frame so that it's accessible to the observeEvent code that is triggered 
     # when another sub-tab is selected in the UI
-    data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = input$municipalitySelector, year = input$data_display_year_selector)
+    data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = get_selected_municipalities(), year = input$data_display_year_selector)
     set_municipal_data(data_frames_list)
   })
  
@@ -353,7 +469,7 @@ server <- function(input, output, session) {
   observeEvent(input$saveUserSelectionButton, {
     tryCatch(
       # Call API to store the selected municipalities
-      result <- call_API_municipalities_endpoint(method = httr::POST, municipalities=input$municipalitySelector),
+      result <- call_API_municipalities_endpoint(method = httr::POST, municipalities=get_selected_municipalities()),
       error = function(err) {
         showModal(modalDialog(
           title = "Failed to Save Settings",

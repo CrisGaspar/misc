@@ -86,6 +86,10 @@ call_API_all_municipalities_endpoint <- function(method = httr::GET, municipalit
   call_API_municipalities_helper(all_municipalities_endpoint, method = method, municipalities = municipalities)
 }
 
+call_API_all_municipality_groups_endpoint <- function(method = httr::GET, municipalities = NULL) {
+  call_API_municipalities_helper(municipality_groups_endpoint, method = method, municipalities = municipalities)
+}
+
 call_API_municipalities_helper <- function(endpoint, method = httr::GET, municipalities = NULL) {
   url <-paste(api_server_url, endpoint, sep="")
   
@@ -126,6 +130,12 @@ call_API_municipalities_helper <- function(endpoint, method = httr::GET, municip
 }
 
 call_API_columns_by_years_endpoint <- function(municipalities, years, by_year_columns) {
+  if (is.null(municipalities)) {
+    result <- list(success = 'true', error_message = kInfoNoInitialMunicipalitySelection, data = NULL)
+    print(result)
+    return(result)
+  }
+  
   url <-paste(api_server_url, columns_by_years_endpoint, sep="")
   method <- httr::POST
   
@@ -152,9 +162,14 @@ call_API_data_endpoint <- function(municipalities = NULL, year = NULL, data_fram
     # POST is called with list of data_frames in JSON format in body
     requestBody <- paste('{"data":',  rjson::toJSON(data_frames), '}')
   }
+  else if (is.null(municipalities)) {
+    result <- list(success = 'true', error_message = kInfoNoInitialMunicipalitySelection, data = NULL)
+    print(result)
+    return(result)
+  }
   else {
     err <- paste("Cannot call API data endpoint because one of the parameters is not valid: year = ",  year, 
-                 " no municicpalities = ", is.null(municipalities) || length(municipalities) == 0, 
+                 " no municipalities = ", is.null(municipalities) || length(municipalities) == 0, 
                  " data_frames is NULL = ", is.null(data_frames))
     result <- list(success = 'false', error_message = err)
     print(result)
@@ -308,7 +323,7 @@ get_municipality_data <- function(municipalities, year, population_by_year = F, 
   if (is.null(by_year_columns) && !population_by_year) {
     # Get data frame filtered to selected municipalities and selected year
     result <- call_API_data_endpoint(municipalities = municipalities, year = year)
-    years = NULL
+    years <- NULL
   }
   else {
     years <- list()

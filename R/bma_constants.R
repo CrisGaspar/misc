@@ -2,6 +2,7 @@ api_server_url <- 'http://localhost:8000/bmaapp/'
 login_endpoint <- 'login'
 municipalities_endpoint <- 'municipalities'
 all_municipalities_endpoint <- 'all_municipalities'
+municipality_groups_endpoint <- 'municipality_groups'
 data_endpoint <- 'data'
 columns_by_years_endpoint <- 'data_subset_by_years'
 
@@ -11,6 +12,7 @@ export_filename <-"bmaExport.xls"
 
 # Errors
 kErrorTitleFailedToLoadData = 'Failed to Load from Excel File'
+kInfoNoInitialMunicipalitySelection = 'No Initial Municipality Selection'
 
 get_recent_years <- function(selected_year) {
   year <- as.numeric(selected_year) 
