@@ -1,6 +1,5 @@
 api_server_url <- 'http://localhost:8000/bmaapp/'
 login_endpoint <- 'login'
-municipalities_endpoint <- 'municipalities'
 all_municipalities_endpoint <- 'all_municipalities'
 municipality_groups_endpoint <- 'municipality_groups'
 data_endpoint <- 'data'

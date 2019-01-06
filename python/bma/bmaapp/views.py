@@ -467,18 +467,3 @@ EXPECTED_SHEET_NAMES = [
 
     "Net Expenditures per Capita"
 ]
-
-import pandas as pd
-filename = "2018_pop_groups.csv"
-
-def create_groups(file):
-    df = pd.read_csv(file, header = None)
-    for index, row in df.iterrows():
-        group_name = row[0]
-        municipality_name = row[1]
-        group = MunicipalityGroup()
-        group.group_name = group_name
-        group.muncipality_name = municipality_name
-        group.save()
-
-#create_groups(filename)

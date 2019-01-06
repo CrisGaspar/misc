@@ -40,7 +40,7 @@ login <- box(
 # Server function sets up how the UI works
 #
 server <- function(input, output, session) {
-  municipality_choices <- reactiveValues(all = list(), selected = list())
+  municipality_choices <- reactiveValues(all = list())
   municipality_groups <- reactiveValues(all = list(), group_mappings = list())
   
   # To logout back to login page
@@ -82,19 +82,6 @@ server <- function(input, output, session) {
             }
             
             municipality_choices$all <- result$municipalities
-            
-            # Get municipalities subset preferred by current user
-            result <- call_API_municipalities_endpoint(method = httr::GET)
-            
-            if (result$success == 'false') {
-              showModal(modalDialog(
-                title = "Failed to get your preferred list of municipalities",
-                result$error_message,
-                easyClose = TRUE,
-                footer = NULL))
-              return()
-            }
-            municipality_choices$selected <- result$municipalities
             
             # Get list of Custom Municipality Groups
             result <- call_API_all_municipality_groups_endpoint(method = httr::GET)
@@ -154,7 +141,7 @@ server <- function(input, output, session) {
           selectInput(inputId = "municipalitySelector",
                       label="All Municipalities",
                       choices = municipality_choices$all,
-                      selected = NULL,
+                      selected = municipality_choices$all,
                       multiple = TRUE,
                       selectize = FALSE,
                       size = 10),
@@ -214,7 +201,7 @@ server <- function(input, output, session) {
           selectInput(inputId = "municipalitySelector",
                       label="All Municipalities",
                       choices = municipality_choices$all,
-                      selected = NULL,
+                      selected = municipality_choices$all,
                       multiple = TRUE,
                       selectize = FALSE,
                       size = 10),
@@ -458,40 +445,12 @@ server <- function(input, output, session) {
     {
       data_frame_to_display <- municipal_data$data_frame_building_permit_activity_by_year
     }
-    data_frames_list <- filter_and_display(output, data_frame_to_display, selected_sub_tab, selected_year = input$data_load_year_selector,
+
+    data_frames_list <- filter_and_display(output, data_frame_to_display, selected_sub_tab, selected_year = input$data_display_year_selector,
                                            municipal_data$data_frame_population_by_year, municipal_data$data_frame_building_permit_activity_by_year)
     set_municipal_data(data_frames_list, only_filtered = T)
     
     shinyjs::runjs("window.scrollTo(0, 0)")
-  })
-
-  # Button to save currently selected municipalities
-  observeEvent(input$saveUserSelectionButton, {
-    tryCatch(
-      # Call API to store the selected municipalities
-      result <- call_API_municipalities_endpoint(method = httr::POST, municipalities=get_selected_municipalities()),
-      error = function(err) {
-        showModal(modalDialog(
-          title = "Failed to Save Settings",
-          err,
-          easyClose = TRUE,
-          footer = NULL))
-      }
-    )
-
-    if (result$success == "true") {
-      showModal(modalDialog(
-        title = "Successfully Saved Settings",
-        easyClose = TRUE,
-        footer = NULL))
-    }
-    else {
-      showModal(modalDialog(
-        title = "Failed to Save Settings",
-        result$error_message,
-        easyClose = TRUE,
-        footer = NULL))
-    }
   })
 
   # Data Load

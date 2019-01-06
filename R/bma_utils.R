@@ -78,10 +78,6 @@ call_login_endpoint <- function(userid, password) {
   call_success_final <- fromJSON(call_success_text)
 }
 
-call_API_municipalities_endpoint <- function(method = httr::GET, municipalities = NULL) {
-  call_API_municipalities_helper(municipalities_endpoint, method = method, municipalities = municipalities)
-}
-
 call_API_all_municipalities_endpoint <- function(method = httr::GET, municipalities = NULL) {
   call_API_municipalities_helper(all_municipalities_endpoint, method = method, municipalities = municipalities)
 }
@@ -320,6 +316,7 @@ create_empty_data_frame <- function(years = NULL, by_year_columns = NULL) {
 }
 
 get_municipality_data <- function(municipalities, year, population_by_year = F, by_year_columns = NULL, previous_year = F) {
+
   if (is.null(by_year_columns) && !population_by_year) {
     # Get data frame filtered to selected municipalities and selected year
     result <- call_API_data_endpoint(municipalities = municipalities, year = year)
