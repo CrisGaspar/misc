@@ -236,7 +236,8 @@ server <- function(input, output, session) {
   output$body <- renderUI({
     if (user_input$authenticated == TRUE) {
       fluidRow(
-          h2(textOutput("selected_data_info"), align = "center"),
+          h3(textOutput("selected_data_info"), align = "center"),
+          h3(textOutput("selected_municipality_group_info"), align = "center"),
           downloadButton("exportToExcel", "View in Excel"),
           DTOutput("data"),
           DTOutput("data_stats")
@@ -302,11 +303,24 @@ server <- function(input, output, session) {
     if (is.null(input$sidebar_menu)) {
       selected_sub_tab <- SUB_TAB_POPULATION
     }
-    paste(input$data_display_year_selector, selected_sub_tab, sep = separator)
+    selected_data_info <- paste(input$data_display_year_selector, selected_sub_tab, sep = separator)
+    selected_data_info
+  }
+
+  get_selected_municipality_group_info <- function(separator = " ") {
+    if (!is.null(input$municipalityGroupSelector)) {
+      selected_municipality_groups_info <- paste(input$municipalityGroupSelector, collapse=", ")
+      selected_municipality_groups_info <- paste(selected_municipality_groups_info, "Municipalities")
+      selected_municipality_groups_info
+    }
   }
   
   output$selected_data_info <- renderText({ 
     get_selected_data_info()
+  })
+  
+  output$selected_municipality_group_info <- renderText({ 
+    get_selected_municipality_group_info()
   })
   
   get_all_group_names <- function(groups_info) {
@@ -315,18 +329,80 @@ server <- function(input, output, session) {
     })
   }
   
+  get_municipality_list_for_group_type <- function(groups_info, names, group_type) {
+    if (group_type == municipality_group_type_population) {
+      municipality_list <- lapply(groups_info, function(group_info) {
+        if (group_info$group_name %in% names && grepl(municipality_group_type_population, group_info$group_name, fixed = TRUE, ignore.case = TRUE)) {
+          return(group_info$municipality_list)
+        }
+      })
+      
+      municipality_list <- unique(unlist(municipality_list, recursive=FALSE))
+      return(municipality_list)
+    }
+    else if (group_type == municipality_group_type_tier) {
+      municipality_list <- lapply(groups_info, function(group_info) {
+        if (group_info$group_name %in% names && grepl(municipality_group_type_tier, group_info$group_name, fixed = TRUE, ignore.case = TRUE)) {
+          return(group_info$municipality_list)
+        }
+      })
+      
+      municipality_list <- unique(unlist(municipality_list, recursive=FALSE))
+      return(municipality_list)
+      
+    }
+    else if (group_type == municipality_group_type_location) {
+      municipality_list <- lapply(groups_info, function(group_info) {
+        if (group_info$group_name %in% names 
+            && !grepl(municipality_group_type_population, group_info$group_name, fixed = TRUE, ignore.case = TRUE)
+            && !grepl(municipality_group_type_tier, group_info$group_name, fixed = TRUE, ignore.case = TRUE)) {
+          return(group_info$municipality_list)
+        }
+      })
+      
+      municipality_list <- unique(unlist(municipality_list, recursive=FALSE))
+      return(municipality_list)
+    }
+    else {
+      return(list())
+    }
+  }
+  
   get_municipality_list_for_groups <- function(groups_info, names) {
     if (is_single_string(names)) {
       names <- list(names)
     }
     
-    municipality_list <- lapply(groups_info, function(group_info) {
-      if (group_info$group_name %in% names) {
-        return(group_info$municipality_list)
-      }
-    })
+    location_groups_municipalities <- get_municipality_list_for_group_type(groups_info, names, municipality_group_type_location)
 
-    municipality_list <- unique(unlist(municipality_list, recursive=FALSE))
+    population_groups_municipalities <- get_municipality_list_for_group_type(groups_info, names, municipality_group_type_population)
+
+    tier_groups_municipalities <- get_municipality_list_for_group_type(groups_info, names, municipality_group_type_tier)
+
+    municipality_list <- list()
+    if (!is.null(location_groups_municipalities)) {
+      municipality_list <- location_groups_municipalities
+      if (!is.null(population_groups_municipalities)) {
+        # need to find the common subset
+        municipality_list <- intersect(municipality_list, population_groups_municipalities)
+      }
+      if (!is.null(tier_groups_municipalities)) {
+        # need to find the common subset
+        municipality_list <- intersect(municipality_list, tier_groups_municipalities)
+      }
+    }
+    else if (!is.null(population_groups_municipalities)) {
+      municipality_list <- population_groups_municipalities
+      if (!is.null(tier_groups_municipalities)) {
+        # need to find the common subset
+        municipality_list <- intersect(municipality_list, tier_groups_municipalities)
+      }
+    }
+    else if (!is.null(tier_groups_municipalities)) {
+      # need to find the common subset
+      municipality_list <- tier_groups_municipalities
+    }
+    
     municipality_list
   }
   

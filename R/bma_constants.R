@@ -44,6 +44,10 @@ years_all_options <- oldest_year: current_year
 recent_years <- get_recent_years(default_selected_year)
 population_years <- get_population_years(default_selected_year)
 
+municipality_group_type_population <- "Population"
+municipality_group_type_tier <- "Tier"
+municipality_group_type_location <- "Location"
+
 SUB_TAB_POPULATION <- "Population"
 SUB_TAB_DENSITY_LAND_AREA <- "Density and Land Area"
 SUB_TAB_ASSESSMENT_INFO <- "Assessment Information"
