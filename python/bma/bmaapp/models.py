@@ -162,6 +162,167 @@ COLUMN_NAME_CONSERVATION_AUTHORITY = 'Conservation Authority'
 COLUMN_NAME_AMBULANCE = 'Ambulance'
 COLUMN_NAME_CEMETERIES = 'Cemeteries'
 
+excel_column_name_to_db_column_name = {
+    COLUMN_NAME_MUNICIPALITY: 'name',
+    COLUMN_NAME_YEAR: 'year',
+
+    COLUMN_NAME_POPULATION_DENSITY: 'population_density_per_km2',
+    COLUMN_NAME_POPULATION: 'population',
+    COLUMN_NAME_LAND_AREA: 'land_area_km2',
+
+    COLUMN_NAME_POPULATION_INCREASE: 'population_increase_percent',
+    COLUMN_NAME_BUILDING_CONSTRUCTION_VALUE: 'building_construction_value',
+    COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA: 'building_construction_per_capita_value',
+    COLUMN_NAME_ESTIMATED_AVG_HOUSEHOLD_INCOME: 'estimated_average_household_income',
+    COLUMN_NAME_WEIGHTED_MEDIAN_VAL_DWELLING: 'weighted_median_dwelling_value',
+    COLUMN_NAME_UNWEIGHTED_ASSESSMENT_PER_CAPITA: 'unweighted_assessment_per_capita',
+    COLUMN_NAME_WEIGHTED_ASSESSMENT_PER_CAPITA: 'weighted_assessment_per_capita',
+    COLUMN_NAME_TOTAL_UNWEIGHTED_ASSESSMENT: 'total_unweighted_assessment',
+    COLUMN_NAME_TOTAL_WEIGHTED_ASSESSMENT: 'total_weighted_assessment',
+
+    COLUMN_NAME_RESIDENTIAL: 'residential',
+    COLUMN_NAME_MULTI_RESIDENTIAL: 'multi_residential',
+    COLUMN_NAME_COMMERCIAL: 'commercial',
+    COLUMN_NAME_INDUSTRIAL: 'industrial',
+    COLUMN_NAME_PIPELINES: 'pipelines',
+    COLUMN_NAME_FARMLANDS: 'farmlands',
+    COLUMN_NAME_FORESTS: 'forests',
+
+    COLUMN_NAME_TOTAL_NET_LEVY: 'total_net_levy_upper_and_lower_tiers',
+    COLUMN_NAME_LEVY_PER_CAPITA: 'levy_per_capita',
+    COLUMN_NAME_UPPER_TIER_LEVY: 'upper_tier_levy',
+    COLUMN_NAME_UPPER_TIER_LEVY_PER_CAPITA: 'upper_tier_levy_per_capita',
+    COLUMN_NAME_LOWER_TIER_LEVY: 'lower_tier_levy',
+    COLUMN_NAME_LOWER_TIER_LEVY_PER_CAPITA: 'lower_tier_levy_per_capita',
+    COLUMN_NAME_TAX_ASSET_CONSUMPTION_RATIO: 'tax_asset_consumption_ratio',
+    COLUMN_NAME_FINANCIAL_POSITION_PER_CAPITA: 'financial_position_per_capita',
+    COLUMN_NAME_TAX_DISCRETIONARY_RESERVES_PERCENT_SOURCE_REVENUES: 'tax_discretionary_reserves_percent_own_source_revenues',
+    COLUMN_NAME_TAX_RESERVES_PERCENT_TAXATION: 'tax_reserves_percent_taxation',
+    COLUMN_NAME_TAX_RESERVE_PER_CAPITA: 'tax_reserves_capita',
+    COLUMN_NAME_TAX_DEBT_INT_PERCENT_OSR: 'tax_debt_int_percent_osr',
+    COLUMN_NAME_TAXR_DEBT_CHARGES_PERCENT_OSR: 'tax_debt_charges_percent_osr',
+    COLUMN_NAME_TOTAL_DEBT_OUTSTANDING_PER_CAPITA: 'total_debt_outstanding_capita',
+    COLUMN_NAME_TAX_DEBT_OUTSTANDING_PER_CAPITA: 'tax_debt_outstanding_capita',
+    COLUMN_NAME_DEBT_TO_RESERVE_RATIO: 'debt_to_reserve_ratio',
+    COLUMN_NAME_TAXES_RECEIVABLE_PERCENT_TAXES_LEVIED: 'taxes_receivable_percent_taxes_levied',
+    COLUMN_NAME_RATES_COVERAGE_RATIO: 'rates_coverage_ratio',
+    COLUMN_NAME_NET_FINANCIAL_LIABILITIES_RATIO: 'net_financial_liabilities_ratio',
+
+    COLUMN_NAME_SINGLE_DETACHED_DWELLINGS_PER_UNIT: 'single_detached_dwellings_per_unit',
+    COLUMN_NAME_MULTIPLES_DWELLING__3_OR_MORE: 'multiples_dwelling_3_plus_per_unit',
+    COLUMN_NAME_MULTIPLES_DWELLING_1_OR_2: 'multiples_dwelling_1_or_2_per_unit',
+    COLUMN_NAME_APARTMENT_UNITS_2_OR_MORE: 'apartment_units_at_least_2_per_unit',
+    COLUMN_NAME_APARTMENT_UNITS_LESS_THAN_2: 'apartment_units_less_than_2_per_unit',
+    COLUMN_NAME_NON_RESIDENTIAL_COMMERCIAL_PER_SQFT: 'non_residential_commercial_per_sq_ft',
+    COLUMN_NAME_NON_RESIDENTIAL_INDUSTRIAL_PER_SQFT: 'non_residential_industrial_per_sq_ft',
+    COLUMN_NAME_BUILDING_PERMIT_FEE: 'building_permit_fee',
+
+    COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL: 'multi_residential_tax_ratio',
+    COLUMN_NAME_TAX_RATIOS_COMMERCIAL_RESIDUAL: 'commercial_residual',
+    COLUMN_NAME_TAX_RATIOS_INDUSTRIAL_RESIDUAL: 'industrial_residual',
+
+    COLUMN_NAME_NEW_MULTI_RESIDENTIAL: 'new_multi_residential',
+    COLUMN_NAME_COMMERCIAL_OFFICE: 'commercial_office',
+    COLUMN_NAME_COMMERCIAL_SHOPPING: 'commercial_shopping',
+    COLUMN_NAME_COMMERCIAL_PARKING: 'commercial_parking',
+    COLUMN_NAME_INDUSTRIAL_LARGE: 'industrial_large',
+
+    COLUMN_NAME_TOTAL_RESID: 'total_resid',
+    COLUMN_NAME_TOTAL_MULTI_RESID: 'total_multi_resid',
+    COLUMN_NAME_TOTAL_COMMERCIAL_RESIDUAL: 'total_comm_residual',
+    COLUMN_NAME_TOTAL_COMMERCIAL_OFFICE: 'total_comm_office',
+    COLUMN_NAME_TOTAL_COMMERCIAL_PARK_VAC: 'total_commercial_park_vac',
+    COLUMN_NAME_TOTAL_COMMERCIAL_SHOPPING: 'total_comm_shopping',
+    COLUMN_NAME_TOTAL_INDUSTRIAL_RESIDUAL: 'total_ind_residual',
+    COLUMN_NAME_TOTAL_INDUSTRIAL_LARGE: 'total_ind_large',
+
+    COLUMN_NAME_MUNICIPAL_RESID: 'municipal_resid',
+    COLUMN_NAME_MUNICIPAL_MULTI_RESID: 'municipal_multi_resid',
+    COLUMN_NAME_MUNICIPAL_COMM_RESIDUAL: 'municipal_comm_residual',
+    COLUMN_NAME_MUNICIPAL_COMM_OFFICE: 'municipal_comm_office',
+    COLUMN_NAME_MUNICIPAL_COMMERCIAL_PARK_VAC: 'municipal_commercial_park_vac',
+    COLUMN_NAME_MUNICIPAL_COMM_SHOPPING: 'municipal_comm_shopping',
+    COLUMN_NAME_MUNICIPAL_IND_RESIDUAL: 'municipal_ind_residual',
+    COLUMN_NAME_MUNICIPAL_IND_LARGE: 'municipal_ind_large',
+
+    COLUMN_NAME_EDUCATION_RESID: 'education_resid',
+    COLUMN_NAME_EDUCATION_MULTI_RESID: 'education_multi_resid',
+    COLUMN_NAME_EDUCATION_COMM_RESIDUAL: 'education_comm_residual',
+    COLUMN_NAME_EDUCATION_COMM_OFFICE: 'education_comm_office',
+    COLUMN_NAME_EDUCATION_COMMERCIAL_PARK_VAC: 'education_commercial_park_vac',
+    COLUMN_NAME_EDUCATION_COMM_SHOPPING: 'education_comm_shopping',
+    COLUMN_NAME_EDUCATION_IND_RESIDUAL: 'education_ind_residual',
+    COLUMN_NAME_EDUCATION_IND_LARGE: 'education_ind_large',
+
+    COLUMN_NAME_BUNGALOW: 'bungalow',
+    COLUMN_NAME_2_STOREY: 'two_storey',
+    COLUMN_NAME_EXECUTIVE: 'executive',
+    COLUMN_NAME_MULTI_RES_WALK_UP: 'multi_res_walk_up',
+    COLUMN_NAME_MULTI_RES_HIGH_RISE: 'multi_res_high_rise',
+    COLUMN_NAME_TAX_SHOPPING: 'shopping',
+    COLUMN_NAME_TAX_HOTEL: 'hotel',
+    COLUMN_NAME_TAX_MOTEL: 'motel',
+    COLUMN_NAME_TAX_OFFICE: 'office',
+    COLUMN_NAME_TAX_IND_STANDARD: 'industrial_standard',
+    COLUMN_NAME_TAX_IND_LARGE: 'industrial_large',
+    COLUMN_NAME_TAX_IND_VACANT: 'industrial_vacant',
+
+    COLUMN_NAME_RESIDENTIAL_200_M3: 'residential_200_m3_5_8_inch',
+    COLUMN_NAME_COMMERCIAL_10K_M3: 'commercial_10000_m3_2_inch',
+    COLUMN_NAME_INDUSTRIAL_30K_M3: 'industrial_30000_m3_3_inch',
+    COLUMN_NAME_INDUSTRIAL_100K_M3: 'industrial_100000_m3_4_inch',
+    COLUMN_NAME_INDUSTRIAL_500K_M3: 'industrial_500000_m3_6_inch',
+    COLUMN_NAME_WATER_ASSET_CONSUMPTION: 'water_asset_consumption',
+    COLUMN_NAME_WW_ASSET_CONSUMPTION: 'ww_asset_consumption',
+    COLUMN_NAME_WATER_RES_PERCENT_OSR: 'water_res_as_percent_osr',
+    COLUMN_NAME_WW_RES_PERCENT_OSR: 'ww_res_percent_osr',
+    COLUMN_NAME_WATER_RES_PERCENT_ACUM_AMORT: 'water_res_as_percent_acum_amort',
+    COLUMN_NAME_WW_RES_PERCENT_ACUM_AMORT: 'ww_res_percent_acum_amort',
+    COLUMN_NAME_WATER_DEBT_INTEREST_COVERAGE: 'water_debt_interest_coverage',
+    COLUMN_NAME_WW_DEBT_INTEREST_COVERAGE: 'ww_debt_interest_coverage',
+    COLUMN_NAME_WATER_NET_LIN_LIAB: 'water_net_lin_liab',
+    COLUMN_NAME_WW_NET_LIN_LIAB: 'ww_net_lin_liab',
+    COLUMN_NAME_EST_AVG_HOUSEHOLD_INCOME: 'est_avg_household_income',
+    COLUMN_NAME_RESIDENTIAL_WATER_SEWER_COSTS: 'residential_water_sewer_costs',
+    COLUMN_NAME_AVG_RESIDENTIAL_TAXES: 'average_residential_taxes',
+    COLUMN_NAME_PROPERTY_TAXES_PERCENT_HOUSEHOLD_INCOME: 'property_taxes_percent_household_income',
+    COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN: 'total_municipal_tax_burden',
+    COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN_PERCENT_HOUSEHOLD_INCOME: 'total_municipal_burden_percent_household_income',
+
+    COLUMN_NAME_FIRE: 'fire',
+    COLUMN_NAME_ROADS_PAVED: 'roads_paved',
+    COLUMN_NAME_BRIDGES_CULVERTS: 'bridges_and_culverts',
+    COLUMN_NAME_TRAFFIC: 'traffic',
+    COLUMN_NAME_WINTER_ROADS: 'winter_roads',
+    COLUMN_NAME_WINTER_SIDEWALKS: 'winter_sidewalks',
+    COLUMN_NAME_TRANSIT: 'transit',
+    COLUMN_NAME_PARKING: 'parking',
+    COLUMN_NAME_WASTE_COLLECTION: 'waste_collection',
+    COLUMN_NAME_WASTE_DISPOSAL: 'waste_disposal',
+    COLUMN_NAME_STORM: 'storm',
+    COLUMN_NAME_RECYCLING: 'recycling',
+    COLUMN_NAME_PUBLIC_HEALTH: 'public_health',
+    COLUMN_NAME_EMERGENCY_MEASURES: 'emergency_measures',
+    COLUMN_NAME_GENERAL_ASSISTANCE: 'general_assistance',
+    COLUMN_NAME_ASSISTANCE_AGED: 'assistance_to_the_aged',
+    COLUMN_NAME_POA: 'poa',
+    COLUMN_NAME_CHILD_CARE: 'child_care',
+    COLUMN_NAME_SOCIAL_HOUSING: 'social_housing',
+    COLUMN_NAME_PARKS: 'parks',
+    COLUMN_NAME_RECREATION_PROGRAMS: 'recreation_programs',
+    COLUMN_NAME_REC_FAC_GOLF: 'rec_fac_golf',
+    COLUMN_NAME_REC_FACILITIES_OTHER: 'rec_facilities_other',
+    COLUMN_NAME_LIBRARY: 'library',
+    COLUMN_NAME_MUSEUMS: 'museums',
+    COLUMN_NAME_CULTURAL: 'cultural',
+    COLUMN_NAME_PLANNING: 'planning',
+    COLUMN_NAME_COMM_IND: 'comm_and_ind',
+    COLUMN_NAME_GENERAL_GOVERNMENT: 'general_government',
+    COLUMN_NAME_CONSERVATION_AUTHORITY: 'conservation_authority',
+    COLUMN_NAME_AMBULANCE: 'ambulance',
+    COLUMN_NAME_CEMETERIES: 'cemeteries'
+}
+
 
 # create your models here.
 
@@ -462,351 +623,19 @@ class MunicipalityData(models.Model):
     def store(self, dict):
         dict.clear()
 
-        dict[COLUMN_NAME_MUNICIPALITY] = self.name
-        dict[COLUMN_NAME_YEAR] = self.year
-
-        #        dict[] = self.region_county_district
-        #        dict[] = self.study_location
-        #        dict[] = self.tier
-        #        dict[] = self.population_bands
-
-        dict[COLUMN_NAME_POPULATION_DENSITY] = self.population_density_per_km2
-        dict[COLUMN_NAME_POPULATION] = self.population
-        dict[COLUMN_NAME_LAND_AREA] = self.land_area_km2
-
-        dict[COLUMN_NAME_POPULATION_INCREASE] = self.population_increase_percent
-        dict[COLUMN_NAME_BUILDING_CONSTRUCTION_VALUE] = self.building_construction_value
-        dict[COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA] = self.building_construction_per_capita_value
-        dict[COLUMN_NAME_ESTIMATED_AVG_HOUSEHOLD_INCOME] = self.estimated_average_household_income
-        dict[COLUMN_NAME_WEIGHTED_MEDIAN_VAL_DWELLING] = self.weighted_median_dwelling_value
-        dict[COLUMN_NAME_UNWEIGHTED_ASSESSMENT_PER_CAPITA] = self.unweighted_assessment_per_capita
-        dict[COLUMN_NAME_WEIGHTED_ASSESSMENT_PER_CAPITA] = self.weighted_assessment_per_capita
-        dict[COLUMN_NAME_TOTAL_UNWEIGHTED_ASSESSMENT] = self.total_unweighted_assessment
-        dict[COLUMN_NAME_TOTAL_WEIGHTED_ASSESSMENT] = self.total_weighted_assessment
-
-        dict[COLUMN_NAME_RESIDENTIAL] = self.residential
-        dict[COLUMN_NAME_MULTI_RESIDENTIAL] = self.multi_residential
-        dict[COLUMN_NAME_COMMERCIAL] = self.commercial
-        dict[COLUMN_NAME_INDUSTRIAL] = self.industrial
-        dict[COLUMN_NAME_PIPELINES] = self.pipelines
-        dict[COLUMN_NAME_FARMLANDS] = self.farmlands
-        dict[COLUMN_NAME_FORESTS] = self.forests
-
-        dict[COLUMN_NAME_TOTAL_NET_LEVY] = self.total_net_levy_upper_and_lower_tiers
-        dict[COLUMN_NAME_LEVY_PER_CAPITA] = self.levy_per_capita
-        dict[COLUMN_NAME_UPPER_TIER_LEVY] = self.upper_tier_levy
-        dict[COLUMN_NAME_UPPER_TIER_LEVY_PER_CAPITA] = self.upper_tier_levy_per_capita
-        dict[COLUMN_NAME_LOWER_TIER_LEVY] = self.lower_tier_levy
-        dict[COLUMN_NAME_LOWER_TIER_LEVY_PER_CAPITA] = self.lower_tier_levy_per_capita
-        dict[COLUMN_NAME_TAX_ASSET_CONSUMPTION_RATIO] = self.tax_asset_consumption_ratio
-        dict[COLUMN_NAME_FINANCIAL_POSITION_PER_CAPITA] = self.financial_position_per_capita
-        dict[
-            COLUMN_NAME_TAX_DISCRETIONARY_RESERVES_PERCENT_SOURCE_REVENUES] = self.tax_discretionary_reserves_percent_own_source_revenues
-        dict[COLUMN_NAME_TAX_RESERVES_PERCENT_TAXATION] = self.tax_reserves_percent_taxation
-        dict[COLUMN_NAME_TAX_RESERVE_PER_CAPITA] = self.tax_reserves_capita
-        dict[COLUMN_NAME_TAX_DEBT_INT_PERCENT_OSR] = self.tax_debt_int_percent_osr
-        dict[COLUMN_NAME_TAXR_DEBT_CHARGES_PERCENT_OSR] = self.tax_debt_charges_percent_osr
-        dict[COLUMN_NAME_TOTAL_DEBT_OUTSTANDING_PER_CAPITA] = self.total_debt_outstanding_capita
-        dict[COLUMN_NAME_TAX_DEBT_OUTSTANDING_PER_CAPITA] = self.tax_debt_outstanding_capita
-        dict[COLUMN_NAME_DEBT_TO_RESERVE_RATIO] = self.debt_to_reserve_ratio
-        dict[COLUMN_NAME_TAXES_RECEIVABLE_PERCENT_TAXES_LEVIED] = self.taxes_receivable_percent_taxes_levied
-        dict[COLUMN_NAME_RATES_COVERAGE_RATIO] = self.rates_coverage_ratio
-        dict[COLUMN_NAME_NET_FINANCIAL_LIABILITIES_RATIO] = self.net_financial_liabilities_ratio
-
-        dict[COLUMN_NAME_SINGLE_DETACHED_DWELLINGS_PER_UNIT] = self.single_detached_dwellings_per_unit
-        dict[COLUMN_NAME_MULTIPLES_DWELLING__3_OR_MORE] = self.multiples_dwelling_3_plus_per_unit
-        dict[COLUMN_NAME_MULTIPLES_DWELLING_1_OR_2] = self.multiples_dwelling_1_or_2_per_unit
-        dict[COLUMN_NAME_APARTMENT_UNITS_2_OR_MORE] = self.apartment_units_at_least_2_per_unit
-        dict[COLUMN_NAME_APARTMENT_UNITS_LESS_THAN_2] = self.apartment_units_less_than_2_per_unit
-        dict[COLUMN_NAME_NON_RESIDENTIAL_COMMERCIAL_PER_SQFT] = self.non_residential_commercial_per_sq_ft
-        dict[COLUMN_NAME_NON_RESIDENTIAL_INDUSTRIAL_PER_SQFT] = self.non_residential_industrial_per_sq_ft
-        dict[COLUMN_NAME_BUILDING_PERMIT_FEE] = self.building_permit_fee
-
-        dict[COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL] = self.multi_residential_tax_ratio
-        dict[COLUMN_NAME_TAX_RATIOS_COMMERCIAL_RESIDUAL] = self.commercial_residual
-        dict[COLUMN_NAME_TAX_RATIOS_INDUSTRIAL_RESIDUAL] = self.industrial_residual
-
-        dict[COLUMN_NAME_NEW_MULTI_RESIDENTIAL] = self.new_multi_residential
-        dict[COLUMN_NAME_COMMERCIAL_OFFICE] = self.commercial_office
-        dict[COLUMN_NAME_COMMERCIAL_SHOPPING] = self.commercial_shopping
-        dict[COLUMN_NAME_COMMERCIAL_PARKING] = self.commercial_parking
-        dict[COLUMN_NAME_INDUSTRIAL_LARGE] = self.industrial_large
-
-        dict[COLUMN_NAME_TOTAL_RESID] = self.total_resid
-        dict[COLUMN_NAME_TOTAL_MULTI_RESID] = self.total_multi_resid
-        dict[COLUMN_NAME_TOTAL_COMMERCIAL_RESIDUAL] = self.total_comm_residual
-        dict[COLUMN_NAME_TOTAL_COMMERCIAL_OFFICE] = self.total_comm_office
-        dict[COLUMN_NAME_TOTAL_COMMERCIAL_PARK_VAC] = self.total_commercial_park_vac
-        dict[COLUMN_NAME_TOTAL_COMMERCIAL_SHOPPING] = self.total_comm_shopping
-        dict[COLUMN_NAME_TOTAL_INDUSTRIAL_RESIDUAL] = self.total_ind_residual
-        dict[COLUMN_NAME_TOTAL_INDUSTRIAL_LARGE] = self.total_ind_large
-
-        dict[COLUMN_NAME_MUNICIPAL_RESID] = self.municipal_resid
-        dict[COLUMN_NAME_MUNICIPAL_MULTI_RESID] = self.municipal_multi_resid
-        dict[COLUMN_NAME_MUNICIPAL_COMM_RESIDUAL] = self.municipal_comm_residual
-        dict[COLUMN_NAME_MUNICIPAL_COMM_OFFICE] = self.municipal_comm_office
-        dict[COLUMN_NAME_MUNICIPAL_COMMERCIAL_PARK_VAC] = self.municipal_commercial_park_vac
-        dict[COLUMN_NAME_MUNICIPAL_COMM_SHOPPING] = self.municipal_comm_shopping
-        dict[COLUMN_NAME_MUNICIPAL_IND_RESIDUAL] = self.municipal_ind_residual
-        dict[COLUMN_NAME_MUNICIPAL_IND_LARGE] = self.municipal_ind_large
-
-        dict[COLUMN_NAME_EDUCATION_RESID] = self.education_resid
-        dict[COLUMN_NAME_EDUCATION_MULTI_RESID] = self.education_multi_resid
-        dict[COLUMN_NAME_EDUCATION_COMM_RESIDUAL] = self.education_comm_residual
-        dict[COLUMN_NAME_EDUCATION_COMM_OFFICE] = self.education_comm_office
-        dict[COLUMN_NAME_EDUCATION_COMMERCIAL_PARK_VAC] = self.education_commercial_park_vac
-        dict[COLUMN_NAME_EDUCATION_COMM_SHOPPING] = self.education_comm_shopping
-        dict[COLUMN_NAME_EDUCATION_IND_RESIDUAL] = self.education_ind_residual
-        dict[COLUMN_NAME_EDUCATION_IND_LARGE] = self.education_ind_large
-
-        dict[COLUMN_NAME_BUNGALOW] = self.bungalow
-        dict[COLUMN_NAME_2_STOREY] = self.two_storey
-        dict[COLUMN_NAME_EXECUTIVE] = self.executive
-        dict[COLUMN_NAME_MULTI_RES_WALK_UP] = self.multi_res_walk_up
-        dict[COLUMN_NAME_MULTI_RES_HIGH_RISE] = self.multi_res_high_rise
-        dict[COLUMN_NAME_TAX_SHOPPING] = self.shopping
-        dict[COLUMN_NAME_TAX_HOTEL] = self.hotel
-        dict[COLUMN_NAME_TAX_MOTEL] = self.motel
-        dict[COLUMN_NAME_TAX_OFFICE] = self.office
-        dict[COLUMN_NAME_TAX_IND_STANDARD] = self.industrial_standard
-        dict[COLUMN_NAME_TAX_IND_LARGE] = self.industrial_large
-        dict[COLUMN_NAME_TAX_IND_VACANT] = self.industrial_vacant
-
-        dict[COLUMN_NAME_RESIDENTIAL_200_M3] = self.residential_200_m3_5_8_inch
-        dict[COLUMN_NAME_COMMERCIAL_10K_M3] = self.commercial_10000_m3_2_inch
-        dict[COLUMN_NAME_INDUSTRIAL_30K_M3] = self.industrial_30000_m3_3_inch
-        dict[COLUMN_NAME_INDUSTRIAL_100K_M3] = self.industrial_100000_m3_4_inch
-        dict[COLUMN_NAME_INDUSTRIAL_500K_M3] = self.industrial_500000_m3_6_inch
-        dict[COLUMN_NAME_WATER_ASSET_CONSUMPTION] = self.water_asset_consumption
-        dict[COLUMN_NAME_WW_ASSET_CONSUMPTION] = self.ww_asset_consumption
-        dict[COLUMN_NAME_WATER_RES_PERCENT_OSR] = self.water_res_as_percent_osr
-        dict[COLUMN_NAME_WW_RES_PERCENT_OSR] = self.ww_res_percent_osr
-        dict[COLUMN_NAME_WATER_RES_PERCENT_ACUM_AMORT] = self.water_res_as_percent_acum_amort
-        dict[COLUMN_NAME_WW_RES_PERCENT_ACUM_AMORT] = self.ww_res_percent_acum_amort
-        dict[COLUMN_NAME_WATER_DEBT_INTEREST_COVERAGE] = self.water_debt_interest_coverage
-        dict[COLUMN_NAME_WW_DEBT_INTEREST_COVERAGE] = self.ww_debt_interest_coverage
-        dict[COLUMN_NAME_WATER_NET_LIN_LIAB] = self.water_net_lin_liab
-        dict[COLUMN_NAME_WW_NET_LIN_LIAB] = self.ww_net_lin_liab
-        dict[COLUMN_NAME_EST_AVG_HOUSEHOLD_INCOME] = self.est_avg_household_income
-        dict[COLUMN_NAME_RESIDENTIAL_WATER_SEWER_COSTS] = self.residential_water_sewer_costs
-        dict[COLUMN_NAME_AVG_RESIDENTIAL_TAXES] = self.average_residential_taxes
-        dict[COLUMN_NAME_PROPERTY_TAXES_PERCENT_HOUSEHOLD_INCOME] = self.property_taxes_percent_household_income
-        dict[COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN] = self.total_municipal_tax_burden
-        dict[
-            COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN_PERCENT_HOUSEHOLD_INCOME] = self.total_municipal_burden_percent_household_income
-
-        dict[COLUMN_NAME_FIRE] = self.fire
-        dict[COLUMN_NAME_ROADS_PAVED] = self.roads_paved
-        dict[COLUMN_NAME_BRIDGES_CULVERTS] = self.bridges_and_culverts
-        dict[COLUMN_NAME_TRAFFIC] = self.traffic
-        dict[COLUMN_NAME_WINTER_ROADS] = self.winter_roads
-        dict[COLUMN_NAME_WINTER_SIDEWALKS] = self.winter_sidewalks
-        dict[COLUMN_NAME_TRANSIT] = self.transit
-        dict[COLUMN_NAME_PARKING] = self.parking
-        dict[COLUMN_NAME_WASTE_COLLECTION] = self.waste_collection
-        dict[COLUMN_NAME_WASTE_DISPOSAL] = self.waste_disposal
-        dict[COLUMN_NAME_STORM] = self.storm
-        dict[COLUMN_NAME_RECYCLING] = self.recycling
-        dict[COLUMN_NAME_PUBLIC_HEALTH] = self.public_health
-        dict[COLUMN_NAME_EMERGENCY_MEASURES] = self.emergency_measures
-        dict[COLUMN_NAME_GENERAL_ASSISTANCE] = self.general_assistance
-        dict[COLUMN_NAME_ASSISTANCE_AGED] = self.assistance_to_the_aged
-        dict[COLUMN_NAME_POA] = self.poa
-        dict[COLUMN_NAME_CHILD_CARE] = self.child_care
-        dict[COLUMN_NAME_SOCIAL_HOUSING] = self.social_housing
-        dict[COLUMN_NAME_PARKS] = self.parks
-        dict[COLUMN_NAME_RECREATION_PROGRAMS] = self.recreation_programs
-        dict[COLUMN_NAME_REC_FAC_GOLF] = self.rec_fac_golf
-        dict[COLUMN_NAME_REC_FACILITIES_OTHER] = self.rec_facilities_other
-        dict[COLUMN_NAME_LIBRARY] = self.library
-        dict[COLUMN_NAME_MUSEUMS] = self.museums
-        dict[COLUMN_NAME_CULTURAL] = self.cultural
-        dict[COLUMN_NAME_PLANNING] = self.planning
-        dict[COLUMN_NAME_COMM_IND] = self.comm_and_ind
-        dict[COLUMN_NAME_GENERAL_GOVERNMENT] = self.general_government
-        dict[COLUMN_NAME_CONSERVATION_AUTHORITY] = self.conservation_authority
-        dict[COLUMN_NAME_AMBULANCE] = self.ambulance
-        dict[COLUMN_NAME_CEMETERIES] = self.cemeteries
+        for excel_column_name, db_column_name in excel_column_name_to_db_column_name.items():
+            dict[excel_column_name] = getattr(self, db_column_name)
 
     def load(self, dict):
-        self.name = dict.get(COLUMN_NAME_MUNICIPALITY)
-        self.year = dict.get(COLUMN_NAME_YEAR)
+        for excel_column_name, vale in dict.items():
+            setattr(self, excel_column_name_to_db_column_name[excel_column_name], value)
+
         self.yearPlusName = str(self.year) + self.name
 
-        #        self.region_county_district = dict.get('')
-        #        self.study_location = dict.get('')
-        #        self.tier = dict.get('')
-        #        self.population_bands = dict.get('')
-
-        self.population_density_per_km2 = dict.get(COLUMN_NAME_POPULATION_DENSITY)
-        self.population = dict.get(COLUMN_NAME_POPULATION)
-        self.land_area_km2 = dict.get(COLUMN_NAME_LAND_AREA)
-
-        self.population_increase_percent = dict.get(COLUMN_NAME_POPULATION_INCREASE)
-        self.building_construction_value = dict.get(COLUMN_NAME_BUILDING_CONSTRUCTION_VALUE)
-        self.building_construction_per_capita_value = dict.get(COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA)
-        self.estimated_average_household_income = dict.get(COLUMN_NAME_ESTIMATED_AVG_HOUSEHOLD_INCOME)
-        self.weighted_median_dwelling_value = dict.get(COLUMN_NAME_WEIGHTED_MEDIAN_VAL_DWELLING)
-        self.unweighted_assessment_per_capita = dict.get(COLUMN_NAME_UNWEIGHTED_ASSESSMENT_PER_CAPITA)
-        self.weighted_assessment_per_capita = dict.get(COLUMN_NAME_WEIGHTED_ASSESSMENT_PER_CAPITA)
-        self.total_unweighted_assessment = dict.get(COLUMN_NAME_TOTAL_UNWEIGHTED_ASSESSMENT)
-        self.total_weighted_assessment = dict.get(COLUMN_NAME_TOTAL_WEIGHTED_ASSESSMENT)
-
-        self.residential = dict.get(COLUMN_NAME_RESIDENTIAL)
-        self.multi_residential = dict.get(COLUMN_NAME_MULTI_RESIDENTIAL)
-        self.commercial = dict.get(COLUMN_NAME_COMMERCIAL)
-        self.industrial = dict.get(COLUMN_NAME_INDUSTRIAL)
-        self.pipelines = dict.get(COLUMN_NAME_PIPELINES)
-        self.farmlands = dict.get(COLUMN_NAME_FARMLANDS)
-        self.forests = dict.get(COLUMN_NAME_FORESTS)
-
-        self.total_net_levy_upper_and_lower_tiers = dict.get(COLUMN_NAME_TOTAL_NET_LEVY)
-        self.levy_per_capita = dict.get(COLUMN_NAME_LEVY_PER_CAPITA)
-        self.upper_tier_levy = dict.get(COLUMN_NAME_UPPER_TIER_LEVY)
-        self.upper_tier_levy_per_capita = dict.get(COLUMN_NAME_UPPER_TIER_LEVY_PER_CAPITA)
-        self.lower_tier_levy = dict.get(COLUMN_NAME_LOWER_TIER_LEVY)
-        self.lower_tier_levy_per_capita = dict.get(COLUMN_NAME_LOWER_TIER_LEVY_PER_CAPITA)
-        self.tax_asset_consumption_ratio = dict.get(COLUMN_NAME_TAX_ASSET_CONSUMPTION_RATIO)
-        self.financial_position_per_capita = dict.get(COLUMN_NAME_FINANCIAL_POSITION_PER_CAPITA)
-        self.tax_discretionary_reserves_percent_own_source_revenues = dict.get(
-            COLUMN_NAME_TAX_DISCRETIONARY_RESERVES_PERCENT_SOURCE_REVENUES)
-        self.tax_reserves_percent_taxation = dict.get(COLUMN_NAME_TAX_RESERVES_PERCENT_TAXATION)
-        self.tax_reserves_capita = dict.get(COLUMN_NAME_TAX_RESERVE_PER_CAPITA)
-        self.tax_debt_int_percent_osr = dict.get(COLUMN_NAME_TAX_DEBT_INT_PERCENT_OSR)
-        self.tax_debt_charges_percent_osr = dict.get(COLUMN_NAME_TAXR_DEBT_CHARGES_PERCENT_OSR)
-        self.total_debt_outstanding_capita = dict.get(COLUMN_NAME_TOTAL_DEBT_OUTSTANDING_PER_CAPITA)
-        self.tax_debt_outstanding_capita = dict.get(COLUMN_NAME_TAX_DEBT_OUTSTANDING_PER_CAPITA)
-        self.debt_to_reserve_ratio = dict.get(COLUMN_NAME_DEBT_TO_RESERVE_RATIO)
-        self.taxes_receivable_percent_taxes_levied = dict.get(COLUMN_NAME_TAXES_RECEIVABLE_PERCENT_TAXES_LEVIED)
-        self.rates_coverage_ratio = dict.get(COLUMN_NAME_RATES_COVERAGE_RATIO)
-        self.net_financial_liabilities_ratio = dict.get(COLUMN_NAME_NET_FINANCIAL_LIABILITIES_RATIO)
-
-        self.single_detached_dwellings_per_unit = dict.get(COLUMN_NAME_SINGLE_DETACHED_DWELLINGS_PER_UNIT)
-        self.multiples_dwelling_3_plus_per_unit = dict.get(COLUMN_NAME_MULTIPLES_DWELLING__3_OR_MORE)
-        self.multiples_dwelling_1_or_2_per_unit = dict.get(COLUMN_NAME_MULTIPLES_DWELLING_1_OR_2)
-        self.apartment_units_at_least_2_per_unit = dict.get(COLUMN_NAME_APARTMENT_UNITS_2_OR_MORE)
-        self.apartment_units_less_than_2_per_unit = dict.get(COLUMN_NAME_APARTMENT_UNITS_LESS_THAN_2)
-        self.non_residential_commercial_per_sq_ft = dict.get(COLUMN_NAME_NON_RESIDENTIAL_COMMERCIAL_PER_SQFT)
-        self.non_residential_industrial_per_sq_ft = dict.get(COLUMN_NAME_NON_RESIDENTIAL_INDUSTRIAL_PER_SQFT)
-        self.building_permit_fee = dict.get(COLUMN_NAME_BUILDING_PERMIT_FEE)
-
-        self.multi_residential_tax_ratio = dict.get(COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL)
-        self.commercial_residual = dict.get(COLUMN_NAME_TAX_RATIOS_COMMERCIAL_RESIDUAL)
-        self.industrial_residual = dict.get(COLUMN_NAME_TAX_RATIOS_INDUSTRIAL_RESIDUAL)
-
-        self.new_multi_residential = dict.get(COLUMN_NAME_NEW_MULTI_RESIDENTIAL)
-        self.commercial_office = dict.get(COLUMN_NAME_COMMERCIAL_OFFICE)
-        self.commercial_shopping = dict.get(COLUMN_NAME_COMMERCIAL_SHOPPING)
-        self.commercial_parking = dict.get(COLUMN_NAME_COMMERCIAL_PARKING)
-        self.industrial_large = dict.get(COLUMN_NAME_INDUSTRIAL_LARGE)
-
-        self.total_resid = dict.get(COLUMN_NAME_TOTAL_RESID)
-        self.total_multi_resid = dict.get(COLUMN_NAME_TOTAL_MULTI_RESID)
-        self.total_comm_residual = dict.get(COLUMN_NAME_TOTAL_COMMERCIAL_RESIDUAL)
-        self.total_comm_office = dict.get(COLUMN_NAME_TOTAL_COMMERCIAL_OFFICE)
-        self.total_commercial_park_vac = dict.get(COLUMN_NAME_TOTAL_COMMERCIAL_PARK_VAC)
-        self.total_comm_shopping = dict.get(COLUMN_NAME_TOTAL_COMMERCIAL_SHOPPING)
-        self.total_ind_residual = dict.get(COLUMN_NAME_TOTAL_INDUSTRIAL_RESIDUAL)
-        self.total_ind_large = dict.get(COLUMN_NAME_TOTAL_INDUSTRIAL_LARGE)
-
-        self.municipal_resid = dict.get(COLUMN_NAME_MUNICIPAL_RESID)
-        self.municipal_multi_resid = dict.get(COLUMN_NAME_MUNICIPAL_MULTI_RESID)
-        self.municipal_comm_residual = dict.get(COLUMN_NAME_MUNICIPAL_COMM_RESIDUAL)
-        self.municipal_comm_office = dict.get(COLUMN_NAME_MUNICIPAL_COMM_OFFICE)
-        self.municipal_commercial_park_vac = dict.get(COLUMN_NAME_MUNICIPAL_COMMERCIAL_PARK_VAC)
-        self.municipal_comm_shopping = dict.get(COLUMN_NAME_MUNICIPAL_COMM_SHOPPING)
-        self.municipal_ind_residual = dict.get(COLUMN_NAME_MUNICIPAL_IND_RESIDUAL)
-        self.municipal_ind_large = dict.get(COLUMN_NAME_MUNICIPAL_IND_LARGE)
-
-        self.education_resid = dict.get(COLUMN_NAME_EDUCATION_RESID)
-        self.education_multi_resid = dict.get(COLUMN_NAME_EDUCATION_MULTI_RESID)
-        self.education_comm_residual = dict.get(COLUMN_NAME_EDUCATION_COMM_RESIDUAL)
-        self.education_comm_office = dict.get(COLUMN_NAME_EDUCATION_COMM_OFFICE)
-        self.education_commercial_park_vac = dict.get(COLUMN_NAME_EDUCATION_COMMERCIAL_PARK_VAC)
-        self.education_comm_shopping = dict.get(COLUMN_NAME_EDUCATION_COMM_SHOPPING)
-        self.education_ind_residual = dict.get(COLUMN_NAME_EDUCATION_IND_RESIDUAL)
-        self.education_ind_large = dict.get(COLUMN_NAME_EDUCATION_IND_LARGE)
-
-        self.bungalow = dict.get(COLUMN_NAME_BUNGALOW)
-        self.two_storey = dict.get(COLUMN_NAME_2_STOREY)
-        self.executive = dict.get(COLUMN_NAME_EXECUTIVE)
-        self.multi_res_walk_up = dict.get(COLUMN_NAME_MULTI_RES_WALK_UP)
-        self.multi_res_high_rise = dict.get(COLUMN_NAME_MULTI_RES_HIGH_RISE)
-        self.shopping = dict.get(COLUMN_NAME_TAX_SHOPPING)
-        self.hotel = dict.get(COLUMN_NAME_TAX_HOTEL)
-        self.motel = dict.get(COLUMN_NAME_TAX_MOTEL)
-        self.office = dict.get(COLUMN_NAME_TAX_OFFICE)
-        self.industrial_standard = dict.get(COLUMN_NAME_TAX_IND_STANDARD)
-        self.industrial_large = dict.get(COLUMN_NAME_TAX_IND_LARGE)
-        self.industrial_vacant = dict.get(COLUMN_NAME_TAX_IND_VACANT)
-
-        self.residential_200_m3_5_8_inch = dict.get(COLUMN_NAME_RESIDENTIAL_200_M3)
-        self.commercial_10000_m3_2_inch = dict.get(COLUMN_NAME_COMMERCIAL_10K_M3)
-        self.industrial_30000_m3_3_inch = dict.get(COLUMN_NAME_INDUSTRIAL_30K_M3)
-        self.industrial_100000_m3_4_inch = dict.get(COLUMN_NAME_INDUSTRIAL_100K_M3)
-        self.industrial_500000_m3_6_inch = dict.get(COLUMN_NAME_INDUSTRIAL_500K_M3)
-        self.water_asset_consumption = dict.get(COLUMN_NAME_WATER_ASSET_CONSUMPTION)
-        self.ww_asset_consumption = dict.get(COLUMN_NAME_WW_ASSET_CONSUMPTION)
-        self.water_res_as_percent_osr = dict.get(COLUMN_NAME_WATER_RES_PERCENT_OSR)
-        self.ww_res_percent_osr = dict.get(COLUMN_NAME_WW_RES_PERCENT_OSR)
-        self.water_res_as_percent_acum_amort = dict.get(COLUMN_NAME_WATER_RES_PERCENT_ACUM_AMORT)
-        self.ww_res_percent_acum_amort = dict.get(COLUMN_NAME_WW_RES_PERCENT_ACUM_AMORT)
-        self.water_debt_interest_coverage = dict.get(COLUMN_NAME_WATER_DEBT_INTEREST_COVERAGE)
-        self.ww_debt_interest_coverage = dict.get(COLUMN_NAME_WW_DEBT_INTEREST_COVERAGE)
-        self.water_net_lin_liab = dict.get(COLUMN_NAME_WATER_NET_LIN_LIAB)
-        self.ww_net_lin_liab = dict.get(COLUMN_NAME_WW_NET_LIN_LIAB)
-        self.est_avg_household_income = dict.get(COLUMN_NAME_EST_AVG_HOUSEHOLD_INCOME)
-        self.residential_water_sewer_costs = dict.get(COLUMN_NAME_RESIDENTIAL_WATER_SEWER_COSTS)
-        self.average_residential_taxes = dict.get(COLUMN_NAME_AVG_RESIDENTIAL_TAXES)
-        self.property_taxes_percent_household_income = dict.get(COLUMN_NAME_PROPERTY_TAXES_PERCENT_HOUSEHOLD_INCOME)
-        self.total_municipal_tax_burden = dict.get(COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN)
-        self.total_municipal_burden_percent_household_income = dict.get(
-            COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN_PERCENT_HOUSEHOLD_INCOME)
-
-        self.fire = dict.get(COLUMN_NAME_FIRE)
-        self.roads_paved = dict.get(COLUMN_NAME_ROADS_PAVED)
-        self.bridges_and_culverts = dict.get(COLUMN_NAME_BRIDGES_CULVERTS)
-        self.traffic = dict.get(COLUMN_NAME_TRAFFIC)
-        self.winter_roads = dict.get(COLUMN_NAME_WINTER_ROADS)
-        self.winter_sidewalks = dict.get(COLUMN_NAME_WINTER_SIDEWALKS)
-        self.transit = dict.get(COLUMN_NAME_TRANSIT)
-        self.parking = dict.get(COLUMN_NAME_PARKING)
-        self.waste_collection = dict.get(COLUMN_NAME_WASTE_COLLECTION)
-        self.waste_disposal = dict.get(COLUMN_NAME_WASTE_DISPOSAL)
-        self.storm = dict.get(COLUMN_NAME_STORM)
-        self.recycling = dict.get(COLUMN_NAME_RECYCLING)
-        self.public_health = dict.get(COLUMN_NAME_PUBLIC_HEALTH)
-        self.emergency_measures = dict.get(COLUMN_NAME_EMERGENCY_MEASURES)
-        self.general_assistance = dict.get(COLUMN_NAME_GENERAL_ASSISTANCE)
-        self.assistance_to_the_aged = dict.get(COLUMN_NAME_ASSISTANCE_AGED)
-        self.poa = dict.get(COLUMN_NAME_POA)
-        self.child_care = dict.get(COLUMN_NAME_CHILD_CARE)
-        self.social_housing = dict.get(COLUMN_NAME_SOCIAL_HOUSING)
-        self.parks = dict.get(COLUMN_NAME_PARKS)
-        self.recreation_programs = dict.get(COLUMN_NAME_RECREATION_PROGRAMS)
-        self.rec_fac_golf = dict.get(COLUMN_NAME_REC_FAC_GOLF)
-        self.rec_facilities_other = dict.get(COLUMN_NAME_REC_FACILITIES_OTHER)
-        self.library = dict.get(COLUMN_NAME_LIBRARY)
-        self.museums = dict.get(COLUMN_NAME_MUSEUMS)
-        self.cultural = dict.get(COLUMN_NAME_CULTURAL)
-        self.planning = dict.get(COLUMN_NAME_PLANNING)
-        self.comm_and_ind = dict.get(COLUMN_NAME_COMM_IND)
-        self.general_government = dict.get(COLUMN_NAME_GENERAL_GOVERNMENT)
-        self.conservation_authority = dict.get(COLUMN_NAME_CONSERVATION_AUTHORITY)
-        self.ambulance = dict.get(COLUMN_NAME_AMBULANCE)
-        self.cemeteries = dict.get(COLUMN_NAME_CEMETERIES)
-
-    def get_column_value(self, column_name):
-        if column_name == COLUMN_NAME_POPULATION:
-            return self.population
-        elif column_name == COLUMN_NAME_BUILDING_CONSTRUCTION_VALUE:
-            return self.building_construction_value
-        elif column_name == COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX or column_name == COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA:
+    def get_column_value(self, excel_column_name):
+        if excel_column_name == COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX:
             return self.building_construction_per_capita_value
-        elif column_name == COLUMN_NAME_ESTIMATED_AVG_HOUSEHOLD_INCOME:
-            return self.estimated_average_household_income
-        elif column_name == COLUMN_NAME_EST_AVG_HOUSEHOLD_INCOME:
-            return self.est_avg_household_income
-        else:
-            return None
+
+        return getattr(self, excel_column_name_to_db_column_name[excel_column_name])
+
 
