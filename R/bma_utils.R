@@ -282,6 +282,12 @@ filter_and_display <- function(output, data_frame, selected_sub_tab, selected_ye
         population_increase_new_name <- paste("2011-", population_increase_old_name, sep = "")
         colnames(filtered_data_frame)[colnames(filtered_data_frame) == population_increase_old_name] <- population_increase_new_name
       }
+      else if (selected_sub_tab == SUB_TAB_AVG_HOUSEHOLD_INCOME) {
+        filtered_data_frame <- get_municipality_data(municipalities = as.list(filtered_data_frame[[COLUMN_NAME_MUNICIPALITY]]), 
+                                                     year = selected_year, population_by_year = F, 
+                                                     by_year_columns = list(COLUMN_NAME_EST_AVG_HOUSEHOLD_INCOME), 
+                                                     previous_year = T)
+      }
     }
 
     # Render data and stats tables in UI

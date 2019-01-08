@@ -805,6 +805,8 @@ class MunicipalityData(models.Model):
             return self.building_construction_per_capita_value
         elif column_name == COLUMN_NAME_ESTIMATED_AVG_HOUSEHOLD_INCOME:
             return self.estimated_average_household_income
+        elif column_name == COLUMN_NAME_EST_AVG_HOUSEHOLD_INCOME:
+            return self.est_avg_household_income
         else:
             return None
 
