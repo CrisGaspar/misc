@@ -208,8 +208,7 @@ def municipality_data(request):
 
                 # Add new data to existing data
                 for key, value in data.items():
-                    if value is not None:
-                        data_dict[key] = value
+                    data_dict[key] = value
 
                 # Load the dictionary into municipality data object
                 new_db_data.load(data_dict)

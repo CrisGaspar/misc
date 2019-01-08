@@ -627,7 +627,7 @@ class MunicipalityData(models.Model):
             dict[excel_column_name] = getattr(self, db_column_name)
 
     def load(self, dict):
-        for excel_column_name, vale in dict.items():
+        for excel_column_name, value in dict.items():
             setattr(self, excel_column_name_to_db_column_name[excel_column_name], value)
 
         self.yearPlusName = str(self.year) + self.name
