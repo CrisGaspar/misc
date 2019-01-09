@@ -8,11 +8,6 @@ default_max_string_length = 100
 COLUMN_NAME_MUNICIPALITY = 'Municipality'
 COLUMN_NAME_YEAR = 'Year'
 
-# self.region_county_district = dict.get('region_county_district')
-# self.study_location = dict.get('study_location')
-# self.tier = dict.get('tier')
-# self.population_bands = dict.get('population_bands')
-
 COLUMN_NAME_POPULATION_DENSITY = 'Population Density per sq. km.'
 COLUMN_NAME_POPULATION = 'Population'
 COLUMN_NAME_LAND_AREA = 'Land Area km2'
@@ -628,7 +623,12 @@ class MunicipalityData(models.Model):
 
     def load(self, dict):
         for excel_column_name, value in dict.items():
-            setattr(self, excel_column_name_to_db_column_name[excel_column_name], value)
+            db_column_name =  excel_column_name_to_db_column_name.get(excel_column_name)
+
+            if db_column_name is None:
+                print("Load: Looking for excel_column_name={} new_value={} but it's not one of the column names we expect".format(excel_column_name, value, db_column_name))
+            else:
+                setattr(self, db_column_name, value)
 
         self.yearPlusName = str(self.year) + self.name
 
