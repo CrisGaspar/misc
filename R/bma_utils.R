@@ -78,40 +78,27 @@ call_login_endpoint <- function(userid, password) {
   call_success_final <- fromJSON(call_success_text)
 }
 
-call_API_all_municipalities_endpoint <- function(method = httr::GET, municipalities = NULL) {
-  call_API_municipalities_helper(all_municipalities_endpoint, method = method, municipalities = municipalities)
+call_API_all_municipalities_endpoint <- function(year) {
+  call_API_municipalities_helper(all_municipalities_endpoint, year = year)
 }
 
-call_API_all_municipality_groups_endpoint <- function(method = httr::GET, municipalities = NULL) {
-  call_API_municipalities_helper(municipality_groups_endpoint, method = method, municipalities = municipalities)
+call_API_all_municipality_groups_endpoint <- function(year) {
+  call_API_municipalities_helper(municipality_groups_endpoint, year = year)
 }
 
-call_API_municipalities_helper <- function(endpoint, method = httr::GET, municipalities = NULL) {
-  url <-paste(api_server_url, endpoint, sep="")
+call_API_municipalities_helper <- function(endpoint, year) {
+  url <-paste(api_server_url, endpoint, "?year=", year, sep="")
+  method <- httr::GET
   
-  error <- NULL  
-  if (identical(method, httr::GET)) {
-    if (!is.null(municipalities)) {
-      error <- "Attempt to call API municipalities endpoint with GET but municipalities should not be passed in"
-    }
-    else {
-      # Valid parameters. No request body needed
-      requestBody <- NULL  
-    }
-  }
-  else if (identical(method, httr::POST)) {
-    if (!is.null(municipalities)) {
-      # Valid parameters. Pass municipalities in the body as JSON
-      requestBody <- paste('{"municipalities":', toJSON(municipalities),'}')
-    }
-    else {
-      error <- "Attempt to call API municipalities endpoint with POST but no municipalities set"
-    }
+  error <- NULL
+  if (is.null(year)) {
+    error <- "Attempt to call API municipalities endpoint using GET but no year selected"
   }
   else {
-    error <- "Attempt to call API municipalities endpoint with unsupported HTTP method"
+    # Valid parameters. No request body needed
+    requestBody <- NULL  
   }
-  
+
   if (!is.null(error)) {
     result <- list(success = "false", error_message = error)
     print(result)
@@ -357,7 +344,7 @@ get_municipality_data <- function(municipalities, year, population_by_year = F, 
       footer = NULL))
   }
   else if (is.null(result$data) || length(result$data) == 0 || result$data == "[]") {
-    print(paste("No Data Found For Selected Year:", year, "or Years: ", years, "and Selected Municipalities: ", municipalities, 
+    print(paste("No data found for selected year:", year, "or years: ", years, "and selected municipalities: ", municipalities, 
                 "\nError message from data server: ", result$error_message))
     data_frame <- create_empty_data_frame(years = years, by_year_columns = by_year_columns)
   }
@@ -372,7 +359,7 @@ is_single_string <- function(input) {
   is.character(input) & length(input) == 1
 }
 
-refresh_data_display <- function(output, selected_sub_tab, municipalities=list(), year=default_selected_year) {
+refresh_data_display <- function(output, selected_sub_tab, municipalities, year) {
   if (is.null(selected_sub_tab)) {
     selected_sub_tab <- SUB_TAB_POPULATION
   }

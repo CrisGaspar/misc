@@ -53,9 +53,14 @@ def all_municipalities(request):
     if request.user is None or not request.user.is_authenticated:
         return error_response(ERROR_USER_NOT_AUTHENTICATED)
 
+    year = request.GET.get('year')
+    if year is None:
+        return error_response(ERROR_MISSING_YEAR_PARAMETER)
+    year = int(year)
+
     if request.method == 'GET':
         try:
-            municipalities_from_db = MunicipalityData.objects.values_list('name', flat=True)
+            municipalities_from_db = MunicipalityData.objects.filter(year=year).values_list('name', flat=True)
             municipality_list = []
             for municipality in municipalities_from_db:
                 municipality_list.append(municipality)
@@ -70,9 +75,14 @@ def municipality_groups(request):
     if request.user is None or not request.user.is_authenticated:
         return error_response(ERROR_USER_NOT_AUTHENTICATED)
 
+    year = request.GET.get('year')
+    if year is None:
+        return error_response(ERROR_MISSING_YEAR_PARAMETER)
+    year = int(year)
+
     if request.method == 'GET':
         try:
-            groups_from_db = MunicipalityGroup.objects.all()
+            groups_from_db = MunicipalityGroup.objects.filter(year = year)
             groups_dict = {}
             for group_entry in groups_from_db:
                 key = group_entry.group_name
@@ -466,3 +476,39 @@ EXPECTED_SHEET_NAMES = [
 
     "Net Expenditures per Capita"
 ]
+
+import pandas as pd
+#filename = "2014_tier_groups.csv"
+#year = 2014
+
+def create_groups(file, data_year):
+    df = pd.read_csv(file, header = None)
+    for index, row in df.iterrows():
+        group_name = row[0]
+        municipality_name = row[1]
+        group = MunicipalityGroup()
+        group.year = data_year
+        group.group_name = group_name
+        group.municipality_name = municipality_name
+        group.save()
+
+def create_all_groups():
+    MunicipalityGroup.objects.all().delete()
+
+    create_groups("2014_loc_groups.csv", 2014)
+    create_groups("2014_pop_groups.csv", 2014)
+    create_groups("2014_tier_groups.csv", 2014)
+    create_groups("2015_loc_groups.csv", 2015)
+    create_groups("2015_pop_groups.csv", 2015)
+    create_groups("2015_tier_groups.csv", 2015)
+    create_groups("2016_loc_groups.csv", 2016)
+    create_groups("2016_pop_groups.csv", 2016)
+    create_groups("2016_tier_groups.csv", 2016)
+    create_groups("2017_loc_groups.csv", 2017)
+    create_groups("2017_pop_groups.csv", 2017)
+    create_groups("2017_tier_groups.csv", 2017)
+    create_groups("2018_loc_groups.csv", 2018)
+    create_groups("2018_pop_groups.csv", 2018)
+    create_groups("2018_tier_groups.csv", 2018)
+
+#create_all_groups()

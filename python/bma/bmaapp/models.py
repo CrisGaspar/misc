@@ -332,6 +332,7 @@ class Municipality(models.Model):
     population_band = models.CharField(max_length=default_max_string_length, null=True)
 
 class MunicipalityGroup(models.Model):
+    year = models.IntegerField()
     group_name = models.CharField(max_length=default_max_string_length, null=True)
     municipality_name = models.CharField(max_length=default_max_string_length, null=True)
 

@@ -38,15 +38,18 @@ get_population_years <- function(selected_year) {
 }
 
 current_year <- as.integer(format(Sys.Date(), "%Y"))
-default_selected_year <- 2018
-oldest_year <- 1991L
+default_selected_year <- current_year - 1
+oldest_year <- 2014L
 years_all_options <- oldest_year: current_year
-recent_years <- get_recent_years(default_selected_year)
-population_years <- get_population_years(default_selected_year)
 
 municipality_group_type_population <- "Population"
 municipality_group_type_tier <- "Tier"
 municipality_group_type_location <- "Location"
+
+ALL_MUNICIPALITIES_LABEL <- "All Municipalities"
+CUSTOM_MUNICIPALITY_GROUPS_LABEL <- "Custom Groups"
+ALL_MUNICIPALITY_SELECTOR_ID <- "municipalitySelector"
+CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID <- "municipalityGroupSelector"
 
 SUB_TAB_POPULATION <- "Population"
 SUB_TAB_DENSITY_LAND_AREA <- "Density and Land Area"
