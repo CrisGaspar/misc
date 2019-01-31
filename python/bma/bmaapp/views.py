@@ -476,39 +476,3 @@ EXPECTED_SHEET_NAMES = [
 
     "Net Expenditures per Capita"
 ]
-
-import pandas as pd
-#filename = "2014_tier_groups.csv"
-#year = 2014
-
-def create_groups(file, data_year):
-    df = pd.read_csv(file, header = None)
-    for index, row in df.iterrows():
-        group_name = row[0]
-        municipality_name = row[1]
-        group = MunicipalityGroup()
-        group.year = data_year
-        group.group_name = group_name
-        group.municipality_name = municipality_name
-        group.save()
-
-def create_all_groups():
-    MunicipalityGroup.objects.all().delete()
-
-    create_groups("2014_loc_groups.csv", 2014)
-    create_groups("2014_pop_groups.csv", 2014)
-    create_groups("2014_tier_groups.csv", 2014)
-    create_groups("2015_loc_groups.csv", 2015)
-    create_groups("2015_pop_groups.csv", 2015)
-    create_groups("2015_tier_groups.csv", 2015)
-    create_groups("2016_loc_groups.csv", 2016)
-    create_groups("2016_pop_groups.csv", 2016)
-    create_groups("2016_tier_groups.csv", 2016)
-    create_groups("2017_loc_groups.csv", 2017)
-    create_groups("2017_pop_groups.csv", 2017)
-    create_groups("2017_tier_groups.csv", 2017)
-    create_groups("2018_loc_groups.csv", 2018)
-    create_groups("2018_pop_groups.csv", 2018)
-    create_groups("2018_tier_groups.csv", 2018)
-
-#create_all_groups()

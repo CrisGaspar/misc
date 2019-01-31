@@ -531,7 +531,8 @@ server <- function(input, output, session) {
   })
 
   municipal_data <- reactiveValues(data_frame_all_columns = NULL, data_frame_filtered_columns = NULL, data_frame_filtered_columns_stats = NULL, 
-                                   data_frame_population_by_year = NULL, data_frame_building_permit_activity_by_year = NULL)
+                                   data_frame_population_by_year = NULL, data_frame_building_permit_activity_by_year = NULL,
+                                   custom_groups_selection_changed_by_user = F)
   
   # All municipality Selector 
   observeEvent(input[[ALL_MUNICIPALITY_SELECTOR_ID]], {
@@ -540,9 +541,15 @@ server <- function(input, output, session) {
       return() 
     }
     
-    # deselect the other municipality selector
-    deselect_selector(CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID, all_choices = get_all_group_names())
-
+    if (!municipal_data$custom_groups_selection_changed_by_user) {
+      # custom groups was not changed by user. the user changed the all municipality selector
+      # deselect the other municipality selector
+      deselect_selector(CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID, all_choices = get_all_group_names())
+    }
+    # reset this flag to default of false so that a transition from user changed custom group selection to user 
+    # changed all municipalities selection can still work property to unselect that previous custom group selection
+    municipal_data$custom_groups_selection_changed_by_user = F
+    
     # update label with updated selected count
     new_label <- paste(ALL_MUNICIPALITIES_LABEL, 
                        selected_count_status(input[[ALL_MUNICIPALITY_SELECTOR_ID]], 
@@ -565,6 +572,8 @@ server <- function(input, output, session) {
       return() 
     }
     
+    municipal_data$custom_groups_selection_changed_by_user <- T
+    
     # deselect the other municipality selector
     deselect_selector(ALL_MUNICIPALITY_SELECTOR_ID, all_choices = get_all_municipalities())
     
@@ -578,6 +587,13 @@ server <- function(input, output, session) {
     # Store data_frame so that it's accessible to the observeEvent code that is triggered 
     # when another sub-tab is selected in the UI
     selected_municipalities <- get_selected_municipalities(selector = CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID)
+
+    # create new label and update all municipalities selector selector to match what's selected by current groups selection
+    all_municipalities <- get_all_municipalities()
+    new_label <- paste(ALL_MUNICIPALITIES_LABEL, 
+                       selected_count_status(selected_municipalities, 
+                                             all_municipalities))    
+    updateSelectInput(session, ALL_MUNICIPALITY_SELECTOR_ID, label = new_label, choices = all_municipalities, selected = selected_municipalities)
 
     data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = selected_municipalities, year = input$data_display_year_selector)
     set_municipal_data(data_frames_list)
