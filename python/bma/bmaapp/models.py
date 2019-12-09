@@ -26,6 +26,7 @@ COLUMN_NAME_INDUSTRIAL = 'Industrial'
 COLUMN_NAME_PIPELINES = 'Pipelines'
 COLUMN_NAME_FARMLANDS = 'Farmlands'
 COLUMN_NAME_FORESTS = 'Forests'
+COLUMN_NAME_LANDFILL = 'Landfill'
 COLUMN_NAME_BUILDING_CONSTRUCTION_VALUE = 'Building Construction Value ($000)'
 COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX = 'per Capita'
 COLUMN_NAME_TOTAL_NET_LEVY = 'Total Net Levy (Upper and Lower Tiers)'
@@ -48,8 +49,8 @@ COLUMN_NAME_TAXES_RECEIVABLE_PERCENT_TAXES_LEVIED = 'Taxes Receivable as a % of 
 COLUMN_NAME_RATES_COVERAGE_RATIO = 'Rates Coverage Ratio'
 COLUMN_NAME_NET_FINANCIAL_LIABILITIES_RATIO = 'Net Financial Liabilities Ratio'
 COLUMN_NAME_SINGLE_DETACHED_DWELLINGS_PER_UNIT = 'Single Detached Dwellings per unit'
-COLUMN_NAME_MULTIPLES_DWELLING__3_OR_MORE = 'Multiples Dwelling 3+ per unit'
-COLUMN_NAME_MULTIPLES_DWELLING_1_OR_2 = 'Multiples Dwelling 1&2 per unit'
+COLUMN_NAME_MULTIPLES_DWELLING__3_OR_MORE = 'Multiples Dwelling 3+ bed. per unit'
+COLUMN_NAME_MULTIPLES_DWELLING_1_OR_2 = 'Multiples Dwelling 1&2 bed. per unit'
 COLUMN_NAME_APARTMENT_UNITS_2_OR_MORE = 'Apartment units >=2 per unit'
 COLUMN_NAME_APARTMENT_UNITS_LESS_THAN_2 = 'Apartment units < 2 per unit'
 COLUMN_NAME_NON_RESIDENTIAL_COMMERCIAL_PER_SQFT = 'Non Residential Commercial per sq. ft.'
@@ -156,6 +157,7 @@ COLUMN_NAME_GENERAL_GOVERNMENT = 'General Government'
 COLUMN_NAME_CONSERVATION_AUTHORITY = 'Conservation Authority'
 COLUMN_NAME_AMBULANCE = 'Ambulance'
 COLUMN_NAME_CEMETERIES = 'Cemeteries'
+COLUMN_NAME_AGRICULTURE_AND_REFORESTATION = 'Agriculture and reforestation'
 
 excel_column_name_to_db_column_name = {
     COLUMN_NAME_MUNICIPALITY: 'name',
@@ -182,6 +184,7 @@ excel_column_name_to_db_column_name = {
     COLUMN_NAME_PIPELINES: 'pipelines',
     COLUMN_NAME_FARMLANDS: 'farmlands',
     COLUMN_NAME_FORESTS: 'forests',
+    COLUMN_NAME_LANDFILL: 'landfill',
 
     COLUMN_NAME_TOTAL_NET_LEVY: 'total_net_levy_upper_and_lower_tiers',
     COLUMN_NAME_LEVY_PER_CAPITA: 'levy_per_capita',
@@ -315,7 +318,8 @@ excel_column_name_to_db_column_name = {
     COLUMN_NAME_GENERAL_GOVERNMENT: 'general_government',
     COLUMN_NAME_CONSERVATION_AUTHORITY: 'conservation_authority',
     COLUMN_NAME_AMBULANCE: 'ambulance',
-    COLUMN_NAME_CEMETERIES: 'cemeteries'
+    COLUMN_NAME_CEMETERIES: 'cemeteries',
+    COLUMN_NAME_AGRICULTURE_AND_REFORESTATION: 'agriculture_and_reforestation'
 }
 
 
@@ -383,6 +387,7 @@ class MunicipalityData(models.Model):
     pipelines = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     farmlands = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     forests = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    landfill = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
 
     total_net_levy_upper_and_lower_tiers = models.DecimalField(max_digits=default_max_digits,
                                                                decimal_places=default_decimal_places, null=True)
@@ -615,6 +620,7 @@ class MunicipalityData(models.Model):
                                                  null=True)
     ambulance = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     cemeteries = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    agriculture_and_reforestation =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
 
     def store(self, dict):
         dict.clear()
