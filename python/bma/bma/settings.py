@@ -25,7 +25,7 @@ SECRET_KEY = '%)s2*)9$)nim(x60qp^%lxm1$m97%r9#48&exlwr%2qdghcx1t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['www.bmaconsultingdata.com','localhost']
 
 LOGIN_URL = 'bmaapp/login/'
 
