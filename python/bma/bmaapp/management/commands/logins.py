@@ -20,10 +20,12 @@ class Command(BaseCommand):
         User.objects.all().delete()
 
         for index, row in users_data.iterrows():
-            # usernames and passwords are 2nd and 3rd columns respectively
-            current_username = row[1]
-            current_password = row[2]
-            user = User.objects.create_user(username=current_username,password=current_password)
+            # skip first row that has column labels
+            if index != 0:
+                # usernames and passwords are 2nd and 3rd columns respectively
+                current_username = row[1]
+                current_password = row[2]
+                user = User.objects.create_user(username=current_username,password=current_password)
 
         # create superuser
         if superuser_name is None or superuser_password is None:
