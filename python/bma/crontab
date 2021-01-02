@@ -1,0 +1,2 @@
+# Check every minute if BMA API Django app needs to be started
+* * * * * /home/ubuntu/bma/bmaapi.sh
