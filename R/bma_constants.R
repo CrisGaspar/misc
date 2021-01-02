@@ -37,8 +37,10 @@ get_population_years <- function(selected_year) {
   population_years
 }
 
-current_year <- as.integer(format(Sys.Date(), "%Y"))
-default_selected_year <- current_year - 1
+#current_year <- as.integer(format(Sys.Date(), "%Y"))
+#default_selected_year <- current_year - 1
+default_selected_year <- 2020
+current_year <- default_selected_year
 oldest_year <- 2014L
 years_all_options <- oldest_year: current_year
 
