@@ -18,7 +18,7 @@ from bmaapp.models import EndUser, Municipality, MunicipalityData, MunicipalityG
 from bmaapp.models import COLUMN_NAME_MUNICIPALITY, COLUMN_NAME_MULTI_RESIDENTIAL, COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL
 from bmaapp.models import COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX, \
     COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA
-from bmaapp.utils import convert_db_data
+from bmaapp.utils import convert_db_data, normalize_name
 
 # ---------------------------------------------------------------------------------------------------------------------
 # TODO:
@@ -108,6 +108,8 @@ def municipalities(request):
     if request.user is None or not request.user.is_authenticated:
         return error_response(ERROR_USER_NOT_AUTHENTICATED)
 
+    logging.info('/municipalities endpoint has been deprecated')
+
     user_id = request.user.username
 
     if request.method == 'GET':
@@ -183,7 +185,7 @@ def municipality_data(request):
                     else:
                         (property_name, year_to_use) = split_to_year_and_property_name(column_name, year, sheet_name)
                         for index, val in enumerate(column_data):
-                            municipality = municipalities[index]
+                            municipality = normalize_name(municipalities[index])
                             tuple_key = (municipality, year_to_use)
                             if tuple_key in data_by_municipality_and_year:
                                 data_entry = data_by_municipality_and_year[tuple_key]
@@ -210,6 +212,9 @@ def municipality_data(request):
                 existing_db_data = MunicipalityData()
                 new_db_data = MunicipalityData()
                 data_dict = {}
+
+                if len(dataset_for_year) >= 2:
+                  logging.error(f'Found duplicate db entry for year {data_year} and municipality {municipality}')
 
                 for data_entry in dataset_for_year:
                     # should be at most 1 entry

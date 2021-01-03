@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from bmaapp.models import MunicipalityGroup
+from bmaapp.utils import normalize_name
 import pandas
 
 
@@ -18,7 +19,7 @@ class Command(BaseCommand):
             # ignore 1st row which has column labels
             if index != 0:
                 group_name = row[0]
-                municipality_name = row[1]
+                municipality_name = normalize_name(row[1])
                 group = MunicipalityGroup()
                 group.year = data_year
                 group.group_name = group_name
