@@ -14,7 +14,7 @@ class Command(BaseCommand):
     # Creates users in DB based on given csv file
     def create_users(self, file, superuser_name, superuser_password):
         # read user credentials from given csv file
-        users_data = pd.read_csv(file, header = None)
+        users_data = pd.read_csv(file)
 
         # existing db creds: delete instead of upsert snce some users credentials may get revoked hence not present in the given file
         User.objects.all().delete()
@@ -22,9 +22,8 @@ class Command(BaseCommand):
         for index, row in users_data.iterrows():
             # skip first row that has column labels
             if index != 0:
-                # usernames and passwords are 2nd and 3rd columns respectively
-                current_username = row[1]
-                current_password = row[2]
+                current_username = row['Login']
+                current_password = row['Password']
                 user = User.objects.create_user(username=current_username,password=current_password)
 
         # create superuser
