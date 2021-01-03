@@ -18,6 +18,7 @@ from bmaapp.models import EndUser, Municipality, MunicipalityData, MunicipalityG
 from bmaapp.models import COLUMN_NAME_MUNICIPALITY, COLUMN_NAME_MULTI_RESIDENTIAL, COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL
 from bmaapp.models import COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX, \
     COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA
+from bmaapp.utils import convert_db_data
 
 # ---------------------------------------------------------------------------------------------------------------------
 # TODO:
@@ -276,14 +277,10 @@ def municipality_data_by_years(request):
 #-----------------------------------------------------------------------------------------------------------------------
 
 def get_municipality_data(municipalities_list, year):
-    dataset_for_year = MunicipalityData.objects.filter(year=year).filter(name__in=municipalities_list).order_by('name')
+    db_data = MunicipalityData.objects.filter(year=year).filter(name__in=municipalities_list).order_by('name')
 
     # Store data as list of dictionaries: one per each entry
-    data = []
-    for data_entry in dataset_for_year:
-        data_dict = {}
-        data_entry.store(data_dict)
-        data.append(data_dict)
+    data = convert_db_data(db_data)
     return success_response({'data': data})
 
 def get_column_name_with_year(name, year):

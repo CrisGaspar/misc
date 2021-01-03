@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
         # create superuser
         if superuser_name is None or superuser_password is None:
-            self.stdout.write('Missing superuser name or password')
+            self.stderr.write('Missing superuser name or password')
         else:
             user = User.objects.create_user(username=superuser_name,password=superuser_password)
             user.is_superuser=True
