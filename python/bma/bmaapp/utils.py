@@ -16,9 +16,11 @@ name_types = ['Region', 'County', 'District']
 def normalize_name(name):
     # Remove redundant and trailing whitespace
     cleaned_name = re.sub(' +', ' ', name.strip())
+
     # Ensure that dashes are flanked by exactly 1 space
-    cleaned_parts = cleaned_name.split('-')
-    cleaned_name = ' - '.join([part.strip() for part in cleaned_parts])
+    # Disabling since different years might have different spacing in the dash case
+    #cleaned_parts = cleaned_name.split('-')
+    #cleaned_name = ' - '.join([part.strip() for part in cleaned_parts])
 
     # Split by whitespace so we can do the name types checks
     name_parts = cleaned_name.split()
