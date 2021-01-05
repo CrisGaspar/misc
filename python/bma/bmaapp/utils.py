@@ -9,11 +9,15 @@ def convert_db_data(db_data):
         data.append(data_dict)
     return data
 
+def normalize_name(name):
+    # Remove redundant and trailing whitespace
+    cleaned_name = re.sub(' +', ' ', name.strip())
+    return cleaned_name
 
 name_types = ['Region', 'County', 'District']
 
 # Normalizes region and county names to '<name> Region' or '<name> County'
-def normalize_name(name):
+def normalize_name_2(name):
     # Remove redundant and trailing whitespace
     cleaned_name = re.sub(' +', ' ', name.strip())
 
