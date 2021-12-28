@@ -7,7 +7,7 @@ class Command(BaseCommand):
     help = 'Adds users to django from csv file plus 1 superuser'
 
     def add_arguments(self, parser):
-        parser.add_argument('csvfile')
+        parser.add_argument('year')
         parser.add_argument('username')
         parser.add_argument('password')
 
@@ -36,5 +36,6 @@ class Command(BaseCommand):
             user.save()
 
     def handle(self, *args, **options):
-        self.create_users(options['csvfile'], options['username'], options['password'])
+        year = options['year']
+        self.create_users(f'data/{year}_logins.csv', options['username'], options['password'])
 
