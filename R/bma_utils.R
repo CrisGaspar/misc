@@ -1,5 +1,31 @@
 source("bma_constants.R", local=TRUE)
 
+# TODO: Add description
+getRecentYears <- function(selected_year) {
+  year <- as.numeric(selected_year)
+  (year-3):(year-1)
+}
+
+# TODO: Add description
+getPopulationYears <- function(selected_year) {
+  year <- as.numeric(selected_year)
+
+  # Census is every 5 years. Start from 2006
+  start_year = 2006
+  if (year <= start_year) {
+    population_years <- list(year)
+  }
+  else {
+    population_years <- seq(from = start_year, to = year, by = 5)
+  }
+
+  # selected year must always be the last element. add only if it is NOT already there
+  if (tail(population_years, n = 1) != year) {
+    population_years <- append(population_years, year)
+  }
+  population_years
+}
+
 excel_sheet_names <- function(filename) {
   readxl::excel_sheets(filename)
 }
@@ -28,7 +54,7 @@ merge_data_frames_vertically_export <- function(df, df_stats) {
 
 # Convert data_frame to numeric columns except the first 1 column which is the municipalities names
 convert_to_numeric <- function(data_frame) {
-  cols <- (non_numeric_cols_count+1):ncol(data_frame)
+  cols <- (kNonNumericColumnsCount+1):ncol(data_frame)
   data_frame[cols] <- lapply(data_frame[cols], as.numeric)
   data_frame
 }
@@ -45,7 +71,7 @@ filter_data_frame <- function(data_frame, filter_columns) {
 
 # Create stats data frame for given data frame with min, max, average, and median for each numeric column in given data frame
 get_stats <- function(data_frame) {
-  data_frame_only_numeric <- data_frame[,-non_numeric_cols_count]
+  data_frame_only_numeric <- data_frame[,-kNonNumericColumnsCount]
   
   # Create empty data frame that will store the stats
   num_columns <- ncol(data_frame)
@@ -72,22 +98,22 @@ get_stats <- function(data_frame) {
 
 # Call API login endpoint with given credentials to authenticate user
 call_login_endpoint <- function(userid, password) {
-  url <- paste(api_server_url, login_endpoint, "?", "userid", "=", userid, "&", "password", "=", password, sep="")
+  url <- paste(kApiUrl, kLoginEndpoint, "?", "userid", "=", userid, "&", "password", "=", password, sep="")
   call_success <- httr::GET(url)
   call_success_text <- content(call_success, "text")
   call_success_final <- fromJSON(call_success_text)
 }
 
 call_API_all_municipalities_endpoint <- function(year) {
-  call_API_municipalities_helper(all_municipalities_endpoint, year = year)
+  call_API_municipalities_helper(kAllMunicipalitiesEndpoint, year = year)
 }
 
 call_API_all_municipality_groups_endpoint <- function(year) {
-  call_API_municipalities_helper(municipality_groups_endpoint, year = year)
+  call_API_municipalities_helper(kMunicipalityGroupsEndpoint, year = year)
 }
 
 call_API_municipalities_helper <- function(endpoint, year) {
-  url <-paste(api_server_url, endpoint, "?year=", year, sep="")
+  url <-paste(kApiUrl, endpoint, "?year=", year, sep="")
   method <- httr::GET
   
   error <- NULL
@@ -114,12 +140,12 @@ call_API_municipalities_helper <- function(endpoint, year) {
 
 call_API_columns_by_years_endpoint <- function(municipalities, years, by_year_columns) {
   if (is.null(municipalities)) {
-    result <- list(success = 'true', error_message = kInfoNoInitialMunicipalitySelection, data = NULL)
+    result <- list(success = 'true', error_message = kInfoNoMunicipalitySelection, data = NULL)
     print(result)
     return(result)
   }
   
-  url <-paste(api_server_url, columns_by_years_endpoint, sep="")
+  url <-paste(kApiUrl, kDataByYearsEndpoint, sep="")
   method <- httr::POST
   
   # To get data: 3 lists of municipalities, years and by_year_columns are passed in body in JSON format
@@ -134,7 +160,7 @@ call_API_columns_by_years_endpoint <- function(municipalities, years, by_year_co
 
 # Call data read/write endpoint
 call_API_data_endpoint <- function(municipalities = NULL, year = NULL, data_frames = NULL) {
-  url <-paste(api_server_url, data_endpoint, "?year=", year, sep="")
+  url <-paste(kApiUrl, kDataEndpoint, "?year=", year, sep="")
   method <- httr::POST
   
   # To get data a year parameter and a list of municipalities is passed as JSON body
@@ -146,7 +172,7 @@ call_API_data_endpoint <- function(municipalities = NULL, year = NULL, data_fram
     requestBody <- paste('{"data":',  rjson::toJSON(data_frames), '}')
   }
   else if (is.null(municipalities)) {
-    result <- list(success = 'true', error_message = kInfoNoInitialMunicipalitySelection, data = NULL)
+    result <- list(success = 'true', error_message = kInfoNoMunicipalitySelection, data = NULL)
     print(result)
     return(result)
   }
@@ -323,10 +349,10 @@ get_municipality_data <- function(municipalities, year, population_by_year = F, 
     }
     else {
       if (population_by_year) {
-        years <- get_population_years(year)
+        years <- getPopulationYears(year)
       }
       else if (!is.null(by_year_columns)){
-        years <- get_recent_years(year)
+        years <- getRecentYears(year)
       }
     }
 

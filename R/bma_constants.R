@@ -1,57 +1,35 @@
-api_server_url <- 'http://localhost:8000/bmaapp/'
-login_endpoint <- 'login'
-all_municipalities_endpoint <- 'all_municipalities'
-municipality_groups_endpoint <- 'municipality_groups'
-data_endpoint <- 'data'
-columns_by_years_endpoint <- 'data_subset_by_years'
+# Convention: all constants start with 'k'
 
-# Only Municipality column is non-numeric
-non_numeric_cols_count <- 1
-export_filename <-"bmaExport.xls"
+# Configuration
+kApiUrl <- 'http://localhost:8000/bmaapp/'
+kLoginEndpoint <- 'login'
+kAllMunicipalitiesEndpoint <- 'all_municipalities'
+kMunicipalityGroupsEndpoint <- 'municipality_groups'
+kDataEndpoint <- 'data'
+kDataByYearsEndpoint <- 'data_subset_by_years'
+
+# Only Municipality column (1st one) is non-numeric
+kNonNumericColumnsCount <- 1
 
 # Errors
-kErrorTitleFailedToLoadData = 'Failed to Load from Excel File'
-kInfoNoInitialMunicipalitySelection = 'No Initial Municipality Selection'
+kErrorFailedToLoadData <- 'Failed to Load from Excel File'
+kInfoNoMunicipalitySelection <- 'No Initial Municipality Selection'
 
-get_recent_years <- function(selected_year) {
-  year <- as.numeric(selected_year) 
-  (year-3):(year-1)
-}
+# Defaults to most recent year we have data for
+# TODO: Get it from API instead of hardcoded value
+kMostRecentYear <- 2021L
+# 2014 is the oldest year
+kAllYears <- 2014L: kMostRecentYear
 
-get_population_years <- function(selected_year) {
-  year <- as.numeric(selected_year)
+# R language does not have enums so have to use string consts instead
+kPopulationGroup <- "Population"
+kTierGroup <- "Tier"
+kLocationGroup <- "Location"
 
-  # Census is every 5 years. Start from 2006
-  start_year = 2006
-  if (year <= start_year) {
-    population_years <- list(year)
-  }
-  else {
-    population_years <- seq(from = start_year, to = year, by = 5)
-  }
-
-  # selected year must always be the last element. add only if it's not already there
-  if (tail(population_years, n = 1) != year) {
-    population_years <- append(population_years, year)
-  }
-  population_years
-}
-
-#current_year <- as.integer(format(Sys.Date(), "%Y"))
-#default_selected_year <- current_year - 1
-default_selected_year <- 2021
-current_year <- default_selected_year
-oldest_year <- 2014L
-years_all_options <- oldest_year: current_year
-
-municipality_group_type_population <- "Population"
-municipality_group_type_tier <- "Tier"
-municipality_group_type_location <- "Location"
-
-ALL_MUNICIPALITIES_LABEL <- "All Municipalities"
-CUSTOM_MUNICIPALITY_GROUPS_LABEL <- "Custom Groups"
-ALL_MUNICIPALITY_SELECTOR_ID <- "municipalitySelector"
-CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID <- "municipalityGroupSelector"
+kAllMunicipalitiesLabel <- "All Municipalities"
+kCustomMunicipalityGroupsLabel <- "Custom Groups"
+kAllMunicipalitySelector <- "municipalitySelector"
+kCustomMunicipalityGroupSelector <- "municipalityGroupSelector"
 
 SUB_TAB_POPULATION <- "Population"
 SUB_TAB_DENSITY_LAND_AREA <- "Density and Land Area"

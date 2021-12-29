@@ -1,3 +1,4 @@
+# Load libraries used by app
 library(shiny)
 library(readxl)
 library(writexl)
@@ -12,7 +13,7 @@ library(rlist)
 library(shinydashboard)
 library(shinyjs)
 
-# Load constants
+# Load constants and utils
 source("bma_constants.R", local=TRUE)
 source("bma_utils.R", local=TRUE)
 
@@ -68,7 +69,7 @@ server <- function(input, output, session) {
             user_input$authenticated <- TRUE
             user_input$is_superuser <- (login_result$is_superuser == 'TRUE')
             
-            refresh_municipalities_and_groups(year = default_selected_year, is_initial_refresh = T)
+            refresh_municipalities_and_groups(year = kMostRecentYear, is_initial_refresh = T)
             user_input$error_message <- NULL
           } 
           else {
@@ -105,20 +106,20 @@ server <- function(input, output, session) {
           
           selectInput(inputId = "data_display_year_selector",
                       label="Year",
-                      choices = years_all_options,
-                      selected = default_selected_year,
+                      choices = kAllYears,
+                      selected = kMostRecentYear,
                       selectize = TRUE),
           
-          selectInput(inputId = ALL_MUNICIPALITY_SELECTOR_ID,
-                      label = ALL_MUNICIPALITIES_LABEL,
+          selectInput(inputId = kAllMunicipalitySelector,
+                      label = kAllMunicipalitiesLabel,
                       choices = NULL,
                       selected = NULL,
                       multiple = TRUE,
                       selectize = FALSE,
                       size = 10),
           
-          selectInput(inputId = CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID,
-                      label = CUSTOM_MUNICIPALITY_GROUPS_LABEL,
+          selectInput(inputId = kCustomMunicipalityGroupSelector,
+                      label = kCustomMunicipalityGroupsLabel,
                       choices = NULL,
                       selected = NULL,
                       multiple = TRUE,
@@ -146,8 +147,8 @@ server <- function(input, output, session) {
           
           selectInput(inputId = "data_load_year_selector",
                       label="Year for Data Import",
-                      choices = years_all_options,
-                      selected = default_selected_year,
+                      choices = kAllYears,
+                      selected = kMostRecentYear,
                       selectize = TRUE),
           
           # Input: Select a file ----
@@ -165,20 +166,20 @@ server <- function(input, output, session) {
           
           selectInput(inputId = "data_display_year_selector",
                       label="Year",
-                      choices = years_all_options,
-                      selected = default_selected_year,
+                      choices = kAllYears,
+                      selected = kMostRecentYear,
                       selectize = TRUE),
           
-          selectInput(inputId = ALL_MUNICIPALITY_SELECTOR_ID,
-                      label = ALL_MUNICIPALITIES_LABEL,
+          selectInput(inputId = kAllMunicipalitySelector,
+                      label = kAllMunicipalitiesLabel,
                       choices = NULL,
                       selected = NULL,
                       multiple = TRUE,
                       selectize = FALSE,
                       size = 10),
           
-          selectInput(inputId = CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID,
-                      label = CUSTOM_MUNICIPALITY_GROUPS_LABEL,
+          selectInput(inputId = kCustomMunicipalityGroupSelector,
+                      label = kCustomMunicipalityGroupsLabel,
                       choices = NULL,
                       selected = NULL,
                       multiple = TRUE,
@@ -225,11 +226,11 @@ server <- function(input, output, session) {
   deselect_selector <- function(selector_id, all_choices) {
     new_selected <- NULL
     label <- NULL
-    if (selector_id == ALL_MUNICIPALITY_SELECTOR_ID) {
-      label <- ALL_MUNICIPALITIES_LABEL
+    if (selector_id == kAllMunicipalitySelector) {
+      label <- kAllMunicipalitiesLabel
     }
-    else if (selector_id == CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID) {
-      label <- CUSTOM_MUNICIPALITY_GROUPS_LABEL
+    else if (selector_id == kCustomMunicipalityGroupSelector) {
+      label <- kCustomMunicipalityGroupsLabel
     }
     
     new_label <- paste(label, selected_count_status(new_selected, all_choices))
@@ -250,11 +251,11 @@ server <- function(input, output, session) {
     }
     
     label <- NULL
-    if (selector_id == ALL_MUNICIPALITY_SELECTOR_ID) {
-      label <- ALL_MUNICIPALITIES_LABEL
+    if (selector_id == kAllMunicipalitySelector) {
+      label <- kAllMunicipalitiesLabel
     }
-    else if (selector_id == CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID) {
-      label <- CUSTOM_MUNICIPALITY_GROUPS_LABEL
+    else if (selector_id == kCustomMunicipalityGroupSelector) {
+      label <- kCustomMunicipalityGroupsLabel
     }
     
     new_label <- paste(label, selected_count_status(selected_choices, all_choices))
@@ -291,13 +292,13 @@ server <- function(input, output, session) {
     all_choices <- get_all_group_names()
 
     # update UI selector. for groups we don't care if it's initial update or not.
-    selected_choices_groups <- update_selector(CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID, all_choices, is_initial_update = NULL)
+    selected_choices_groups <- update_selector(kCustomMunicipalityGroupSelector, all_choices, is_initial_update = NULL)
     
     # Full list of municipalities active for given year
     all_choices <- get_all_municipalities()
     
     # update UI selector
-    selected_choices_municipalities <- update_selector(ALL_MUNICIPALITY_SELECTOR_ID, all_choices, is_initial_update = is_initial_refresh)
+    selected_choices_municipalities <- update_selector(kAllMunicipalitySelector, all_choices, is_initial_update = is_initial_refresh)
 
     selected_municipalities <- get_selected_municipalities_explicitly(selected_choices_groups, selected_choices_municipalities)
     selected_municipalities
@@ -335,12 +336,12 @@ server <- function(input, output, session) {
   
   get_selected_municipalities <- function(selectorID = NULL) {
     if (!is.null(selectorID)) {
-      if (selectorID == ALL_MUNICIPALITY_SELECTOR_ID) {
-        return(input[[ALL_MUNICIPALITY_SELECTOR_ID]])
+      if (selectorID == kAllMunicipalitySelector) {
+        return(input[[kAllMunicipalitySelector]])
       }
-      else if (selectorID == CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID) {
+      else if (selectorID == kCustomMunicipalityGroupSelector) {
         # find the list of municipalities in this group
-        group_names <- input[[CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID]]
+        group_names <- input[[kCustomMunicipalityGroupSelector]]
         group_mappings <- municipality_groups$group_mappings
         municipality_list <- get_municipality_list_for_groups(group_mappings, filter_names = group_names)
         return(municipality_list)
@@ -351,14 +352,14 @@ server <- function(input, output, session) {
     }
     
     # no explicit selector passed in. so try both
-    full_selector_val <- input[[ALL_MUNICIPALITY_SELECTOR_ID]]
+    full_selector_val <- input[[kAllMunicipalitySelector]]
 
     if (!is.null(full_selector_val)) {
       return(full_selector_val)
     }
-    else if (!is.null(input[[CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID]])) {
+    else if (!is.null(input[[kCustomMunicipalityGroupSelector]])) {
       # find the list of municipalities in this group
-      group_names <- input[[CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID]]
+      group_names <- input[[kCustomMunicipalityGroupSelector]]
       group_mappings <- municipality_groups$group_mappings
       municipality_list <- get_municipality_list_for_groups(group_mappings, filter_names = group_names)
       return(municipality_list)
@@ -378,8 +379,8 @@ server <- function(input, output, session) {
   }
 
   get_selected_municipality_group_info <- function(separator = " ") {
-    if (!is.null(input[[CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID]])) {
-      selected_municipality_groups_info <- paste(input[[CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID]], collapse=", ")
+    if (!is.null(input[[kCustomMunicipalityGroupSelector]])) {
+      selected_municipality_groups_info <- paste(input[[kCustomMunicipalityGroupSelector]], collapse=", ")
       selected_municipality_groups_info <- paste(selected_municipality_groups_info, "Municipalities")
       selected_municipality_groups_info
     }
@@ -400,32 +401,32 @@ server <- function(input, output, session) {
   }
   
   get_all_municipalities_helper <- function(groups_info) {
-    get_municipality_list_for_group_type(groups_info, filter_names = NULL, municipality_group_type_tier)
+    get_municipality_list_for_group_type(groups_info, filter_names = NULL, kTierGroup)
   }
   
   get_municipality_list_for_group_type <- function(groups_info, filter_names, group_type) {
     municipality_list <- list()
-    if (group_type == municipality_group_type_population) {
+    if (group_type == kPopulationGroup) {
       municipality_list <- lapply(groups_info, function(group_info) {
         if ((is.null(filter_names) || group_info$group_name %in% filter_names) 
-            && grepl(municipality_group_type_population, group_info$group_name, fixed = TRUE, ignore.case = TRUE)) {
+            && grepl(kPopulationGroup, group_info$group_name, fixed = TRUE, ignore.case = TRUE)) {
           return(group_info$municipality_list)
         }
       })
     }
-    else if (group_type == municipality_group_type_tier) {
+    else if (group_type == kTierGroup) {
       municipality_list <- lapply(groups_info, function(group_info) {
         if ((is.null(filter_names) || group_info$group_name %in% filter_names) 
-            && grepl(municipality_group_type_tier, group_info$group_name, fixed = TRUE, ignore.case = TRUE)) {
+            && grepl(kTierGroup, group_info$group_name, fixed = TRUE, ignore.case = TRUE)) {
           return(group_info$municipality_list)
         }
       })
     }
-    else if (group_type == municipality_group_type_location) {
+    else if (group_type == kLocationGroup) {
       municipality_list <- lapply(groups_info, function(group_info) {
         if ((is.null(filter_names) || group_info$group_name %in% filter_names) 
-            && !grepl(municipality_group_type_population, group_info$group_name, fixed = TRUE, ignore.case = TRUE)
-            && !grepl(municipality_group_type_tier, group_info$group_name, fixed = TRUE, ignore.case = TRUE)) {
+            && !grepl(kPopulationGroup, group_info$group_name, fixed = TRUE, ignore.case = TRUE)
+            && !grepl(kTierGroup, group_info$group_name, fixed = TRUE, ignore.case = TRUE)) {
           return(group_info$municipality_list)
         }
       })
@@ -440,11 +441,11 @@ server <- function(input, output, session) {
       filter_names <- list(filter_names)
     }
     
-    location_groups_municipalities <- get_municipality_list_for_group_type(groups_info, filter_names, municipality_group_type_location)
+    location_groups_municipalities <- get_municipality_list_for_group_type(groups_info, filter_names, kLocationGroup)
 
-    population_groups_municipalities <- get_municipality_list_for_group_type(groups_info, filter_names, municipality_group_type_population)
+    population_groups_municipalities <- get_municipality_list_for_group_type(groups_info, filter_names, kPopulationGroup)
 
-    tier_groups_municipalities <- get_municipality_list_for_group_type(groups_info, filter_names, municipality_group_type_tier)
+    tier_groups_municipalities <- get_municipality_list_for_group_type(groups_info, filter_names, kTierGroup)
 
     municipality_list <- list()
     if (!is.null(location_groups_municipalities)) {
@@ -535,8 +536,8 @@ server <- function(input, output, session) {
                                    custom_groups_selection_changed_by_user = F)
   
   # All municipality Selector 
-  observeEvent(input[[ALL_MUNICIPALITY_SELECTOR_ID]], {
-    if (is.null(input[[ALL_MUNICIPALITY_SELECTOR_ID]])) {
+  observeEvent(input[[kAllMunicipalitySelector]], {
+    if (is.null(input[[kAllMunicipalitySelector]])) {
       # got reset due to clicking on municipality group selector. nothing to do
       return() 
     }
@@ -544,30 +545,30 @@ server <- function(input, output, session) {
     if (!municipal_data$custom_groups_selection_changed_by_user) {
       # custom groups was not changed by user. the user changed the all municipality selector
       # deselect the other municipality selector
-      deselect_selector(CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID, all_choices = get_all_group_names())
+      deselect_selector(kCustomMunicipalityGroupSelector, all_choices = get_all_group_names())
     }
     # reset this flag to default of false so that a transition from user changed custom group selection to user 
     # changed all municipalities selection can still work property to unselect that previous custom group selection
     municipal_data$custom_groups_selection_changed_by_user = F
     
     # update label with updated selected count
-    new_label <- paste(ALL_MUNICIPALITIES_LABEL, 
-                       selected_count_status(input[[ALL_MUNICIPALITY_SELECTOR_ID]], 
+    new_label <- paste(kAllMunicipalitiesLabel,
+                       selected_count_status(input[[kAllMunicipalitySelector]],
                                              get_all_municipalities()))
-    updateSelectInput(session, ALL_MUNICIPALITY_SELECTOR_ID, label = new_label)
+    updateSelectInput(session, kAllMunicipalitySelector, label = new_label)
         
     # Refresh data frame filtered to selected municipalities and selected year
     # Store data_frame so that it's accessible to the observeEvent code that is triggered 
     # when another sub-tab is selected in the UI
-    selected_municipalities <- get_selected_municipalities(selector = ALL_MUNICIPALITY_SELECTOR_ID)
+    selected_municipalities <- get_selected_municipalities(selector = kAllMunicipalitySelector)
 
     data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = selected_municipalities, year = input$data_display_year_selector)
     set_municipal_data(data_frames_list)
   })
   
   # Municipality group Selector 
-  observeEvent(input[[CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID]], {
-    if (is.null(input[[CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID]])) {
+  observeEvent(input[[kCustomMunicipalityGroupSelector]], {
+    if (is.null(input[[kCustomMunicipalityGroupSelector]])) {
       # got reset due to clicking on all municipality selector. nothing to do
       return() 
     }
@@ -575,25 +576,25 @@ server <- function(input, output, session) {
     municipal_data$custom_groups_selection_changed_by_user <- T
     
     # deselect the other municipality selector
-    deselect_selector(ALL_MUNICIPALITY_SELECTOR_ID, all_choices = get_all_municipalities())
+    deselect_selector(kAllMunicipalitySelector, all_choices = get_all_municipalities())
     
     # update label with updated selected count
-    new_label <- paste(CUSTOM_MUNICIPALITY_GROUPS_LABEL, 
-                       selected_count_status(input[[CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID]], 
+    new_label <- paste(kCustomMunicipalityGroupsLabel,
+                       selected_count_status(input[[kCustomMunicipalityGroupSelector]],
                                              get_all_group_names()))
-    updateSelectInput(session, CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID, label = new_label)
+    updateSelectInput(session, kCustomMunicipalityGroupSelector, label = new_label)
     
     # Refresh data frame filtered to selected municipalities and selected year
     # Store data_frame so that it's accessible to the observeEvent code that is triggered 
     # when another sub-tab is selected in the UI
-    selected_municipalities <- get_selected_municipalities(selector = CUSTOM_MUNICIPALITY_GROUP_SELECTOR_ID)
+    selected_municipalities <- get_selected_municipalities(selector = kCustomMunicipalityGroupSelector)
 
     # create new label and update all municipalities selector selector to match what's selected by current groups selection
     all_municipalities <- get_all_municipalities()
-    new_label <- paste(ALL_MUNICIPALITIES_LABEL, 
-                       selected_count_status(selected_municipalities, 
+    new_label <- paste(kAllMunicipalitiesLabel,
+                       selected_count_status(selected_municipalities,
                                              all_municipalities))    
-    updateSelectInput(session, ALL_MUNICIPALITY_SELECTOR_ID, label = new_label, choices = all_municipalities, selected = selected_municipalities)
+    updateSelectInput(session, kAllMunicipalitySelector, label = new_label, choices = all_municipalities, selected = selected_municipalities)
 
     data_frames_list <- refresh_data_display(output, input$sidebar_menu, municipalities = selected_municipalities, year = input$data_display_year_selector)
     set_municipal_data(data_frames_list)
