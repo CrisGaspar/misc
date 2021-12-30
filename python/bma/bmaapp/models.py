@@ -65,7 +65,7 @@ COLUMN_NAME_NEW_MULTI_RESIDENTIAL = 'New Multi-Residential'
 COLUMN_NAME_COMMERCIAL_OFFICE = 'Commercial Office'
 COLUMN_NAME_COMMERCIAL_SHOPPING = 'Commercial Shopping'
 COLUMN_NAME_COMMERCIAL_PARKING = 'Commercial Parking'
-COLUMN_NAME_INDUSTRIAL_LARGE = 'Industrial Large'
+COLUMN_NAME_INDUSTRIAL_LARGE = 'Large Industrial'
 COLUMN_NAME_TOTAL_RESID = 'Total Resid.'
 COLUMN_NAME_TOTAL_MULTI_RESID = 'Total Multi Resid.'
 COLUMN_NAME_TOTAL_COMMERCIAL_RESIDUAL = 'Total Comm. Residual'
@@ -223,7 +223,7 @@ excel_column_name_to_db_column_name = {
     COLUMN_NAME_COMMERCIAL_OFFICE: 'commercial_office',
     COLUMN_NAME_COMMERCIAL_SHOPPING: 'commercial_shopping',
     COLUMN_NAME_COMMERCIAL_PARKING: 'commercial_parking',
-    COLUMN_NAME_INDUSTRIAL_LARGE: 'industrial_large',
+    COLUMN_NAME_INDUSTRIAL_LARGE: 'large_industrial',
 
     COLUMN_NAME_TOTAL_RESID: 'total_resid',
     COLUMN_NAME_TOTAL_MULTI_RESID: 'total_multi_resid',
@@ -461,7 +461,7 @@ class MunicipalityData(models.Model):
                                               null=True)
     commercial_parking = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
                                              null=True)
-    industrial_large = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
+    large_industrial = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
                                            null=True)
 
     total_resid = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
