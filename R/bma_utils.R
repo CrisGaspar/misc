@@ -239,12 +239,12 @@ renderDT_formatted <- function(data_frame) {
   # Before rendering: format the numbers for display
   renderDT(datatable(data_frame, rownames= FALSE, options = options_list, colnames = display_column_names) %>% 
              formatCurrency(filter_column_names(column_names, COLUMNS_COUNTER), currency = FORMAT_SETTINGS_COUNTER$SYMBOL, mark = FORMAT_SETTINGS_COUNTER$SEPARATOR, digits = FORMAT_SETTINGS_COUNTER$DECIMALS) %>% 
+             formatCurrency(filter_column_names(column_names, kColumnsNumber1Decimal), currency = FORMAT_SETTINGS_NUMBER_1_DECIMAL$SYMBOL, before = F, 
+                            mark = FORMAT_SETTINGS_NUMBER_1_DECIMAL$SEPARATOR, digits = FORMAT_SETTINGS_NUMBER_1_DECIMAL$DECIMALS) %>% 
              formatCurrency(filter_column_names(column_names, COLUMNS_CURRENCY_0_DECIMALS), currency = FORMAT_SETTINGS_CURRENCY_DEFAULT$SYMBOL, mark = FORMAT_SETTINGS_CURRENCY_DEFAULT$SEPARATOR, 
                             digits = FORMAT_SETTINGS_CURRENCY_DEFAULT$DECIMALS) %>% 
              formatCurrency(filter_column_names(column_names, COLUMNS_CURRENCY_2_DECIMALS), currency = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$SYMBOL, mark = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$SEPARATOR, 
                             digits = FORMAT_SETTINGS_CURRENCY_2_DECIMALS$DECIMALS) %>% 
-             formatCurrency(filter_column_names(column_names, COLUMNS_PERCENT_1_DECIMAL), currency = FORMAT_SETTINGS_PERCENT_1_DECIMAL$SYMBOL, before = F, 
-                            mark = FORMAT_SETTINGS_PERCENT_1_DECIMAL$SEPARATOR, digits = FORMAT_SETTINGS_PERCENT_1_DECIMAL$DECIMALS) %>% 
              formatCurrency(filter_column_names(column_names, COLUMNS_PERCENT_2_DECIMALS), currency = FORMAT_SETTINGS_PERCENT_2_DECIMALS$SYMBOL, before = F,
                             mark = FORMAT_SETTINGS_PERCENT_2_DECIMALS$SEPARATOR, digits = FORMAT_SETTINGS_PERCENT_2_DECIMALS$DECIMALS) %>% 
              formatCurrency(filter_column_names(column_names, COLUMNS_PERCENT_4_DECIMALS), currency = FORMAT_SETTINGS_PERCENT_4_DECIMALS$SYMBOL, before = F,
