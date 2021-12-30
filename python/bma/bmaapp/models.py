@@ -38,12 +38,12 @@ COLUMN_NAME_LOWER_TIER_LEVY_PER_CAPITA = 'Lower Tier Levy per Capita'
 COLUMN_NAME_TAX_ASSET_CONSUMPTION_RATIO = 'Tax Asset Consumption Ratio'
 COLUMN_NAME_FINANCIAL_POSITION_PER_CAPITA = 'Financial Position per Capita'
 COLUMN_NAME_TAX_DISCRETIONARY_RESERVES_PERCENT_SOURCE_REVENUES = 'Tax Discretionary Reserves as a % of Own Source Revenues'
-COLUMN_NAME_TAX_RESERVES_PERCENT_TAXATION = 'Tax Reserves as a % of Taxation'
+COLUMN_NAME_TAX_RESERVES_PERCENT_TAXATION = 'Tax Reserves (less WWW) as % of Taxation'
 COLUMN_NAME_TAX_RESERVE_PER_CAPITA = 'Tax Reserves / Capita'
 COLUMN_NAME_TAX_DEBT_INT_PERCENT_OSR = 'Tax Debt Int as % OSR'
-COLUMN_NAME_TAXR_DEBT_CHARGES_PERCENT_OSR = 'Tax Debt Charges as % OSR'
+COLUMN_NAME_TAXR_DEBT_CHARGES_PERCENT_OSR = 'Total Debt Charges (less WWW) as % of Own Source Revenues'
 COLUMN_NAME_TOTAL_DEBT_OUTSTANDING_PER_CAPITA = 'Total Debt Outstanding / Capita'
-COLUMN_NAME_TAX_DEBT_OUTSTANDING_PER_CAPITA = 'Tax Debt Outstanding / Capita'
+COLUMN_NAME_TAX_DEBT_OUTSTANDING_PER_CAPITA = 'Total Debt Outstanding (less WWW) / Capita'
 COLUMN_NAME_DEBT_TO_RESERVE_RATIO = 'Debt to Reserve Ratio'
 COLUMN_NAME_TAXES_RECEIVABLE_PERCENT_TAXES_LEVIED = 'Taxes Receivable as a % of Taxes Levied'
 COLUMN_NAME_RATES_COVERAGE_RATIO = 'Rates Coverage Ratio'
@@ -128,36 +128,48 @@ COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN_PERCENT_HOUSEHOLD_INCOME = 'Total Municipal B
 COLUMN_NAME_FIRE = 'Fire'
 COLUMN_NAME_ROADS_PAVED = 'Roads Paved'
 COLUMN_NAME_BRIDGES_CULVERTS = 'Bridges and Culverts'
-COLUMN_NAME_TRAFFIC = 'Traffic'
-COLUMN_NAME_WINTER_ROADS = 'Winter Roads'
-COLUMN_NAME_WINTER_SIDEWALKS = 'Winter Sidewalks'
-COLUMN_NAME_TRANSIT = 'Transit'
+COLUMN_NAME_TRAFFIC = 'Traffic Operations'
+COLUMN_NAME_WINTER_ROADS = 'Winter Control Except Sidewalks'
+COLUMN_NAME_WINTER_SIDEWALKS = 'Winter Control Sidewalks, Parking Lots'
+COLUMN_NAME_TRANSIT_CONVENTIONAL = 'Transit Services - Conventional'
+COLUMN_NAME_TRANSIT_DISABLED = 'Transit Services - Disabled'
 COLUMN_NAME_PARKING = 'Parking'
 COLUMN_NAME_WASTE_COLLECTION = 'Waste Collection'
 COLUMN_NAME_WASTE_DISPOSAL = 'Waste Disposal'
-COLUMN_NAME_STORM = 'Storm'
-COLUMN_NAME_RECYCLING = 'Recycling'
+COLUMN_NAME_STORM_SEWER_URBAN = 'Storm Sewer - Urban'
+COLUMN_NAME_STORM_SEWER_RURAL = 'Storm Sewer - Rural'
 COLUMN_NAME_PUBLIC_HEALTH = 'Public Health'
 COLUMN_NAME_EMERGENCY_MEASURES = 'Emergency Measures'
 COLUMN_NAME_GENERAL_ASSISTANCE = 'General Assistance'
 COLUMN_NAME_ASSISTANCE_AGED = 'Assistance to the Aged'
-COLUMN_NAME_POA = 'POA'
 COLUMN_NAME_CHILD_CARE = 'Child Care'
 COLUMN_NAME_SOCIAL_HOUSING = 'Social Housing'
 COLUMN_NAME_PARKS = 'Parks'
 COLUMN_NAME_RECREATION_PROGRAMS = 'Recreation Programs'
-COLUMN_NAME_REC_FAC_GOLF = 'Rec Fac Golf'
+COLUMN_NAME_GOLF_MARINA_SKI_HILL = 'Golf, Marina, Ski Hill'
 COLUMN_NAME_REC_FACILITIES_OTHER = 'Rec Facilities Other'
 COLUMN_NAME_LIBRARY = 'Library'
 COLUMN_NAME_MUSEUMS = 'Museums'
 COLUMN_NAME_CULTURAL = 'Cultural'
 COLUMN_NAME_PLANNING = 'Planning'
-COLUMN_NAME_COMM_IND = 'Comm & Ind.'
+COLUMN_NAME_COMMERCIAL_INDUSTRIAL = 'Commercial & Industrial'
 COLUMN_NAME_GENERAL_GOVERNMENT = 'General Government'
 COLUMN_NAME_CONSERVATION_AUTHORITY = 'Conservation Authority'
-COLUMN_NAME_AMBULANCE = 'Ambulance'
+COLUMN_NAME_AMBULANCE = 'Ambulance Services'
 COLUMN_NAME_CEMETERIES = 'Cemeteries'
 COLUMN_NAME_AGRICULTURE_AND_REFORESTATION = 'Agriculture and reforestation'
+COLUMN_NAME_COURT_SECURITY = 'Court Security'
+COLUMN_NAME_POLICE = 'Police'
+COLUMN_NAME_PRISONER_TRANSPORT = 'Prisoner Transport' 
+COLUMN_NAME_PROTECTIVE_INSPECTION_AND_CONTROL = 'Protective Inspection and Control'
+COLUMN_NAME_PROVINCIAL_OFFENCES_ACT = 'Provincial Offences Act'
+COLUMN_NAME_ROADS_UNPAVED = 'Roads Unpaved'
+COLUMN_NAME_STREET_LIGHTING = 'Street Lighting'
+COLUMN_NAME_AIR_TRANSPORTATION = 'Air Transportation'
+COLUMN_NAME_SOLID_WASTE_DIVERSION = 'Solid Waste Diversion'
+COLUMN_NAME_HOSPITALS = 'Hospitals'
+COLUMN_NAME_COVID_EXPENSES = 'Covid Expenses'
+COLUMN_NAME_BUILDING_PERMITS_INSPECTION_SERVICES = 'Building permits and inspection services'
 
 excel_column_name_to_db_column_name = {
     COLUMN_NAME_MUNICIPALITY: 'name',
@@ -293,33 +305,45 @@ excel_column_name_to_db_column_name = {
     COLUMN_NAME_TRAFFIC: 'traffic',
     COLUMN_NAME_WINTER_ROADS: 'winter_roads',
     COLUMN_NAME_WINTER_SIDEWALKS: 'winter_sidewalks',
-    COLUMN_NAME_TRANSIT: 'transit',
+    COLUMN_NAME_TRANSIT_CONVENTIONAL: 'transit_conventional',
+    COLUMN_NAME_TRANSIT_DISABLED: 'transit_disabled',
     COLUMN_NAME_PARKING: 'parking',
     COLUMN_NAME_WASTE_COLLECTION: 'waste_collection',
     COLUMN_NAME_WASTE_DISPOSAL: 'waste_disposal',
-    COLUMN_NAME_STORM: 'storm',
-    COLUMN_NAME_RECYCLING: 'recycling',
+    COLUMN_NAME_STORM_SEWER_URBAN: 'storm_sewer_urban',
+    COLUMN_NAME_STORM_SEWER_RURAL: 'storm_sewer_rural',
     COLUMN_NAME_PUBLIC_HEALTH: 'public_health',
     COLUMN_NAME_EMERGENCY_MEASURES: 'emergency_measures',
     COLUMN_NAME_GENERAL_ASSISTANCE: 'general_assistance',
     COLUMN_NAME_ASSISTANCE_AGED: 'assistance_to_the_aged',
-    COLUMN_NAME_POA: 'poa',
     COLUMN_NAME_CHILD_CARE: 'child_care',
     COLUMN_NAME_SOCIAL_HOUSING: 'social_housing',
     COLUMN_NAME_PARKS: 'parks',
     COLUMN_NAME_RECREATION_PROGRAMS: 'recreation_programs',
-    COLUMN_NAME_REC_FAC_GOLF: 'rec_fac_golf',
+    COLUMN_NAME_GOLF_MARINA_SKI_HILL: 'golf_marina_ski_hill',
     COLUMN_NAME_REC_FACILITIES_OTHER: 'rec_facilities_other',
     COLUMN_NAME_LIBRARY: 'library',
     COLUMN_NAME_MUSEUMS: 'museums',
     COLUMN_NAME_CULTURAL: 'cultural',
     COLUMN_NAME_PLANNING: 'planning',
-    COLUMN_NAME_COMM_IND: 'comm_and_ind',
+    COLUMN_NAME_COMMERCIAL_INDUSTRIAL: 'commercial_and_industrial',
     COLUMN_NAME_GENERAL_GOVERNMENT: 'general_government',
     COLUMN_NAME_CONSERVATION_AUTHORITY: 'conservation_authority',
     COLUMN_NAME_AMBULANCE: 'ambulance',
     COLUMN_NAME_CEMETERIES: 'cemeteries',
-    COLUMN_NAME_AGRICULTURE_AND_REFORESTATION: 'agriculture_and_reforestation'
+    COLUMN_NAME_AGRICULTURE_AND_REFORESTATION: 'agriculture_and_reforestation',
+    COLUMN_NAME_COURT_SECURITY: 'court_security',
+    COLUMN_NAME_POLICE: 'police',
+    COLUMN_NAME_PRISONER_TRANSPORT: 'prisoner_transport',
+    COLUMN_NAME_PROTECTIVE_INSPECTION_AND_CONTROL: 'protective_inspection_and_control',
+    COLUMN_NAME_PROVINCIAL_OFFENCES_ACT: 'provincial_offences_act',
+    COLUMN_NAME_ROADS_UNPAVED: 'roads_unpaved',
+    COLUMN_NAME_STREET_LIGHTING: 'street_lighting',
+    COLUMN_NAME_AIR_TRANSPORTATION: 'air_transportation',
+    COLUMN_NAME_SOLID_WASTE_DIVERSION: 'solid_waste_diversion',
+    COLUMN_NAME_HOSPITALS: 'hospitals',
+    COLUMN_NAME_COVID_EXPENSES: 'covid_expenses',
+    COLUMN_NAME_BUILDING_PERMITS_INSPECTION_SERVICES: 'building_permits_inspection_services'    
 }
 
 
@@ -584,14 +608,17 @@ class MunicipalityData(models.Model):
     winter_roads = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     winter_sidewalks = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
                                            null=True)
-    transit = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    transit_conventional = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    transit_disabled = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    
     parking = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     waste_collection = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
                                            null=True)
     waste_disposal = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
                                          null=True)
-    storm = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    recycling = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    storm_sewer_urban = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    storm_sewer_rural = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+ 
     public_health = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     emergency_measures = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
                                              null=True)
@@ -599,21 +626,20 @@ class MunicipalityData(models.Model):
                                              null=True)
     assistance_to_the_aged = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
                                                  null=True)
-    poa = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     child_care = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     social_housing = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
                                          null=True)
     parks = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     recreation_programs = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
                                               null=True)
-    rec_fac_golf = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    golf_marina_ski_hill = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     rec_facilities_other = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
                                                null=True)
     library = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     museums = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     cultural = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     planning = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
-    comm_and_ind = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    commercial_and_industrial = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     general_government = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
                                              null=True)
     conservation_authority = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places,
@@ -621,6 +647,19 @@ class MunicipalityData(models.Model):
     ambulance = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     cemeteries = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     agriculture_and_reforestation =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    
+    court_security =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    police =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    prisoner_transport=  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    protective_inspection_and_control =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    provincial_offences_act =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    roads_unpaved =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    street_lighting =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    air_transportation =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    solid_waste_diversion =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    hospitals =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    covid_expenses =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    building_permits_inspection_services =  models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
 
     def store(self, dict):
         dict.clear()

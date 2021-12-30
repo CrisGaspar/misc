@@ -284,8 +284,7 @@ filter_and_display <- function(output, data_frame, selected_sub_tab, selected_ye
         # get previous year columns
         previous_year_columns_data_frame <- get_municipality_data(municipalities = as.list(filtered_data_frame[[COLUMN_NAME_MUNICIPALITY]]), 
                                                                   year = selected_year, population_by_year = F, 
-                                                                  by_year_columns = list(COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA,
-                                                                                         COLUMN_NAME_ESTIMATED_AVG_HOUSEHOLD_INCOME), 
+                                                                  by_year_columns = list(COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA), 
                                                                   previous_year = T)
       
         filtered_data_frame <- merge(filtered_data_frame, previous_year_columns_data_frame, by = "Municipality", all.x = TRUE)

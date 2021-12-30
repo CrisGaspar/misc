@@ -83,7 +83,7 @@ kTabAvgHouseholdIncome <- "Average Household Income"
 kTabAvgValueDwelling <- "Average Value of Dwelling"
 kTabCombinedCosts <- "Combined costs"
 kTabTaxesPercentIncome <- "Taxes as a Percent of Income"
-kTabFireServices = 'Fire Services'
+kTabNetExpendituresPerCapitaFireServices = 'Fire Services'
 kTabNetExpendituresPerCapitaRoadsPaved = 'Roadways - Paved'
 kTabNetExpendituresPerCapitaBridgesCulverts = 'Roadways - Bridges and Culverts'
 kTabNetExpendituresPerCapitaTraffic = 'Roadways - Traffic Control'
@@ -93,29 +93,42 @@ kTabNetExpendituresPerCapitaTransit = 'Transit Services'
 kTabNetExpendituresPerCapitaParking = 'Parking'
 kTabNetExpendituresPerCapitaWasteCollection = 'Waste Collection'
 kTabNetExpendituresPerCapitaWasteDisposal = 'Waste Disposal'
-kTabNetExpendituresPerCapitaStorm = 'Storm Sewer'
-kTabNetExpendituresPerCapitaRecycling = 'Recycling'
+kTabNetExpendituresPerCapitaStormUrban = 'Storm Sewer - Urban'
 kTabNetExpendituresPerCapitaPublicHealth = 'Public Health'
 kTabNetExpendituresPerCapitaEmmergencyMeasures = 'Emergency Measures'
 kTabNetExpendituresPerCapitaGeneralAssistance = 'General Assistance'
 kTabNetExpendituresPerCapitaAssistanceAged = 'Assistance to the Aged'
-kTabNetExpendituresPerCapitaPOA = 'POA'
 kTabNetExpendituresPerCapitaChildCare = 'Child Care'
 kTabNetExpendituresPerCapitaSocialHousing = 'Social Housing'
 kTabNetExpendituresPerCapitaParks = 'Parks'
 kTabNetExpendituresPerCapitaRecPrograms = 'Rec Programs'
-kTabNetExpendituresPerCapitaRecFacGolf = 'Rec Facilities Golf'
+kTabNetExpendituresPerCapitaGolfMarinaSkiHill = 'Golf, Marina, Ski Hill'
 kTabNetExpendituresPerCapitaRecFacilitiesOther = 'Rec Facilities Other'
 kTabNetExpendituresPerCapitaLibrary = 'Library'
 kTabNetExpendituresPerCapitaMuseums = 'Museums'
 kTabNetExpendituresPerCapitaCultural = 'Cultural Services'
 kTabNetExpendituresPerCapitaPlanning = 'Planning'
-kTabNetExpendituresPerCapitaCommInd = 'Comm and Ind'
+kTabNetExpendituresPerCapitaCommercialIndustrial = 'Commercial and Industrial'
 kTabNetExpendituresPerCapitaGeneralGovernment = 'General Government'
 kTabNetExpendituresPerCapitaConservationAuthority = 'Conservation Authority'
-kTabNetExpendituresPerCapitaAmbulance = 'Ambulance'
+kTabNetExpendituresPerCapitaAmbulance = 'Ambulance Services'
 kTabNetExpendituresPerCapitaCemeteries = 'Cemeteries'
 kTabNetExpendituresPerCapitaAgriAndReforestation = 'Agriculture and reforestation'
+
+kTabNetExpendituresPerCapitaCourtSecurity = 'Court Security'
+kTabNetExpendituresPerCapitaPolice = 'Police'
+kTabNetExpendituresPerCapitaPrisonerTransport = 'Prisoner Transport'
+kTabNetExpendituresPerCapitaProtectiveInspectionAndControl = 'Protective Inspection and Control'
+kTabNetExpendituresPerCapitaProvincialOffencesAct = 'Provincial Offences Act'
+kTabNetExpendituresPerCapitaRoadsUnpaved = 'Roads Unpaved'
+kTabNetExpendituresPerCapitaTransitDisabled = 'Transit Services - Disabled'
+kTabNetExpendituresPerCapitaStreetLighting = 'Street Lighting'
+kTabNetExpendituresPerCapitaAirTransportation = 'Air Transportation'
+kTabNetExpendituresPerCapitaStormSewerRural = 'Storm Sewer - Rural'
+kTabNetExpendituresPerCapitaSolidWasteDiversion = 'Solid Waste Diversion'
+kTabNetExpendituresPerCapitaHospitals = 'Hospitals'
+kTabNetExpendituresPerCapitaCovidExpenses = 'Covid Expenses'
+kTabNetExpendituresPerCapitaBldgPermitsInspectionServices = 'Building permits and inspection services'
 
 # Column names
 COLUMN_NAME_MUNICIPALITY = 'Municipality'
@@ -232,39 +245,55 @@ COLUMN_NAME_AVG_RESIDENTIAL_TAXES = 'Average Residential Taxes'
 COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN = 'Total Municipal Tax Burden'
 COLUMN_NAME_PROPERTY_TAXES_PERCENT_HOUSEHOLD_INCOME = 'Property Taxes as a % of Household Income'
 COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN_PERCENT_HOUSEHOLD_INCOME = 'Total Municipal Burden as a % of Household Income'
+
+# Columns for Net Expenditures per Capita
 COLUMN_NAME_FIRE = 'Fire'
 COLUMN_NAME_ROADS_PAVED = 'Roads Paved'
 COLUMN_NAME_BRIDGES_CULVERTS = 'Bridges and Culverts'
-COLUMN_NAME_TRAFFIC = 'Traffic'
-COLUMN_NAME_WINTER_ROADS = 'Winter Roads'
-COLUMN_NAME_WINTER_SIDEWALKS = 'Winter Sidewalks'
-COLUMN_NAME_TRANSIT = 'Transit'
 COLUMN_NAME_PARKING = 'Parking'
 COLUMN_NAME_WASTE_COLLECTION = 'Waste Collection'
 COLUMN_NAME_WASTE_DISPOSAL = 'Waste Disposal'
-COLUMN_NAME_STORM = 'Storm'
-COLUMN_NAME_RECYCLING = 'Recycling'
 COLUMN_NAME_PUBLIC_HEALTH = 'Public Health'
 COLUMN_NAME_EMERGENCY_MEASURES = 'Emergency Measures'
 COLUMN_NAME_GENERAL_ASSISTANCE = 'General Assistance'
 COLUMN_NAME_ASSISTANCE_AGED = 'Assistance to the Aged'
-COLUMN_NAME_POA = 'POA'
 COLUMN_NAME_CHILD_CARE = 'Child Care'
 COLUMN_NAME_SOCIAL_HOUSING = 'Social Housing'
 COLUMN_NAME_PARKS = 'Parks'
 COLUMN_NAME_RECREATION_PROGRAMS = 'Recreation Programs'
-COLUMN_NAME_REC_FAC_GOLF = 'Rec Fac Golf'
 COLUMN_NAME_REC_FACILITIES_OTHER = 'Rec Facilities Other'
 COLUMN_NAME_LIBRARY = 'Library'
 COLUMN_NAME_MUSEUMS = 'Museums'
 COLUMN_NAME_CULTURAL = 'Cultural'
 COLUMN_NAME_PLANNING = 'Planning'
-COLUMN_NAME_COMM_IND = 'Comm & Ind.'
 COLUMN_NAME_GENERAL_GOVERNMENT = 'General Government'
 COLUMN_NAME_CONSERVATION_AUTHORITY = 'Conservation Authority'
-COLUMN_NAME_AMBULANCE = 'Ambulance'
 COLUMN_NAME_CEMETERIES = 'Cemeteries'
 COLUMN_NAME_AGRICULTURE_AND_REFORESTATION = 'Agriculture and reforestation'
+
+COLUMN_NAME_COURT_SECURITY = 'Court Security'
+COLUMN_NAME_POLICE = 'Police'
+COLUMN_NAME_PRISONER_TRANSPORT = 'Prisoner Transport' 
+COLUMN_NAME_PROTECTIVE_INSPECTION_AND_CONTROL = 'Protective Inspection and Control'
+COLUMN_NAME_PROVINCIAL_OFFENCES_ACT = 'Provincial Offences Act'
+COLUMN_NAME_ROADS_UNPAVED = 'Roads Unpaved'
+COLUMN_NAME_TRAFFIC_OPERATIONS = 'Traffic Operations'
+COLUMN_NAME_WINTER_CONTROL_EXCEPT_SIDEWALKS = 'Winter Control Except Sidewalks'
+COLUMN_NAME_WINTER_CONTROL_SIDEWALKS_PARKING_LOTS = 'Winter Control Sidewalks, Parking Lots'
+COLUMN_NAME_TRANSIT_SERVICES_CONVENTIONAL = 'Transit Services - Conventional'
+COLUMN_NAME_TRANSIT_SERVICES_DISABLED = 'Transit Services - Disabled'
+COLUMN_NAME_STREET_LIGHTING = 'Street Lighting'
+COLUMN_NAME_AIR_TRANSPORTATION = 'Air Transportation'
+COLUMN_NAME_STORM_SEWER_URBAN = 'Storm Sewer - Urban'
+COLUMN_NAME_STORM_SEWER_RURAL = 'Storm Sewer - Rural'
+COLUMN_NAME_SOLID_WASTE_DIVERSION = 'Solid Waste Diversion'
+COLUMN_NAME_HOSPITALS = 'Hospitals'
+COLUMN_NAME_AMBULANCE_SERVICES = 'Ambulance Services'
+COLUMN_NAME_COVID_EXPENSES = 'Covid Expenses'
+COLUMN_NAME_GOLF_MARINA_SKI_HILL = 'Golf, Marina, Ski Hill'
+COLUMN_NAME_COMMERCIAL_AND_INDUSTRIAL = 'Commercial & Industrial'
+COLUMN_NAME_BUILDING_PERMITS_INSPECTION_SERVICES = 'Building permits and inspection services'
+
 
 # Mapping from menu items (sheets in source excel data file) to corresponding tabs
 menu_sub_tabs_text <- list(
@@ -292,17 +321,22 @@ menu_sub_tabs_text <- list(
 
 # Separately set the mapping for Net Expenditures Per Capita
 menu_sub_tabs_text[[kSheetNetExpendituresPerCapita]] = list(
-    kTabFireServices, kTabNetExpendituresPerCapitaRoadsPaved, kTabNetExpendituresPerCapitaBridgesCulverts, 
+    kTabNetExpendituresPerCapitaFireServices, kTabNetExpendituresPerCapitaRoadsPaved, kTabNetExpendituresPerCapitaBridgesCulverts, 
     kTabNetExpendituresPerCapitaTraffic, kTabNetExpendituresPerCapitaWinterRoads, kTabNetExpendituresPerCapitaWinterSidewalks, 
     kTabNetExpendituresPerCapitaTransit, kTabNetExpendituresPerCapitaParking, kTabNetExpendituresPerCapitaWasteCollection, 
-    kTabNetExpendituresPerCapitaWasteDisposal, kTabNetExpendituresPerCapitaStorm, kTabNetExpendituresPerCapitaRecycling, 
+    kTabNetExpendituresPerCapitaWasteDisposal, kTabNetExpendituresPerCapitaStormUrban, 
     kTabNetExpendituresPerCapitaPublicHealth, kTabNetExpendituresPerCapitaEmmergencyMeasures, kTabNetExpendituresPerCapitaGeneralAssistance,
-    kTabNetExpendituresPerCapitaAssistanceAged, kTabNetExpendituresPerCapitaPOA, kTabNetExpendituresPerCapitaChildCare, 
+    kTabNetExpendituresPerCapitaAssistanceAged, kTabNetExpendituresPerCapitaChildCare, 
     kTabNetExpendituresPerCapitaSocialHousing, kTabNetExpendituresPerCapitaParks, kTabNetExpendituresPerCapitaRecPrograms, 
-    kTabNetExpendituresPerCapitaRecFacGolf, kTabNetExpendituresPerCapitaRecFacilitiesOther, kTabNetExpendituresPerCapitaLibrary, 
+    kTabNetExpendituresPerCapitaGolfMarinaSkiHill, kTabNetExpendituresPerCapitaRecFacilitiesOther, kTabNetExpendituresPerCapitaLibrary, 
     kTabNetExpendituresPerCapitaMuseums, kTabNetExpendituresPerCapitaCultural, kTabNetExpendituresPerCapitaPlanning, 
-    kTabNetExpendituresPerCapitaCommInd, kTabNetExpendituresPerCapitaGeneralGovernment, kTabNetExpendituresPerCapitaConservationAuthority, 
-    kTabNetExpendituresPerCapitaAmbulance, kTabNetExpendituresPerCapitaCemeteries, kTabNetExpendituresPerCapitaAgriAndReforestation)
+    kTabNetExpendituresPerCapitaCommercialIndustrial, kTabNetExpendituresPerCapitaGeneralGovernment, kTabNetExpendituresPerCapitaConservationAuthority, 
+    kTabNetExpendituresPerCapitaAmbulance, kTabNetExpendituresPerCapitaCemeteries, kTabNetExpendituresPerCapitaAgriAndReforestation,
+    kTabNetExpendituresPerCapitaCourtSecurity, kTabNetExpendituresPerCapitaPolice, kTabNetExpendituresPerCapitaPrisonerTransport,
+    kTabNetExpendituresPerCapitaProtectiveInspectionAndControl, kTabNetExpendituresPerCapitaProvincialOffencesAct, kTabNetExpendituresPerCapitaRoadsUnpaved,
+    kTabNetExpendituresPerCapitaTransitDisabled, kTabNetExpendituresPerCapitaStreetLighting, kTabNetExpendituresPerCapitaAirTransportation,
+    kTabNetExpendituresPerCapitaStormSewerRural, kTabNetExpendituresPerCapitaSolidWasteDiversion, kTabNetExpendituresPerCapitaHospitals,
+    kTabNetExpendituresPerCapitaCovidExpenses, kTabNetExpendituresPerCapitaBldgPermitsInspectionServices)
 
 
 # Initialize list of expected sheets
@@ -314,12 +348,12 @@ kSheetsPercent <-list(kTabTaxDisResPercentOSR, kTabTaxReservesPercentTaxation, k
                       kTabWasteWaterResPercentOSR, kTabWaterResPercentAcumAmort, kTabWasteWaterResPercentAcumAmort, 
                       kTabTaxesPercentIncome)
 
-# Replace 'Percent' with '%' for display in the app
+# Replace '%' in sheet names with 'Percent' for display in the app
 kSheetsPercentUpdatedForDisplay <- lapply(kSheetsPercent, function(str) {
   sub("Percent", "%", str)
 })
 
-# Replace sheet name containing 'and' with '&' for display in app
+# Replace '&' in sheet names with 'and' for display in app
 kSheetsAnd <- list(kTabWaterAndSewerCosts)
 kSheetsAndUpdatedForDisplay <- lapply(kSheetsAnd, function(str) {
   sub(" and ", "&", str)
@@ -400,39 +434,52 @@ column_names_per_sub_tab_selection[[kTabCombinedCosts]] = list(COLUMN_NAME_RESID
 column_names_per_sub_tab_selection[[kTabTaxesPercentIncome]] = list(
   COLUMN_NAME_AVG_RESIDENTIAL_TAXES, COLUMN_NAME_PROPERTY_TAXES_PERCENT_HOUSEHOLD_INCOME, COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN, 
   COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN_PERCENT_HOUSEHOLD_INCOME)
-column_names_per_sub_tab_selection[[kTabFireServices]] = list(COLUMN_NAME_FIRE) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaFireServices]] = list(COLUMN_NAME_FIRE)
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaRoadsPaved]] = list(COLUMN_NAME_ROADS_PAVED) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaBridgesCulverts]] = list(COLUMN_NAME_BRIDGES_CULVERTS) 
-column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaTraffic]] = list(COLUMN_NAME_TRAFFIC)
-column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaWinterRoads]] = list(COLUMN_NAME_WINTER_ROADS) 
-column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaWinterSidewalks]] = list(COLUMN_NAME_WINTER_SIDEWALKS) 
-column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaTransit]] = list(COLUMN_NAME_TRANSIT) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaTraffic]] = list(COLUMN_NAME_TRAFFIC_OPERATIONS)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaWinterRoads]] = list(COLUMN_NAME_WINTER_CONTROL_EXCEPT_SIDEWALKS) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaWinterSidewalks]] = list(COLUMN_NAME_WINTER_CONTROL_SIDEWALKS_PARKING_LOTS) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaTransit]] = list(COLUMN_NAME_TRANSIT_SERVICES_CONVENTIONAL) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaParking]] = list(COLUMN_NAME_PARKING)
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaWasteCollection]] = list(COLUMN_NAME_WASTE_COLLECTION) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaWasteDisposal]] = list(COLUMN_NAME_WASTE_DISPOSAL) 
-column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaStorm]] = list(COLUMN_NAME_STORM) 
-column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaRecycling]] = list(COLUMN_NAME_RECYCLING)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaStormUrban]] = list(COLUMN_NAME_STORM_SEWER_URBAN)
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaPublicHealth]] = list(COLUMN_NAME_PUBLIC_HEALTH) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaEmmergencyMeasures]] = list(COLUMN_NAME_EMERGENCY_MEASURES) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaGeneralAssistance]] = list(COLUMN_NAME_GENERAL_ASSISTANCE)
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaAssistanceAged]] = list(COLUMN_NAME_ASSISTANCE_AGED) 
-column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaPOA]] = list(COLUMN_NAME_POA) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaChildCare]] = list(COLUMN_NAME_CHILD_CARE) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaSocialHousing]] = list(COLUMN_NAME_SOCIAL_HOUSING)
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaParks]] = list(COLUMN_NAME_PARKS) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaRecPrograms]] = list(COLUMN_NAME_RECREATION_PROGRAMS) 
-column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaRecFacGolf]] = list(COLUMN_NAME_REC_FAC_GOLF) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaGolfMarinaSkiHill]] = list(COLUMN_NAME_GOLF_MARINA_SKI_HILL) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaRecFacilitiesOther]] = list(COLUMN_NAME_REC_FACILITIES_OTHER)
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaLibrary]] = list(COLUMN_NAME_LIBRARY) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaMuseums]] = list(COLUMN_NAME_MUSEUMS) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaCultural]] = list(COLUMN_NAME_CULTURAL) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaPlanning]] = list(COLUMN_NAME_PLANNING) 
-column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaCommInd]] = list(COLUMN_NAME_COMM_IND)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaCommercialIndustrial]] = list(COLUMN_NAME_COMMERCIAL_AND_INDUSTRIAL)
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaGeneralGovernment]] = list(COLUMN_NAME_GENERAL_GOVERNMENT) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaConservationAuthority]] = list(COLUMN_NAME_CONSERVATION_AUTHORITY) 
-column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaAmbulance]] = list(COLUMN_NAME_AMBULANCE) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaAmbulance]] = list(COLUMN_NAME_AMBULANCE_SERVICES) 
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaCemeteries]] = list(COLUMN_NAME_CEMETERIES)
 column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaAgriAndReforestation]] = list(COLUMN_NAME_AGRICULTURE_AND_REFORESTATION)
+
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaCourtSecurity]] = list(COLUMN_NAME_COURT_SECURITY)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaPolice]] = list(COLUMN_NAME_POLICE)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaPrisonerTransport]] = list(COLUMN_NAME_PRISONER_TRANSPORT)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaProtectiveInspectionAndControl]] = list(COLUMN_NAME_PROTECTIVE_INSPECTION_AND_CONTROL)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaProvincialOffencesAct]] = list(COLUMN_NAME_PROVINCIAL_OFFENCES_ACT)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaRoadsUnpaved]] = list(COLUMN_NAME_ROADS_UNPAVED)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaTransitDisabled]] = list(COLUMN_NAME_TRANSIT_SERVICES_DISABLED)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaStreetLighting]] = list(COLUMN_NAME_STREET_LIGHTING)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaAirTransportation]] = list(COLUMN_NAME_AIR_TRANSPORTATION)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaStormSewerRural]] = list(COLUMN_NAME_STORM_SEWER_RURAL)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaSolidWasteDiversion]] = list(COLUMN_NAME_SOLID_WASTE_DIVERSION)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaHospitals]] = list(COLUMN_NAME_HOSPITALS)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaCovidExpenses]] = list(COLUMN_NAME_COVID_EXPENSES)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaBldgPermitsInspectionServices]] = list(COLUMN_NAME_BUILDING_PERMITS_INSPECTION_SERVICES)
 
 # List of all column names: add Municipality column which is the only non-number column
 ALL_COLUMN_NAMES_LIST <- unique(append(list(COLUMN_NAME_MUNICIPALITY),
@@ -499,9 +546,13 @@ COLUMNS_CURRENCY_0_DECIMALS = c(COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA, CO
                                 COLUMN_NAME_TAX_MOTEL, COLUMN_NAME_TAX_IND_VACANT, COLUMN_NAME_RESIDENTIAL_200_M3, COLUMN_NAME_COMMERCIAL_10K_M3, 
                                 COLUMN_NAME_INDUSTRIAL_30K_M3, COLUMN_NAME_INDUSTRIAL_100K_M3, COLUMN_NAME_INDUSTRIAL_500K_M3, COLUMN_NAME_EST_AVG_HOUSEHOLD_INCOME, 
                                 COLUMN_NAME_RESIDENTIAL_WATER_SEWER_COSTS, COLUMN_NAME_AVG_RESIDENTIAL_TAXES, COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN, COLUMN_NAME_FIRE, 
-                                COLUMN_NAME_ROADS_PAVED, COLUMN_NAME_BRIDGES_CULVERTS, COLUMN_NAME_TRAFFIC, COLUMN_NAME_WINTER_ROADS, COLUMN_NAME_WINTER_SIDEWALKS, 
-                                COLUMN_NAME_TRANSIT, COLUMN_NAME_PARKING, COLUMN_NAME_WASTE_COLLECTION, COLUMN_NAME_WASTE_DISPOSAL, COLUMN_NAME_STORM, COLUMN_NAME_RECYCLING, 
-                                COLUMN_NAME_PUBLIC_HEALTH, COLUMN_NAME_EMERGENCY_MEASURES, COLUMN_NAME_GENERAL_ASSISTANCE, COLUMN_NAME_ASSISTANCE_AGED, COLUMN_NAME_POA, 
-                                COLUMN_NAME_CHILD_CARE, COLUMN_NAME_SOCIAL_HOUSING, COLUMN_NAME_PARKS, COLUMN_NAME_RECREATION_PROGRAMS, COLUMN_NAME_REC_FAC_GOLF, 
-                                COLUMN_NAME_REC_FACILITIES_OTHER, COLUMN_NAME_LIBRARY, COLUMN_NAME_MUSEUMS, COLUMN_NAME_CULTURAL, COLUMN_NAME_PLANNING, COLUMN_NAME_COMM_IND, 
-                                COLUMN_NAME_GENERAL_GOVERNMENT, COLUMN_NAME_CONSERVATION_AUTHORITY, COLUMN_NAME_AMBULANCE, COLUMN_NAME_CEMETERIES, COLUMN_NAME_AGRICULTURE_AND_REFORESTATION)
+                                COLUMN_NAME_ROADS_PAVED, COLUMN_NAME_BRIDGES_CULVERTS, COLUMN_NAME_TRAFFIC_OPERATIONS, COLUMN_NAME_WINTER_CONTROL_EXCEPT_SIDEWALKS, COLUMN_NAME_WINTER_CONTROL_SIDEWALKS_PARKING_LOTS, 
+                                COLUMN_NAME_TRANSIT_SERVICES_CONVENTIONAL, COLUMN_NAME_PARKING, COLUMN_NAME_WASTE_COLLECTION, COLUMN_NAME_WASTE_DISPOSAL, COLUMN_NAME_STORM_SEWER_URBAN, 
+                                COLUMN_NAME_PUBLIC_HEALTH, COLUMN_NAME_EMERGENCY_MEASURES, COLUMN_NAME_GENERAL_ASSISTANCE, COLUMN_NAME_ASSISTANCE_AGED, 
+                                COLUMN_NAME_CHILD_CARE, COLUMN_NAME_SOCIAL_HOUSING, COLUMN_NAME_PARKS, COLUMN_NAME_RECREATION_PROGRAMS, COLUMN_NAME_GOLF_MARINA_SKI_HILL, 
+                                COLUMN_NAME_REC_FACILITIES_OTHER, COLUMN_NAME_LIBRARY, COLUMN_NAME_MUSEUMS, COLUMN_NAME_CULTURAL, COLUMN_NAME_PLANNING, COLUMN_NAME_COMMERCIAL_AND_INDUSTRIAL, 
+                                COLUMN_NAME_GENERAL_GOVERNMENT, COLUMN_NAME_CONSERVATION_AUTHORITY, COLUMN_NAME_AMBULANCE_SERVICES, COLUMN_NAME_CEMETERIES, COLUMN_NAME_AGRICULTURE_AND_REFORESTATION,
+                                COLUMN_NAME_COURT_SECURITY, COLUMN_NAME_POLICE, COLUMN_NAME_PRISONER_TRANSPORT, COLUMN_NAME_PROTECTIVE_INSPECTION_AND_CONTROL,
+                                COLUMN_NAME_PROVINCIAL_OFFENCES_ACT, COLUMN_NAME_ROADS_UNPAVED, COLUMN_NAME_TRANSIT_SERVICES_DISABLED, COLUMN_NAME_STREET_LIGHTING,
+                                COLUMN_NAME_AIR_TRANSPORTATION, COLUMN_NAME_STORM_SEWER_RURAL, COLUMN_NAME_SOLID_WASTE_DIVERSION,COLUMN_NAME_HOSPITALS,
+                                COLUMN_NAME_COVID_EXPENSES, COLUMN_NAME_BUILDING_PERMITS_INSPECTION_SERVICES)
