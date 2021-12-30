@@ -16,7 +16,7 @@ kErrorFailedToLoadData <- 'Failed to Load from Excel File'
 kInfoNoMunicipalitySelection <- 'No Initial Municipality Selection'
 
 # Defaults to most recent year we have data for
-# TODO: Get it from API instead of hardcoded value
+# TODO: Get it from API instead of hard-coded value
 kMostRecentYear <- 2021L
 # 2014 is the oldest year
 kAllYears <- 2014L: kMostRecentYear
@@ -26,92 +26,98 @@ kPopulationGroup <- "Population"
 kTierGroup <- "Tier"
 kLocationGroup <- "Location"
 
+# Labels and selectors
 kAllMunicipalitiesLabel <- "All Municipalities"
 kCustomMunicipalityGroupsLabel <- "Custom Groups"
 kAllMunicipalitySelector <- "municipalitySelector"
 kCustomMunicipalityGroupSelector <- "municipalityGroupSelector"
 
-SUB_TAB_POPULATION <- "Population"
-SUB_TAB_DENSITY_LAND_AREA <- "Density and Land Area"
-SUB_TAB_ASSESSMENT_INFO <- "Assessment Information"
-SUB_TAB_ASSESSMENT_COMPOSITION <- "Assessment Composition"
-SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR <- "Building Permit Activity"
-SUB_TAB_TOTAL_LEYY <- "Total Levy"
-SUB_TAB_UPPER_TIER_LEVY <- "Upper Tier Levy"
-SUB_TAB_LOWER_TIER_LEVY <- "Lower Tier Levy"
-SUB_TAB_TAX_ASSET_CONSUMPTION_RATIO <- "Tax Asset Consumption Ratio"
-SUB_TAB_FINANCIAL_POSITION_PER_CAPITA <- "Financial Position per Capita"
-SUB_TAB_TAX_DIS_RES_PERCENT_OSR <- "Tax Dis Res as Percent OSR"
-SUB_TAB_TAX_RESERVES_PERCENT_TAXATION <- "Tax Reserves as Percent of Taxation"
-SUB_TAB_TAX_RES_PER_CAPITA <- "Tax Res per Capita"
-SUB_TAB_TAX_DEBT_INT_PERCENT_OSR <- "Tax Debt Int Percent OSR"
-SUB_TAB_TAX_DEBT_CHARGES_PERCENT_OSR <- "Tax Debt Charges as Percent OSR"
-SUB_TAB_TOTAL_TAX_DEBT_OUT_PER_CAPITA <- "Total Debt Out per Capita"
-SUB_TAB_TAX_DEBT_OUT_PER_CAPITA <- "Tax Debt Out per Capita"
-SUB_TAB_DEBT_TO_RESERVE_RATIO <- "Debt to Reserve Ratio"
-SUB_TAB_TAX_RECEIVABLE_PERCENT_TAX <- "Tax Receivable as Percent Tax"
-SUB_TAB_RATES_COVERAGE_RATIO <- "Rates Coverage Ratio"
-SUB_TAB_NET_FIN_LIAB_RATIO <- "Net Fin Liab Ratio"
-SUB_TAB_DEVELOPMENT_CHARGES <- "Development Charges"
-SUB_TAB_BUILDING_PERMIT_FEES <- "Building Permit Fees"
-SUB_TAB_TAX_RATIOS <- "Tax Ratios"
-SUB_TAB_OPTIONAL_CLASS <- "Optional Class"
-SUB_TAB_TOTAL_TAX_RATES <- "Total Tax Rates"
-SUB_TAB_MUNICIPAL_TAX_RATES <- "Municipal Tax Rates"
-SUB_TAB_EDUCATIONL_TAX_RATES <- "Education Tax Rates"
-SUB_TAB_RESIDENTIAL <- "Residential"
-SUB_TAB_MULTI_RESIDENTIAL <- "Multi-Residential"
-SUB_TAB_COMMERCIAL <- "Commercial"
-SUB_TAB_INDUSTRIAL <- "Industrial"
-SUB_TAB_WATER_AND_SEWER_COSTS <- "Water and Sewer Costs"
-SUB_TAB_WATER_ASSET_CONSUMPTION <- "Water Asset Consumption"
-SUB_TAB_WASTE_WATER_ASSET_CONSUMPTION <- "Wastewater Asset Consumption"
-SUB_TAB_WATER_RES_PERCENT_OSR <- "Water Res as Percent OSR"
-SUB_TAB_WASTE_WATER_RES_PERCENT_OSR <- "Wastewater Res as Percent OSR"
-SUB_TAB_WATER_RES_PERCENT_ACUM_AMORT <- "Water Res as Percent Acum Amort"
-SUB_TAB_WASTE_WATER_RES_PERCENT_ACUM_AMORT <- "Wastewater Res as Percent Acum Amort"
-SUB_TAB_WATER_DEBT_INT_COVER <- "Water Debt Int Cover"
-SUB_TAB_WASTE_WATER_DEBT_INT_COVER <- "Wastewater Debt Int Cover"
-SUB_TAB_WATER_NET_FIN_LIAB <- "Water Net Fin Liab"
-SUB_TAB_WASTE_WATER_NET_FIN_LIAB <- "Wastewater Net Fin Liab"
-SUB_TAB_AVG_HOUSEHOLD_INCOME <- "Average Household Income"
-SUB_TAB_AVG_VALUE_DWELLING <- "Average Value of Dwelling"
-SUB_TAB_COMBINED_COSTS <- "Combined costs"
-SUB_TAB_TAXES_PERCENT_INCOME <- "Taxes as a Percent of Income"
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_FIRE = 'Fire Services'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_ROADS_PAVED = 'Roadways - Paved'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_BRIDGES_CULVERTS = 'Roadways - Bridges and Culverts'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_TRAFFIC = 'Roadways - Traffic Control'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WINTER_ROADS = 'Winter Control - Roads'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WINTER_SIDEWALKS = 'Winter Control - Sidewalks'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_TRANSIT = 'Transit Services'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PARKING = 'Parking'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WASTE_COLLECTION = 'Waste Collection'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WASTE_DISPOSAL = 'Waste Disposal'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_STORM = 'Storm Sewer'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_RECYCLING = 'Recycling'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PUBLIC_HEALTH = 'Public Health'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_EMERGENCY_MEASURES = 'Emergency Measures'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_GENERAL_ASSISTANCE = 'General Assistance'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_ASSISTANCE_AGED = 'Assistance to the Aged'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_POA = 'POA'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CHILD_CARE = 'Child Care'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_SOCIAL_HOUSING = 'Social Housing'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PARKS = 'Parks'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_RECREATION_PROGRAMS = 'Rec Programs'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_REC_FAC_GOLF = 'Rec Facilities Golf'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_REC_FACILITIES_OTHER = 'Rec Facilities Other'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_LIBRARY = 'Library'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_MUSEUMS = 'Museums'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CULTURAL = 'Cultural Services'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PLANNING = 'Planning'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_COMM_IND = 'Comm and Ind'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_GENERAL_GOVERNMENT = 'General Government'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CONSERVATION_AUTHORITY = 'Conservation Authority'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_AMBULANCE = 'Ambulance'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CEMETERIES = 'Cemeteries'
-SUB_TAB_NET_EXPENDITURES_PER_CAPITA_AGRICULTURE_AND_REFORESTATION = 'Agriculture and reforestation'
+# Special sheet name used in more than 1 place hence made constant
+kSheetNetExpendituresPerCapita <- "Net Expenditures per Capita"
 
+# Tabs names: should be enum but R does not suport enums
+kTabPopulation <- "Population"
+kTabDensityLandArea <- "Density and Land Area"
+kTabAssessmentInfo <- "Assessment Information"
+kTabAssessmentComposition <- "Assessment Composition"
+kTabBuildingPermitByYear <- "Building Permit Activity"
+kTabTotalLevy <- "Total Levy"
+kTabUpperTierLevy <- "Upper Tier Levy"
+kTabLowerTierLevy <- "Lower Tier Levy"
+kTabTaxAssetConsumptionRatio <- "Tax Asset Consumption Ratio"
+kTabFinancialPositionPerCapita <- "Financial Position per Capita"
+kTabTaxDisResPercentOSR <- "Tax Dis Res as Percent OSR"
+kTabTaxReservesPercentTaxation <- "Tax Reserves as Percent of Taxation"
+kTabTaxResPerCapita <- "Tax Res per Capita"
+kTabTaxDebtIntPercentOSR <- "Tax Debt Int Percent OSR"
+kTabTaxDebtChargesPercentOSR <- "Tax Debt Charges as Percent OSR"
+kTabTotalTaxDebtOutPerCapita <- "Total Debt Out per Capita"
+kTabTaxDebtOutPerCapita <- "Tax Debt Out per Capita"
+kTabDebtToReserveRatio <- "Debt to Reserve Ratio"
+kTabTaxReceivablePercentTax <- "Tax Receivable as Percent Tax"
+kTabRatesCoverageRatio <- "Rates Coverage Ratio"
+kTabNetFinLiabRatio <- "Net Fin Liab Ratio"
+kTabDevelopmentCharges <- "Development Charges"
+kTabBuildingPermitFees <- "Building Permit Fees"
+kTabTaxRatios <- "Tax Ratios"
+kTabOptionalClass <- "Optional Class"
+kTabTotalTaxRates <- "Total Tax Rates"
+kTabMunicipalTaxRates <- "Municipal Tax Rates"
+kTabEducationalTaxRates <- "Education Tax Rates"
+kTabResidential <- "Residential"
+kTabMultiResidential <- "Multi-Residential"
+kTabCommercial <- "Commercial"
+kTabIndustrial <- "Industrial"
+kTabWaterAndSewerCosts <- "Water and Sewer Costs"
+kTabWaterAssetConsumption <- "Water Asset Consumption"
+kTabWasterWaterAssetConsumption <- "Wastewater Asset Consumption"
+kTabWaterResPercentOSR <- "Water Res as Percent OSR"
+kTabWasteWaterResPercentOSR <- "Wastewater Res as Percent OSR"
+kTabWaterResPercentAcumAmort <- "Water Res as Percent Acum Amort"
+kTabWasteWaterResPercentAcumAmort <- "Wastewater Res as Percent Acum Amort"
+kTabWaterDebtIntCover <- "Water Debt Int Cover"
+kTabWasteWaterDebtIntCover <- "Wastewater Debt Int Cover"
+kTabWaterNetFinLiab <- "Water Net Fin Liab"
+kTabWasteWaterNetFinLiab <- "Wastewater Net Fin Liab"
+kTabAvgHouseholdIncome <- "Average Household Income"
+kTabAvgValueDwelling <- "Average Value of Dwelling"
+kTabCombinedCosts <- "Combined costs"
+kTabTaxesPercentIncome <- "Taxes as a Percent of Income"
+kTabFireServices = 'Fire Services'
+kTabNetExpendituresPerCapitaRoadsPaved = 'Roadways - Paved'
+kTabNetExpendituresPerCapitaBridgesCulverts = 'Roadways - Bridges and Culverts'
+kTabNetExpendituresPerCapitaTraffic = 'Roadways - Traffic Control'
+kTabNetExpendituresPerCapitaWinterRoads = 'Winter Control - Roads'
+kTabNetExpendituresPerCapitaWinterSidewalks = 'Winter Control - Sidewalks'
+kTabNetExpendituresPerCapitaTransit = 'Transit Services'
+kTabNetExpendituresPerCapitaParking = 'Parking'
+kTabNetExpendituresPerCapitaWasteCollection = 'Waste Collection'
+kTabNetExpendituresPerCapitaWasteDisposal = 'Waste Disposal'
+kTabNetExpendituresPerCapitaStorm = 'Storm Sewer'
+kTabNetExpendituresPerCapitaRecycling = 'Recycling'
+kTabNetExpendituresPerCapitaPublicHealth = 'Public Health'
+kTabNetExpendituresPerCapitaEmmergencyMeasures = 'Emergency Measures'
+kTabNetExpendituresPerCapitaGeneralAssistance = 'General Assistance'
+kTabNetExpendituresPerCapitaAssistanceAged = 'Assistance to the Aged'
+kTabNetExpendituresPerCapitaPOA = 'POA'
+kTabNetExpendituresPerCapitaChildCare = 'Child Care'
+kTabNetExpendituresPerCapitaSocialHousing = 'Social Housing'
+kTabNetExpendituresPerCapitaParks = 'Parks'
+kTabNetExpendituresPerCapitaRecPrograms = 'Rec Programs'
+kTabNetExpendituresPerCapitaRecFacGolf = 'Rec Facilities Golf'
+kTabNetExpendituresPerCapitaRecFacilitiesOther = 'Rec Facilities Other'
+kTabNetExpendituresPerCapitaLibrary = 'Library'
+kTabNetExpendituresPerCapitaMuseums = 'Museums'
+kTabNetExpendituresPerCapitaCultural = 'Cultural Services'
+kTabNetExpendituresPerCapitaPlanning = 'Planning'
+kTabNetExpendituresPerCapitaCommInd = 'Comm and Ind'
+kTabNetExpendituresPerCapitaGeneralGovernment = 'General Government'
+kTabNetExpendituresPerCapitaConservationAuthority = 'Conservation Authority'
+kTabNetExpendituresPerCapitaAmbulance = 'Ambulance'
+kTabNetExpendituresPerCapitaCemeteries = 'Cemeteries'
+kTabNetExpendituresPerCapitaAgriAndReforestation = 'Agriculture and reforestation'
+
+# Column names
 COLUMN_NAME_MUNICIPALITY = 'Municipality'
 COLUMN_NAME_POPULATION = 'Population'
 COLUMN_NAME_POPULATION_DENSITY = 'Population Density per sq. km.'
@@ -260,168 +266,179 @@ COLUMN_NAME_AMBULANCE = 'Ambulance'
 COLUMN_NAME_CEMETERIES = 'Cemeteries'
 COLUMN_NAME_AGRICULTURE_AND_REFORESTATION = 'Agriculture and reforestation'
 
-
-SHEET_NET_EXPENDITURES_PER_CAPITA <- "Net Expenditures per Capita"
-
+# Mapping from menu items (sheets in source excel data file) to corresponding tabs
 menu_sub_tabs_text <- list(
-  "Socio Economic Indicators" = list(SUB_TAB_POPULATION, SUB_TAB_DENSITY_LAND_AREA, SUB_TAB_ASSESSMENT_INFO, 
-                                     SUB_TAB_ASSESSMENT_COMPOSITION, SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR),
+  "Socio Economic Indicators" = list(kTabPopulation, kTabDensityLandArea, kTabAssessmentInfo, 
+                                     kTabAssessmentComposition, kTabBuildingPermitByYear),
   
-  "Municipal Financial Indicators" = list(SUB_TAB_TOTAL_LEYY, SUB_TAB_UPPER_TIER_LEVY, SUB_TAB_LOWER_TIER_LEVY, SUB_TAB_TAX_ASSET_CONSUMPTION_RATIO, SUB_TAB_FINANCIAL_POSITION_PER_CAPITA,
-       SUB_TAB_TAX_DIS_RES_PERCENT_OSR, SUB_TAB_TAX_RESERVES_PERCENT_TAXATION, SUB_TAB_TAX_RES_PER_CAPITA, SUB_TAB_TAX_DEBT_INT_PERCENT_OSR,
-       SUB_TAB_TAX_DEBT_CHARGES_PERCENT_OSR, SUB_TAB_TOTAL_TAX_DEBT_OUT_PER_CAPITA, SUB_TAB_TAX_DEBT_OUT_PER_CAPITA, SUB_TAB_DEBT_TO_RESERVE_RATIO,
-       SUB_TAB_TAX_RECEIVABLE_PERCENT_TAX, SUB_TAB_RATES_COVERAGE_RATIO, SUB_TAB_NET_FIN_LIAB_RATIO),
+  "Municipal Financial Indicators" = list(kTabTotalLevy, kTabUpperTierLevy, kTabLowerTierLevy, kTabTaxAssetConsumptionRatio, kTabFinancialPositionPerCapita,
+       kTabTaxDisResPercentOSR, kTabTaxReservesPercentTaxation, kTabTaxResPerCapita, kTabTaxDebtIntPercentOSR,
+       kTabTaxDebtChargesPercentOSR, kTabTotalTaxDebtOutPerCapita, kTabTaxDebtOutPerCapita, kTabDebtToReserveRatio,
+       kTabTaxReceivablePercentTax, kTabRatesCoverageRatio, kTabNetFinLiabRatio),
   
-  "Select User Fee Information" = list(SUB_TAB_DEVELOPMENT_CHARGES, SUB_TAB_BUILDING_PERMIT_FEES),
+  "Select User Fee Information" = list(kTabDevelopmentCharges, kTabBuildingPermitFees),
   
-  "Tax Policies" = list(SUB_TAB_TAX_RATIOS, SUB_TAB_OPTIONAL_CLASS),
+  "Tax Policies" = list(kTabTaxRatios, kTabOptionalClass),
   
-  "Comparison of Relative Taxes" = list(SUB_TAB_TOTAL_TAX_RATES, SUB_TAB_MUNICIPAL_TAX_RATES, SUB_TAB_EDUCATIONL_TAX_RATES, SUB_TAB_RESIDENTIAL, SUB_TAB_MULTI_RESIDENTIAL,
-       SUB_TAB_COMMERCIAL, SUB_TAB_INDUSTRIAL),
+  "Comparison of Relative Taxes" = list(kTabTotalTaxRates, kTabMunicipalTaxRates, kTabEducationalTaxRates, kTabResidential, kTabMultiResidential,
+       kTabCommercial, kTabIndustrial),
   
-  "Comparison of Water & Sewer Costs" = list(SUB_TAB_WATER_AND_SEWER_COSTS, SUB_TAB_WATER_ASSET_CONSUMPTION, SUB_TAB_WASTE_WATER_ASSET_CONSUMPTION, SUB_TAB_WATER_RES_PERCENT_OSR,
-       SUB_TAB_WASTE_WATER_RES_PERCENT_OSR, SUB_TAB_WATER_RES_PERCENT_ACUM_AMORT, SUB_TAB_WASTE_WATER_RES_PERCENT_ACUM_AMORT, SUB_TAB_WATER_DEBT_INT_COVER,
-       SUB_TAB_WASTE_WATER_DEBT_INT_COVER, SUB_TAB_WATER_NET_FIN_LIAB, SUB_TAB_WASTE_WATER_NET_FIN_LIAB),
+  "Comparison of Water & Sewer Costs" = list(kTabWaterAndSewerCosts, kTabWaterAssetConsumption, kTabWasterWaterAssetConsumption, kTabWaterResPercentOSR,
+       kTabWasteWaterResPercentOSR, kTabWaterResPercentAcumAmort, kTabWasteWaterResPercentAcumAmort, kTabWaterDebtIntCover,
+       kTabWasteWaterDebtIntCover, kTabWaterNetFinLiab, kTabWasteWaterNetFinLiab),
   
-  "Taxes as a % of Income" = list(SUB_TAB_AVG_HOUSEHOLD_INCOME, SUB_TAB_AVG_VALUE_DWELLING, SUB_TAB_COMBINED_COSTS, SUB_TAB_TAXES_PERCENT_INCOME)
+  "Taxes as a % of Income" = list(kTabAvgHouseholdIncome, kTabAvgValueDwelling, kTabCombinedCosts, kTabTaxesPercentIncome)
 )
 
-menu_sub_tabs_text[[SHEET_NET_EXPENDITURES_PER_CAPITA]] = list(
-    SUB_TAB_NET_EXPENDITURES_PER_CAPITA_FIRE, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_ROADS_PAVED, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_BRIDGES_CULVERTS, 
-    SUB_TAB_NET_EXPENDITURES_PER_CAPITA_TRAFFIC, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WINTER_ROADS, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WINTER_SIDEWALKS, 
-    SUB_TAB_NET_EXPENDITURES_PER_CAPITA_TRANSIT, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PARKING, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WASTE_COLLECTION, 
-    SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WASTE_DISPOSAL, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_STORM, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_RECYCLING, 
-    SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PUBLIC_HEALTH, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_EMERGENCY_MEASURES, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_GENERAL_ASSISTANCE,
-    SUB_TAB_NET_EXPENDITURES_PER_CAPITA_ASSISTANCE_AGED, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_POA, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CHILD_CARE, 
-    SUB_TAB_NET_EXPENDITURES_PER_CAPITA_SOCIAL_HOUSING, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PARKS, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_RECREATION_PROGRAMS, 
-    SUB_TAB_NET_EXPENDITURES_PER_CAPITA_REC_FAC_GOLF, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_REC_FACILITIES_OTHER, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_LIBRARY, 
-    SUB_TAB_NET_EXPENDITURES_PER_CAPITA_MUSEUMS, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CULTURAL, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PLANNING, 
-    SUB_TAB_NET_EXPENDITURES_PER_CAPITA_COMM_IND, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_GENERAL_GOVERNMENT, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CONSERVATION_AUTHORITY, 
-    SUB_TAB_NET_EXPENDITURES_PER_CAPITA_AMBULANCE, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CEMETERIES, SUB_TAB_NET_EXPENDITURES_PER_CAPITA_AGRICULTURE_AND_REFORESTATION)
+# Separately set the mapping for Net Expenditures Per Capita
+menu_sub_tabs_text[[kSheetNetExpendituresPerCapita]] = list(
+    kTabFireServices, kTabNetExpendituresPerCapitaRoadsPaved, kTabNetExpendituresPerCapitaBridgesCulverts, 
+    kTabNetExpendituresPerCapitaTraffic, kTabNetExpendituresPerCapitaWinterRoads, kTabNetExpendituresPerCapitaWinterSidewalks, 
+    kTabNetExpendituresPerCapitaTransit, kTabNetExpendituresPerCapitaParking, kTabNetExpendituresPerCapitaWasteCollection, 
+    kTabNetExpendituresPerCapitaWasteDisposal, kTabNetExpendituresPerCapitaStorm, kTabNetExpendituresPerCapitaRecycling, 
+    kTabNetExpendituresPerCapitaPublicHealth, kTabNetExpendituresPerCapitaEmmergencyMeasures, kTabNetExpendituresPerCapitaGeneralAssistance,
+    kTabNetExpendituresPerCapitaAssistanceAged, kTabNetExpendituresPerCapitaPOA, kTabNetExpendituresPerCapitaChildCare, 
+    kTabNetExpendituresPerCapitaSocialHousing, kTabNetExpendituresPerCapitaParks, kTabNetExpendituresPerCapitaRecPrograms, 
+    kTabNetExpendituresPerCapitaRecFacGolf, kTabNetExpendituresPerCapitaRecFacilitiesOther, kTabNetExpendituresPerCapitaLibrary, 
+    kTabNetExpendituresPerCapitaMuseums, kTabNetExpendituresPerCapitaCultural, kTabNetExpendituresPerCapitaPlanning, 
+    kTabNetExpendituresPerCapitaCommInd, kTabNetExpendituresPerCapitaGeneralGovernment, kTabNetExpendituresPerCapitaConservationAuthority, 
+    kTabNetExpendituresPerCapitaAmbulance, kTabNetExpendituresPerCapitaCemeteries, kTabNetExpendituresPerCapitaAgriAndReforestation)
 
-data_set_names <- list.flatten(menu_sub_tabs_text)
-data_set_percent_character_exclusions <-list(SUB_TAB_TAX_DIS_RES_PERCENT_OSR, SUB_TAB_TAX_RESERVES_PERCENT_TAXATION, SUB_TAB_TAX_DEBT_INT_PERCENT_OSR, 
-                                            SUB_TAB_TAX_DEBT_CHARGES_PERCENT_OSR, SUB_TAB_TAX_RECEIVABLE_PERCENT_TAX, SUB_TAB_WATER_RES_PERCENT_OSR, 
-                                            SUB_TAB_WASTE_WATER_RES_PERCENT_OSR, SUB_TAB_WATER_RES_PERCENT_ACUM_AMORT, SUB_TAB_WASTE_WATER_RES_PERCENT_ACUM_AMORT, 
-                                            SUB_TAB_TAXES_PERCENT_INCOME)
-data_set_percent_character_additions <- lapply(data_set_percent_character_exclusions, function(str) {
+
+# Initialize list of expected sheets
+kExpectedSheets <- list.flatten(menu_sub_tabs_text)
+
+# For these sheets API returns 'Percent' so we must replace that by '%' when displaying in the app
+kSheetsPercent <-list(kTabTaxDisResPercentOSR, kTabTaxReservesPercentTaxation, kTabTaxDebtIntPercentOSR, 
+                      kTabTaxDebtChargesPercentOSR, kTabTaxReceivablePercentTax, kTabWaterResPercentOSR, 
+                      kTabWasteWaterResPercentOSR, kTabWaterResPercentAcumAmort, kTabWasteWaterResPercentAcumAmort, 
+                      kTabTaxesPercentIncome)
+
+# Replace 'Percent' with '%' for display in the app
+kSheetsPercentUpdatedForDisplay <- lapply(kSheetsPercent, function(str) {
   sub("Percent", "%", str)
 })
-data_set_and_character_exclusions <- list(SUB_TAB_WATER_AND_SEWER_COSTS)
-data_set_and_character_additions <- lapply(data_set_and_character_exclusions, function(str) {
+
+# Replace sheet name containing 'and' with '&' for display in app
+kSheetsAnd <- list(kTabWaterAndSewerCosts)
+kSheetsAndUpdatedForDisplay <- lapply(kSheetsAnd, function(str) {
   sub(" and ", "&", str)
 })
 
-
-data_set_names <- unique(setdiff(
-  list.flatten(list.append(data_set_names, data_set_percent_character_additions, data_set_and_character_additions, SHEET_NET_EXPENDITURES_PER_CAPITA)), 
-  list.flatten(list.append(data_set_percent_character_exclusions, data_set_and_character_exclusions, menu_sub_tabs_text[[SHEET_NET_EXPENDITURES_PER_CAPITA]])))
+# Final list of expected sheets: add the sheets with modified display name, subtract the original corresponding ones, 
+# and for Net Expenditures Per Capita enfore 1 single sheet as per source data Excel file
+kExpectedSheets <- unique(setdiff(
+  list.flatten(list.append(kExpectedSheets, kSheetsPercentUpdatedForDisplay, kSheetsAndUpdatedForDisplay, kSheetNetExpendituresPerCapita)), 
+  list.flatten(list.append(kSheetsPercent, kSheetsAnd, menu_sub_tabs_text[[kSheetNetExpendituresPerCapita]])))
 )
 
+# Mapping of tab to column names for that tab
 column_names_per_sub_tab_selection <- list()
-column_names_per_sub_tab_selection[[SUB_TAB_POPULATION]] = list(
+column_names_per_sub_tab_selection[[kTabPopulation]] = list(
   COLUMN_NAME_POPULATION_DENSITY, COLUMN_NAME_POPULATION_INCREASE, COLUMN_NAME_WEIGHTED_MEDIAN_VAL_DWELLING, COLUMN_NAME_UNWEIGHTED_ASSESSMENT_PER_CAPITA, 
   COLUMN_NAME_WEIGHTED_ASSESSMENT_PER_CAPITA)
-column_names_per_sub_tab_selection[[SUB_TAB_DENSITY_LAND_AREA]] = list(COLUMN_NAME_POPULATION_DENSITY, COLUMN_NAME_LAND_AREA)
-column_names_per_sub_tab_selection[[SUB_TAB_ASSESSMENT_INFO]] = list(
+column_names_per_sub_tab_selection[[kTabDensityLandArea]] = list(COLUMN_NAME_POPULATION_DENSITY, COLUMN_NAME_LAND_AREA)
+column_names_per_sub_tab_selection[[kTabAssessmentInfo]] = list(
   COLUMN_NAME_TOTAL_UNWEIGHTED_ASSESSMENT, COLUMN_NAME_TOTAL_WEIGHTED_ASSESSMENT, COLUMN_NAME_UNWEIGHTED_ASSESSMENT_PER_CAPITA, 
   COLUMN_NAME_WEIGHTED_ASSESSMENT_PER_CAPITA)
-column_names_per_sub_tab_selection[[SUB_TAB_ASSESSMENT_COMPOSITION]] = list(
+column_names_per_sub_tab_selection[[kTabAssessmentComposition]] = list(
   COLUMN_NAME_RESIDENTIAL, COLUMN_NAME_MULTI_RESIDENTIAL, COLUMN_NAME_COMMERCIAL, COLUMN_NAME_INDUSTRIAL, COLUMN_NAME_PIPELINES, COLUMN_NAME_FARMLANDS, 
   COLUMN_NAME_FORESTS, COLUMN_NAME_LANDFILL)
-column_names_per_sub_tab_selection[[SUB_TAB_TOTAL_LEYY]] = list(COLUMN_NAME_TOTAL_NET_LEVY, COLUMN_NAME_LEVY_PER_CAPITA)
-column_names_per_sub_tab_selection[[SUB_TAB_UPPER_TIER_LEVY]] = list(COLUMN_NAME_UPPER_TIER_LEVY, COLUMN_NAME_UPPER_TIER_LEVY_PER_CAPITA)
-column_names_per_sub_tab_selection[[SUB_TAB_LOWER_TIER_LEVY]] = list(COLUMN_NAME_LOWER_TIER_LEVY, COLUMN_NAME_LOWER_TIER_LEVY_PER_CAPITA)
-column_names_per_sub_tab_selection[[SUB_TAB_TAX_ASSET_CONSUMPTION_RATIO]] = list(COLUMN_NAME_TAX_ASSET_CONSUMPTION_RATIO)
-column_names_per_sub_tab_selection[[SUB_TAB_FINANCIAL_POSITION_PER_CAPITA]] = list(COLUMN_NAME_FINANCIAL_POSITION_PER_CAPITA)
-column_names_per_sub_tab_selection[[SUB_TAB_TAX_DIS_RES_PERCENT_OSR]] = list(COLUMN_NAME_TAX_DISCRETIONARY_RESERVES_PERCENT_SOURCE_REVENUES)
-column_names_per_sub_tab_selection[[SUB_TAB_TAX_RESERVES_PERCENT_TAXATION]] = list(COLUMN_NAME_TAX_RESERVES_PERCENT_TAXATION)
-column_names_per_sub_tab_selection[[SUB_TAB_TAX_RES_PER_CAPITA]] = list(COLUMN_NAME_TAX_RESERVE_PER_CAPITA)
-column_names_per_sub_tab_selection[[SUB_TAB_TAX_DEBT_INT_PERCENT_OSR]] = list(COLUMN_NAME_TAX_DEBT_INT_PERCENT_OSR)
-column_names_per_sub_tab_selection[[SUB_TAB_TAX_DEBT_CHARGES_PERCENT_OSR]] = list(COLUMN_NAME_TAXR_DEBT_CHARGES_PERCENT_OSR)
-column_names_per_sub_tab_selection[[SUB_TAB_TOTAL_TAX_DEBT_OUT_PER_CAPITA]] = list(COLUMN_NAME_TOTAL_DEBT_OUTSTANDING_PER_CAPITA)
-column_names_per_sub_tab_selection[[SUB_TAB_TAX_DEBT_OUT_PER_CAPITA]] = list(COLUMN_NAME_TAX_DEBT_OUTSTANDING_PER_CAPITA)
-column_names_per_sub_tab_selection[[SUB_TAB_DEBT_TO_RESERVE_RATIO]] = list(COLUMN_NAME_DEBT_TO_RESERVE_RATIO)
-column_names_per_sub_tab_selection[[SUB_TAB_TAX_RECEIVABLE_PERCENT_TAX]] = list(COLUMN_NAME_TAXES_RECEIVABLE_PERCENT_TAXES_LEVIED)
-column_names_per_sub_tab_selection[[SUB_TAB_RATES_COVERAGE_RATIO]] = list(COLUMN_NAME_RATES_COVERAGE_RATIO)
-column_names_per_sub_tab_selection[[SUB_TAB_NET_FIN_LIAB_RATIO]] = list(COLUMN_NAME_NET_FINANCIAL_LIABILITIES_RATIO)
-column_names_per_sub_tab_selection[[SUB_TAB_DEVELOPMENT_CHARGES]] = list(
+column_names_per_sub_tab_selection[[kTabTotalLevy]] = list(COLUMN_NAME_TOTAL_NET_LEVY, COLUMN_NAME_LEVY_PER_CAPITA)
+column_names_per_sub_tab_selection[[kTabUpperTierLevy]] = list(COLUMN_NAME_UPPER_TIER_LEVY, COLUMN_NAME_UPPER_TIER_LEVY_PER_CAPITA)
+column_names_per_sub_tab_selection[[kTabLowerTierLevy]] = list(COLUMN_NAME_LOWER_TIER_LEVY, COLUMN_NAME_LOWER_TIER_LEVY_PER_CAPITA)
+column_names_per_sub_tab_selection[[kTabTaxAssetConsumptionRatio]] = list(COLUMN_NAME_TAX_ASSET_CONSUMPTION_RATIO)
+column_names_per_sub_tab_selection[[kTabFinancialPositionPerCapita]] = list(COLUMN_NAME_FINANCIAL_POSITION_PER_CAPITA)
+column_names_per_sub_tab_selection[[kTabTaxDisResPercentOSR]] = list(COLUMN_NAME_TAX_DISCRETIONARY_RESERVES_PERCENT_SOURCE_REVENUES)
+column_names_per_sub_tab_selection[[kTabTaxReservesPercentTaxation]] = list(COLUMN_NAME_TAX_RESERVES_PERCENT_TAXATION)
+column_names_per_sub_tab_selection[[kTabTaxResPerCapita]] = list(COLUMN_NAME_TAX_RESERVE_PER_CAPITA)
+column_names_per_sub_tab_selection[[kTabTaxDebtIntPercentOSR]] = list(COLUMN_NAME_TAX_DEBT_INT_PERCENT_OSR)
+column_names_per_sub_tab_selection[[kTabTaxDebtChargesPercentOSR]] = list(COLUMN_NAME_TAXR_DEBT_CHARGES_PERCENT_OSR)
+column_names_per_sub_tab_selection[[kTabTotalTaxDebtOutPerCapita]] = list(COLUMN_NAME_TOTAL_DEBT_OUTSTANDING_PER_CAPITA)
+column_names_per_sub_tab_selection[[kTabTaxDebtOutPerCapita]] = list(COLUMN_NAME_TAX_DEBT_OUTSTANDING_PER_CAPITA)
+column_names_per_sub_tab_selection[[kTabDebtToReserveRatio]] = list(COLUMN_NAME_DEBT_TO_RESERVE_RATIO)
+column_names_per_sub_tab_selection[[kTabTaxReceivablePercentTax]] = list(COLUMN_NAME_TAXES_RECEIVABLE_PERCENT_TAXES_LEVIED)
+column_names_per_sub_tab_selection[[kTabRatesCoverageRatio]] = list(COLUMN_NAME_RATES_COVERAGE_RATIO)
+column_names_per_sub_tab_selection[[kTabNetFinLiabRatio]] = list(COLUMN_NAME_NET_FINANCIAL_LIABILITIES_RATIO)
+column_names_per_sub_tab_selection[[kTabDevelopmentCharges]] = list(
   COLUMN_NAME_SINGLE_DETACHED_DWELLINGS_PER_UNIT, COLUMN_NAME_MULTIPLES_DWELLING__3_OR_MORE, COLUMN_NAME_MULTIPLES_DWELLING_1_OR_2, 
   COLUMN_NAME_APARTMENT_UNITS_2_OR_MORE, COLUMN_NAME_APARTMENT_UNITS_LESS_THAN_2, COLUMN_NAME_NON_RESIDENTIAL_COMMERCIAL_PER_SQFT, 
   COLUMN_NAME_NON_RESIDENTIAL_INDUSTRIAL_PER_SQFT)
-column_names_per_sub_tab_selection[[SUB_TAB_BUILDING_PERMIT_FEES]] = list(COLUMN_NAME_BUILDING_PERMIT_FEE)
-column_names_per_sub_tab_selection[[SUB_TAB_TAX_RATIOS]] = list(
+column_names_per_sub_tab_selection[[kTabBuildingPermitFees]] = list(COLUMN_NAME_BUILDING_PERMIT_FEE)
+column_names_per_sub_tab_selection[[kTabTaxRatios]] = list(
   COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL, COLUMN_NAME_TAX_RATIOS_COMMERCIAL_RESIDUAL, COLUMN_NAME_TAX_RATIOS_INDUSTRIAL_RESIDUAL)
-column_names_per_sub_tab_selection[[SUB_TAB_OPTIONAL_CLASS]] = list(
+column_names_per_sub_tab_selection[[kTabOptionalClass]] = list(
   COLUMN_NAME_NEW_MULTI_RESIDENTIAL, COLUMN_NAME_COMMERCIAL_OFFICE, COLUMN_NAME_COMMERCIAL_SHOPPING, COLUMN_NAME_COMMERCIAL_PARKING, COLUMN_NAME_INDUSTRIAL_LARGE)
-column_names_per_sub_tab_selection[[SUB_TAB_TOTAL_TAX_RATES]] = list(
+column_names_per_sub_tab_selection[[kTabTotalTaxRates]] = list(
   COLUMN_NAME_TOTAL_RESID, COLUMN_NAME_TOTAL_MULTI_RESID, COLUMN_NAME_TOTAL_COMMERCIAL_RESIDUAL, COLUMN_NAME_TOTAL_COMMERCIAL_OFFICE, 
   COLUMN_NAME_TOTAL_COMMERCIAL_PARK_VAC, COLUMN_NAME_TOTAL_COMMERCIAL_SHOPPING, COLUMN_NAME_TOTAL_INDUSTRIAL_RESIDUAL, COLUMN_NAME_TOTAL_INDUSTRIAL_LARGE)
-column_names_per_sub_tab_selection[[SUB_TAB_MUNICIPAL_TAX_RATES]] = list(
+column_names_per_sub_tab_selection[[kTabMunicipalTaxRates]] = list(
   COLUMN_NAME_MUNICIPAL_RESID, COLUMN_NAME_MUNICIPAL_MULTI_RESID, COLUMN_NAME_MUNICIPAL_COMM_RESIDUAL, COLUMN_NAME_MUNICIPAL_COMM_OFFICE, 
   COLUMN_NAME_MUNICIPAL_COMMERCIAL_PARK_VAC, COLUMN_NAME_MUNICIPAL_COMM_SHOPPING, COLUMN_NAME_MUNICIPAL_IND_RESIDUAL, COLUMN_NAME_MUNICIPAL_IND_LARGE)
-column_names_per_sub_tab_selection[[SUB_TAB_EDUCATIONL_TAX_RATES]] = list(
+column_names_per_sub_tab_selection[[kTabEducationalTaxRates]] = list(
   COLUMN_NAME_EDUCATION_RESID, COLUMN_NAME_EDUCATION_MULTI_RESID, COLUMN_NAME_EDUCATION_COMM_RESIDUAL, COLUMN_NAME_EDUCATION_COMM_OFFICE, 
   COLUMN_NAME_EDUCATION_COMMERCIAL_PARK_VAC, COLUMN_NAME_EDUCATION_COMM_SHOPPING, COLUMN_NAME_EDUCATION_IND_RESIDUAL, COLUMN_NAME_EDUCATION_IND_LARGE)
-column_names_per_sub_tab_selection[[SUB_TAB_RESIDENTIAL]] = list(COLUMN_NAME_BUNGALOW, COLUMN_NAME_2_STOREY, COLUMN_NAME_EXECUTIVE)
-column_names_per_sub_tab_selection[[SUB_TAB_MULTI_RESIDENTIAL]] = list(COLUMN_NAME_MULTI_RES_WALK_UP, COLUMN_NAME_MULTI_RES_HIGH_RISE)
-column_names_per_sub_tab_selection[[SUB_TAB_COMMERCIAL]] = list(COLUMN_NAME_TAX_SHOPPING, COLUMN_NAME_TAX_HOTEL, COLUMN_NAME_TAX_MOTEL, COLUMN_NAME_TAX_OFFICE)
-column_names_per_sub_tab_selection[[SUB_TAB_INDUSTRIAL]] = list(COLUMN_NAME_TAX_IND_STANDARD, COLUMN_NAME_TAX_IND_LARGE, COLUMN_NAME_TAX_IND_VACANT)
-column_names_per_sub_tab_selection[[SUB_TAB_WATER_AND_SEWER_COSTS]] = list(
+column_names_per_sub_tab_selection[[kTabResidential]] = list(COLUMN_NAME_BUNGALOW, COLUMN_NAME_2_STOREY, COLUMN_NAME_EXECUTIVE)
+column_names_per_sub_tab_selection[[kTabMultiResidential]] = list(COLUMN_NAME_MULTI_RES_WALK_UP, COLUMN_NAME_MULTI_RES_HIGH_RISE)
+column_names_per_sub_tab_selection[[kTabCommercial]] = list(COLUMN_NAME_TAX_SHOPPING, COLUMN_NAME_TAX_HOTEL, COLUMN_NAME_TAX_MOTEL, COLUMN_NAME_TAX_OFFICE)
+column_names_per_sub_tab_selection[[kTabIndustrial]] = list(COLUMN_NAME_TAX_IND_STANDARD, COLUMN_NAME_TAX_IND_LARGE, COLUMN_NAME_TAX_IND_VACANT)
+column_names_per_sub_tab_selection[[kTabWaterAndSewerCosts]] = list(
   COLUMN_NAME_RESIDENTIAL_200_M3, COLUMN_NAME_COMMERCIAL_10K_M3, COLUMN_NAME_INDUSTRIAL_30K_M3, COLUMN_NAME_INDUSTRIAL_100K_M3, COLUMN_NAME_INDUSTRIAL_500K_M3)
-column_names_per_sub_tab_selection[[SUB_TAB_WATER_ASSET_CONSUMPTION]] = list(COLUMN_NAME_WATER_ASSET_CONSUMPTION)
-column_names_per_sub_tab_selection[[SUB_TAB_WASTE_WATER_ASSET_CONSUMPTION]] = list(COLUMN_NAME_WW_ASSET_CONSUMPTION)
-column_names_per_sub_tab_selection[[SUB_TAB_WATER_RES_PERCENT_OSR]] = list(COLUMN_NAME_WATER_RES_PERCENT_OSR)
-column_names_per_sub_tab_selection[[SUB_TAB_WASTE_WATER_RES_PERCENT_OSR]] = list(COLUMN_NAME_WW_RES_PERCENT_OSR)
-column_names_per_sub_tab_selection[[SUB_TAB_WATER_RES_PERCENT_ACUM_AMORT]] = list(COLUMN_NAME_WATER_RES_PERCENT_ACUM_AMORT)
-column_names_per_sub_tab_selection[[SUB_TAB_WASTE_WATER_RES_PERCENT_ACUM_AMORT]] = list(COLUMN_NAME_WW_RES_PERCENT_ACUM_AMORT)
-column_names_per_sub_tab_selection[[SUB_TAB_WATER_DEBT_INT_COVER]] = list(COLUMN_NAME_WATER_DEBT_INTEREST_COVERAGE)
-column_names_per_sub_tab_selection[[SUB_TAB_WASTE_WATER_DEBT_INT_COVER]] = list(COLUMN_NAME_WW_DEBT_INTEREST_COVERAGE)
-column_names_per_sub_tab_selection[[SUB_TAB_WATER_NET_FIN_LIAB]] = list(COLUMN_NAME_WATER_NET_LIN_LIAB)
-column_names_per_sub_tab_selection[[SUB_TAB_WASTE_WATER_NET_FIN_LIAB]] = list(COLUMN_NAME_WW_NET_LIN_LIAB)
-column_names_per_sub_tab_selection[[SUB_TAB_AVG_HOUSEHOLD_INCOME]] = list(COLUMN_NAME_EST_AVG_HOUSEHOLD_INCOME)
-column_names_per_sub_tab_selection[[SUB_TAB_AVG_VALUE_DWELLING]] = list(COLUMN_NAME_WEIGHTED_MEDIAN_VAL_DWELLING)
-column_names_per_sub_tab_selection[[SUB_TAB_COMBINED_COSTS]] = list(COLUMN_NAME_RESIDENTIAL_WATER_SEWER_COSTS, COLUMN_NAME_AVG_RESIDENTIAL_TAXES, COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN)
-column_names_per_sub_tab_selection[[SUB_TAB_TAXES_PERCENT_INCOME]] = list(
+column_names_per_sub_tab_selection[[kTabWaterAssetConsumption]] = list(COLUMN_NAME_WATER_ASSET_CONSUMPTION)
+column_names_per_sub_tab_selection[[kTabWasterWaterAssetConsumption]] = list(COLUMN_NAME_WW_ASSET_CONSUMPTION)
+column_names_per_sub_tab_selection[[kTabWaterResPercentOSR]] = list(COLUMN_NAME_WATER_RES_PERCENT_OSR)
+column_names_per_sub_tab_selection[[kTabWasteWaterResPercentOSR]] = list(COLUMN_NAME_WW_RES_PERCENT_OSR)
+column_names_per_sub_tab_selection[[kTabWaterResPercentAcumAmort]] = list(COLUMN_NAME_WATER_RES_PERCENT_ACUM_AMORT)
+column_names_per_sub_tab_selection[[kTabWasteWaterResPercentAcumAmort]] = list(COLUMN_NAME_WW_RES_PERCENT_ACUM_AMORT)
+column_names_per_sub_tab_selection[[kTabWaterDebtIntCover]] = list(COLUMN_NAME_WATER_DEBT_INTEREST_COVERAGE)
+column_names_per_sub_tab_selection[[kTabWasteWaterDebtIntCover]] = list(COLUMN_NAME_WW_DEBT_INTEREST_COVERAGE)
+column_names_per_sub_tab_selection[[kTabWaterNetFinLiab]] = list(COLUMN_NAME_WATER_NET_LIN_LIAB)
+column_names_per_sub_tab_selection[[kTabWasteWaterNetFinLiab]] = list(COLUMN_NAME_WW_NET_LIN_LIAB)
+column_names_per_sub_tab_selection[[kTabAvgHouseholdIncome]] = list(COLUMN_NAME_EST_AVG_HOUSEHOLD_INCOME)
+column_names_per_sub_tab_selection[[kTabAvgValueDwelling]] = list(COLUMN_NAME_WEIGHTED_MEDIAN_VAL_DWELLING)
+column_names_per_sub_tab_selection[[kTabCombinedCosts]] = list(COLUMN_NAME_RESIDENTIAL_WATER_SEWER_COSTS, COLUMN_NAME_AVG_RESIDENTIAL_TAXES, COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN)
+column_names_per_sub_tab_selection[[kTabTaxesPercentIncome]] = list(
   COLUMN_NAME_AVG_RESIDENTIAL_TAXES, COLUMN_NAME_PROPERTY_TAXES_PERCENT_HOUSEHOLD_INCOME, COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN, 
   COLUMN_NAME_TOTAL_MUNICIPAL_BURDEN_PERCENT_HOUSEHOLD_INCOME)
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_FIRE]] = list(COLUMN_NAME_FIRE) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_ROADS_PAVED]] = list(COLUMN_NAME_ROADS_PAVED) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_BRIDGES_CULVERTS]] = list(COLUMN_NAME_BRIDGES_CULVERTS) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_TRAFFIC]] = list(COLUMN_NAME_TRAFFIC)
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WINTER_ROADS]] = list(COLUMN_NAME_WINTER_ROADS) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WINTER_SIDEWALKS]] = list(COLUMN_NAME_WINTER_SIDEWALKS) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_TRANSIT]] = list(COLUMN_NAME_TRANSIT) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PARKING]] = list(COLUMN_NAME_PARKING)
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WASTE_COLLECTION]] = list(COLUMN_NAME_WASTE_COLLECTION) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_WASTE_DISPOSAL]] = list(COLUMN_NAME_WASTE_DISPOSAL) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_STORM]] = list(COLUMN_NAME_STORM) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_RECYCLING]] = list(COLUMN_NAME_RECYCLING)
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PUBLIC_HEALTH]] = list(COLUMN_NAME_PUBLIC_HEALTH) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_EMERGENCY_MEASURES]] = list(COLUMN_NAME_EMERGENCY_MEASURES) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_GENERAL_ASSISTANCE]] = list(COLUMN_NAME_GENERAL_ASSISTANCE)
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_ASSISTANCE_AGED]] = list(COLUMN_NAME_ASSISTANCE_AGED) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_POA]] = list(COLUMN_NAME_POA) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CHILD_CARE]] = list(COLUMN_NAME_CHILD_CARE) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_SOCIAL_HOUSING]] = list(COLUMN_NAME_SOCIAL_HOUSING)
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PARKS]] = list(COLUMN_NAME_PARKS) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_RECREATION_PROGRAMS]] = list(COLUMN_NAME_RECREATION_PROGRAMS) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_REC_FAC_GOLF]] = list(COLUMN_NAME_REC_FAC_GOLF) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_REC_FACILITIES_OTHER]] = list(COLUMN_NAME_REC_FACILITIES_OTHER)
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_LIBRARY]] = list(COLUMN_NAME_LIBRARY) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_MUSEUMS]] = list(COLUMN_NAME_MUSEUMS) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CULTURAL]] = list(COLUMN_NAME_CULTURAL) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_PLANNING]] = list(COLUMN_NAME_PLANNING) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_COMM_IND]] = list(COLUMN_NAME_COMM_IND)
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_GENERAL_GOVERNMENT]] = list(COLUMN_NAME_GENERAL_GOVERNMENT) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CONSERVATION_AUTHORITY]] = list(COLUMN_NAME_CONSERVATION_AUTHORITY) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_AMBULANCE]] = list(COLUMN_NAME_AMBULANCE) 
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_CEMETERIES]] = list(COLUMN_NAME_CEMETERIES)
-column_names_per_sub_tab_selection[[SUB_TAB_NET_EXPENDITURES_PER_CAPITA_AGRICULTURE_AND_REFORESTATION]] = list(COLUMN_NAME_AGRICULTURE_AND_REFORESTATION)
+column_names_per_sub_tab_selection[[kTabFireServices]] = list(COLUMN_NAME_FIRE) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaRoadsPaved]] = list(COLUMN_NAME_ROADS_PAVED) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaBridgesCulverts]] = list(COLUMN_NAME_BRIDGES_CULVERTS) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaTraffic]] = list(COLUMN_NAME_TRAFFIC)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaWinterRoads]] = list(COLUMN_NAME_WINTER_ROADS) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaWinterSidewalks]] = list(COLUMN_NAME_WINTER_SIDEWALKS) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaTransit]] = list(COLUMN_NAME_TRANSIT) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaParking]] = list(COLUMN_NAME_PARKING)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaWasteCollection]] = list(COLUMN_NAME_WASTE_COLLECTION) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaWasteDisposal]] = list(COLUMN_NAME_WASTE_DISPOSAL) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaStorm]] = list(COLUMN_NAME_STORM) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaRecycling]] = list(COLUMN_NAME_RECYCLING)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaPublicHealth]] = list(COLUMN_NAME_PUBLIC_HEALTH) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaEmmergencyMeasures]] = list(COLUMN_NAME_EMERGENCY_MEASURES) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaGeneralAssistance]] = list(COLUMN_NAME_GENERAL_ASSISTANCE)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaAssistanceAged]] = list(COLUMN_NAME_ASSISTANCE_AGED) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaPOA]] = list(COLUMN_NAME_POA) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaChildCare]] = list(COLUMN_NAME_CHILD_CARE) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaSocialHousing]] = list(COLUMN_NAME_SOCIAL_HOUSING)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaParks]] = list(COLUMN_NAME_PARKS) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaRecPrograms]] = list(COLUMN_NAME_RECREATION_PROGRAMS) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaRecFacGolf]] = list(COLUMN_NAME_REC_FAC_GOLF) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaRecFacilitiesOther]] = list(COLUMN_NAME_REC_FACILITIES_OTHER)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaLibrary]] = list(COLUMN_NAME_LIBRARY) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaMuseums]] = list(COLUMN_NAME_MUSEUMS) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaCultural]] = list(COLUMN_NAME_CULTURAL) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaPlanning]] = list(COLUMN_NAME_PLANNING) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaCommInd]] = list(COLUMN_NAME_COMM_IND)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaGeneralGovernment]] = list(COLUMN_NAME_GENERAL_GOVERNMENT) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaConservationAuthority]] = list(COLUMN_NAME_CONSERVATION_AUTHORITY) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaAmbulance]] = list(COLUMN_NAME_AMBULANCE) 
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaCemeteries]] = list(COLUMN_NAME_CEMETERIES)
+column_names_per_sub_tab_selection[[kTabNetExpendituresPerCapitaAgriAndReforestation]] = list(COLUMN_NAME_AGRICULTURE_AND_REFORESTATION)
 
+# List of all column names: add Municipality column which is the only non-number column
 ALL_COLUMN_NAMES_LIST <- unique(append(list(COLUMN_NAME_MUNICIPALITY),
                                        list.flatten(column_names_per_sub_tab_selection)))
 
+# Different formats used when displaying column values in app
 FORMAT_SETTINGS_CURRENCY_DEFAULT = list("SYMBOL" = "$", "SEPARATOR" = ",", "DECIMALS" = 0)
 FORMAT_SETTINGS_CURRENCY_2_DECIMALS = list("SYMBOL" = "$", "SEPARATOR" = ",", "DECIMALS" = 2)
 FORMAT_SETTINGS_COUNTER = list("SYMBOL" = "", "SEPARATOR" = ",", "DECIMALS" = 0)
@@ -430,10 +447,17 @@ FORMAT_SETTINGS_PERCENT_2_DECIMALS = list("SYMBOL" = "%", "SEPARATOR" = ",", "DE
 FORMAT_SETTINGS_PERCENT_4_DECIMALS = list("SYMBOL" = "%", "SEPARATOR" = ",", "DECIMALS" = 4)
 FORMAT_SETTINGS_PERCENT_6_DECIMALS = list("SYMBOL" = "%", "SEPARATOR" = ",", "DECIMALS" = 6)
 
+#
+# Column values display formats
+#
+
+# No-format-change-needed columns
 AS_IS_DISPLAY_COLUMNS = list(COLUMN_NAME_MUNICIPALITY)
 
+# Integer (no decimals) columns
 COLUMNS_COUNTER = c(COLUMN_NAME_POPULATION, COLUMN_NAME_POPULATION_DENSITY, COLUMN_NAME_LAND_AREA)
 
+# Columns with numbers with various number of decimals
 COLUMNS_PERCENT_1_DECIMAL = c(COLUMN_NAME_WATER_NET_LIN_LIAB, COLUMN_NAME_WW_NET_LIN_LIAB)
 
 COLUMNS_PERCENT_2_DECIMALS = c(COLUMN_NAME_POPULATION_INCREASE, COLUMN_NAME_RESIDENTIAL, COLUMN_NAME_MULTI_RESIDENTIAL, COLUMN_NAME_COMMERCIAL, 
@@ -458,6 +482,7 @@ COLUMNS_PERCENT_6_DECIMALS = c(COLUMN_NAME_TOTAL_RESID, COLUMN_NAME_TOTAL_MULTI_
                                COLUMN_NAME_EDUCATION_COMM_OFFICE, COLUMN_NAME_EDUCATION_COMMERCIAL_PARK_VAC, COLUMN_NAME_EDUCATION_COMM_SHOPPING,
                                COLUMN_NAME_EDUCATION_IND_RESIDUAL, COLUMN_NAME_EDUCATION_IND_LARGE)
 
+# Columns with currency ($ amount) values 
 COLUMNS_CURRENCY_2_DECIMALS = c(COLUMN_NAME_NON_RESIDENTIAL_COMMERCIAL_PER_SQFT, COLUMN_NAME_NON_RESIDENTIAL_INDUSTRIAL_PER_SQFT, COLUMN_NAME_TAX_SHOPPING, 
                                 COLUMN_NAME_TAX_OFFICE, COLUMN_NAME_TAX_IND_STANDARD, COLUMN_NAME_TAX_IND_LARGE)
 

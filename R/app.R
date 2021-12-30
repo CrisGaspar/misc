@@ -372,7 +372,7 @@ server <- function(input, output, session) {
   get_selected_data_info <- function(separator = " ") {
     selected_sub_tab <- input$sidebar_menu
     if (is.null(input$sidebar_menu)) {
-      selected_sub_tab <- SUB_TAB_POPULATION
+      selected_sub_tab <- kTabPopulation
     }
     selected_data_info <- paste(input$data_display_year_selector, selected_sub_tab, sep = separator)
     selected_data_info
@@ -484,7 +484,7 @@ server <- function(input, output, session) {
     sheet_names_read <- excel_sheet_names(filename)
 
     # We check for missing sheets.
-    missing_sheets <- setdiff(data_set_names, sheet_names_read)
+    missing_sheets <- setdiff(kExpectedSheets, sheet_names_read)
 
     if (length(missing_sheets) > 0) {
       err <- paste("Missing sheets in uploaded file: ", paste(missing_sheets, collapse=", "))
@@ -499,14 +499,14 @@ server <- function(input, output, session) {
     }
 
     # Check and log any new sheets but still continue to upload
-    new_sheets <- setdiff(sheet_names_read, data_set_names)
+    new_sheets <- setdiff(sheet_names_read, kExpectedSheets)
     if (length(new_sheets) > 0) {
       info <- paste("Ignoring new sheets in uploaded file: ", paste(new_sheets, collapse=", "))
       print(info)
     }
 
     # Read only datasheets we wanted/expected and send to API to save
-    data_sheets <- read_excel_sheets(filename, data_set_names)
+    data_sheets <- read_excel_sheets(filename, kExpectedSheets)
     result <- call_API_data_endpoint(data_frames = data_sheets, year = input$data_load_year_selector)
     
     if (result$success == "true") {
@@ -618,7 +618,7 @@ server <- function(input, output, session) {
     
     data_frame_to_display <- municipal_data$data_frame_all_columns
     
-    if (selected_sub_tab == SUB_TAB_BUILDING_PERMIT_ACTIVITY_BY_YEAR)
+    if (selected_sub_tab == kTabBuildingPermitByYear)
     {
       data_frame_to_display <- municipal_data$data_frame_building_permit_activity_by_year
     }
