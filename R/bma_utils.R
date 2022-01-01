@@ -289,10 +289,13 @@ filter_and_display <- function(output, data_frame, selected_sub_tab, selected_ye
       
         filtered_data_frame <- merge(filtered_data_frame, previous_year_columns_data_frame, by = "Municipality", all.x = TRUE)
         
-        # update population increase column name
-        population_increase_old_name <- paste(selected_year, COLUMN_NAME_POPULATION_INCREASE)
-        population_increase_new_name <- paste("2011-", population_increase_old_name, sep = "")
-        colnames(filtered_data_frame)[colnames(filtered_data_frame) == population_increase_old_name] <- population_increase_new_name
+        # update annual population increase column name
+        # display name is: \<startYear>-<endYear> Annual Population Increase'
+        population_increase_api_name <- paste(selected_year, COLUMN_NAME_ANNUAL_POPULATION_INCREASE)
+        start_year <- getPreviousCensusYear(selected_year)
+        population_increase_display_name <- paste(start_year, "-", selected_year, 
+                                                  COLUMN_NAME_ANNUAL_POPULATION_INCREASE, sep = " ")
+        colnames(filtered_data_frame)[colnames(filtered_data_frame) == population_increase_api_name] <- population_increase_display_name
       }
       else if (selected_sub_tab == kTabAvgHouseholdIncome) {
         filtered_data_frame <- get_municipality_data(municipalities = as.list(filtered_data_frame[[COLUMN_NAME_MUNICIPALITY]]), 

@@ -11,7 +11,7 @@ COLUMN_NAME_YEAR = 'Year'
 COLUMN_NAME_POPULATION_DENSITY = 'Population Density per sq. km.'
 COLUMN_NAME_POPULATION = 'Population'
 COLUMN_NAME_LAND_AREA = 'Land Area km2'
-COLUMN_NAME_POPULATION_INCREASE = 'Population Increase'
+COLUMN_NAME_POPULATION_INCREASE = 'Annual Population Increase'
 COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA = 'Building Construction Value per Capita'
 COLUMN_NAME_ESTIMATED_AVG_HOUSEHOLD_INCOME = 'Estimated Average Household Income'
 COLUMN_NAME_WEIGHTED_MEDIAN_VAL_DWELLING = 'Weighted Median Value of Dwelling'
@@ -179,7 +179,7 @@ excel_column_name_to_db_column_name = {
     COLUMN_NAME_POPULATION: 'population',
     COLUMN_NAME_LAND_AREA: 'land_area_km2',
 
-    COLUMN_NAME_POPULATION_INCREASE: 'population_increase_percent',
+    COLUMN_NAME_POPULATION_INCREASE: 'annual_population_increase_percent',
     COLUMN_NAME_BUILDING_CONSTRUCTION_VALUE: 'building_construction_value',
     COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA: 'building_construction_per_capita_value',
     COLUMN_NAME_ESTIMATED_AVG_HOUSEHOLD_INCOME: 'estimated_average_household_income',
@@ -384,7 +384,7 @@ class MunicipalityData(models.Model):
     population = models.IntegerField(null=True)
     population_density_per_km2 = models.DecimalField(max_digits=default_max_digits,
                                                      decimal_places=default_decimal_places, null=True)
-    population_increase_percent = models.DecimalField(max_digits=default_max_digits,
+    annual_population_increase_percent = models.DecimalField(max_digits=default_max_digits,
                                                       decimal_places=default_decimal_places, null=True)
     building_construction_value = models.DecimalField(max_digits=default_max_digits,
                                                       decimal_places=default_decimal_places, null=True)
