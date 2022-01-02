@@ -203,10 +203,12 @@ filter_column_names <- function(column_names, filtering_list) {
     if (fifth_char == ' ') {
       possible_year <- strtoi(first_4_chars, base = 10)
       if (!is.na(possible_year)) {
+        # the real name is the part after '<year> '
         extracted_column_name <- substr(column_name, 6, nchar(column_name))
       }
     }
     else if (fifth_char == '-') {
+      # the format is '<startYear>-<endYear> <columnName>'
       possible_year_range_start <- strtoi(first_4_chars, base = 10)
       possible_year_range_end <- strtoi(substr(column_name, 6, 9), base = 10)
  
@@ -264,6 +266,14 @@ prepend_year <- function(column_name, year) {
   }
 }
 
+# get the nearest preceding census year before given year
+getPreviousCensusYear <- function(year) {
+  # census years: start with 2011. every 5 years. stop at 2100
+  censusYears <- seq(2011, 2100, by=5)
+  maxless <- max(censusYears[censusYears < year])
+  maxless
+}
+
 filter_and_display <- function(output, data_frame, selected_sub_tab, selected_year, population_data_frame = NULL, building_construction_data_frame = NULL) {
   if (!is.null(data_frame)) {
     if (selected_sub_tab == kTabBuildingPermitByYear) {
@@ -282,7 +292,7 @@ filter_and_display <- function(output, data_frame, selected_sub_tab, selected_ye
         filtered_data_frame <- merge(population_data_frame, filtered_data_frame, by = "Municipality", all.y = TRUE)
        
         # get previous year columns
-        previous_year_columns_data_frame <- get_municipality_data(municipalities = as.list(filtered_data_frame[[COLUMN_NAME_MUNICIPALITY]]), 
+        previous_year_columns_data_frame <- get_municipality_data(municipalities = as.list(filtered_data_frame[[COLUMN_NAME_MUNICIPALITY]]),
                                                                   year = selected_year, population_by_year = F, 
                                                                   by_year_columns = list(COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA), 
                                                                   previous_year = T)
@@ -290,11 +300,12 @@ filter_and_display <- function(output, data_frame, selected_sub_tab, selected_ye
         filtered_data_frame <- merge(filtered_data_frame, previous_year_columns_data_frame, by = "Municipality", all.x = TRUE)
         
         # update annual population increase column name
-        # display name is: \<startYear>-<endYear> Annual Population Increase'
+        # display name is: '<startYear>-<endYear> Annual Population Increase'
         population_increase_api_name <- paste(selected_year, COLUMN_NAME_ANNUAL_POPULATION_INCREASE)
         start_year <- getPreviousCensusYear(selected_year)
-        population_increase_display_name <- paste(start_year, "-", selected_year, 
-                                                  COLUMN_NAME_ANNUAL_POPULATION_INCREASE, sep = " ")
+        yearRange <- paste(start_year, "-", selected_year, sep = "")
+        population_increase_display_name <- paste(yearRange, COLUMN_NAME_ANNUAL_POPULATION_INCREASE, sep = " ")
+        # update dataframe to new display name
         colnames(filtered_data_frame)[colnames(filtered_data_frame) == population_increase_api_name] <- population_increase_display_name
       }
       else if (selected_sub_tab == kTabAvgHouseholdIncome) {
