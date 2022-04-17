@@ -1,8 +1,0 @@
-Usage:
-java -jar code.jar <transformation_filename> <text_filename>
-
-
- * NOTES:
- * 1. In a production environment for efficiency I would split text file into smaller files of size <= 10 MBs and then kick off
- *    Spark processing jobs in Spark cluster locally or on AWS for maximum parallelism.
- * 2. Since this is not a paid exercise, I did not include unit tests.
