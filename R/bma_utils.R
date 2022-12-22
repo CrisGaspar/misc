@@ -310,9 +310,9 @@ filter_and_display <- function(output, data_frame, selected_sub_tab, selected_ye
       }
       else if (selected_sub_tab == kTabAvgHouseholdIncome) {
         filtered_data_frame <- get_municipality_data(municipalities = as.list(filtered_data_frame[[COLUMN_NAME_MUNICIPALITY]]), 
-                                                     year = selected_year, population_by_year = F, 
-                                                     by_year_columns = list(COLUMN_NAME_EST_AVG_HOUSEHOLD_INCOME), 
-                                                     previous_year = T)
+                                                     year = selected_year, population_by_year = F,
+                                                     by_year_columns = list(COLUMN_NAME_EST_AVG_HOUSEHOLD_INCOME),
+                                                     previous_year = F, recent_years = F)
       }
     }
 
@@ -347,7 +347,7 @@ create_empty_data_frame <- function(years = NULL, by_year_columns = NULL) {
   df
 }
 
-get_municipality_data <- function(municipalities, year, population_by_year = F, by_year_columns = NULL, previous_year = F) {
+get_municipality_data <- function(municipalities, year, population_by_year = F, by_year_columns = NULL, previous_year = F, recent_years = F) {
 
   if (is.null(by_year_columns) && !population_by_year) {
     # Get data frame filtered to selected municipalities and selected year
@@ -360,13 +360,14 @@ get_municipality_data <- function(municipalities, year, population_by_year = F, 
       year_num <- as.numeric(year)
       years <- list(as.character(year_num - 1))
     }
-    else {
-      if (population_by_year) {
-        years <- getPopulationYears(year)
-      }
-      else if (!is.null(by_year_columns)){
-        years <- getRecentYears(year)
-      }
+    else if (population_by_year) {
+      years <- getPopulationYears(year)
+    }
+    else if (recent_years){
+      years <- getRecentYears(year)
+    } else {
+      # use current selected year
+      years <- list(year)
     }
 
     # Get by-year data for selected municipalities, specific years and specified colum name 
@@ -413,7 +414,8 @@ refresh_data_display <- function(output, selected_sub_tab, municipalities, year)
   data_frame_population_by_year <- get_municipality_data(municipalities = municipalities, year = year, population_by_year = T, by_year_columns = list(COLUMN_NAME_POPULATION))
   data_frame_building_permit_activity_by_year <- get_municipality_data(municipalities = municipalities, year = year, population_by_year = F, 
                                                                        by_year_columns = list(COLUMN_NAME_BUILDING_CONSTRUCTION_VALUE, 
-                                                                                              COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX))
+                                                                                              COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX),
+                                                                       recent_years = T)
   data_frame_to_display <- data_frame
   if (selected_sub_tab == kTabBuildingPermitByYear)
   {
