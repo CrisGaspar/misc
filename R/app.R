@@ -210,7 +210,7 @@ server <- function(input, output, session) {
       fluidRow(
           h3(textOutput("selected_data_info"), align = "center"),
           h3(textOutput("selected_municipality_group_info"), align = "center"),
-          downloadButton("exportToExcel", "View in Excel"),
+          downloadButton("downloadData", "Export To Excel"),
           DTOutput("data"),
           DTOutput("data_stats")
           # actionButton(inputId="saveUserSelectionButton", label ="Save"),
@@ -632,9 +632,9 @@ server <- function(input, output, session) {
   })
 
   # Data Load
-  output$exportToExcel <- downloadHandler(
+  output$downloadData <- downloadHandler(
     filename = function() {
-      paste("data-", Sys.Date(), "-", get_selected_data_info(), ".xlsx", sep="")
+      paste0("data-", Sys.Date(), "-", get_selected_data_info(), ".xlsx")
     },
     contentType = "text/xlsx",
     content = function(file) {

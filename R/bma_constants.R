@@ -17,7 +17,7 @@ kInfoNoMunicipalitySelection <- 'No Initial Municipality Selection'
 
 # Defaults to most recent year we have data for
 # TODO: Get it from API instead of hard-coded value
-kMostRecentYear <- 2022L
+kMostRecentYear <- 2023L
 # 2014 is the oldest year
 kAllYears <- 2014L: kMostRecentYear
 

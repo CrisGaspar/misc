@@ -45,7 +45,13 @@ merge_data_frames_vertically_export <- function(df, df_stats) {
   colnames(empty_row_df) <- colnames(df)
   
   # In stats data_frame replace Inf and Nan values to NA
-  clean_df_stats <- do.call(data.frame, lapply(df_stats, function(x) replace(x, is.infinite(x) || is.nan(x), NA)))
+  inf_cols <- sapply(df, is.infinite)
+  nan_cols <- sapply(df, is.nan)
+
+  df[inf_cols] <- ifelse(is.infinite(df[inf_cols]), NA, df[inf_cols])
+  df[nan_cols] <- ifelse(is.nan(df[nan_cols]), NA, df[nan_cols])
+  
+  clean_df_stats <- df_stats
   colnames(clean_df_stats) <- colnames(df)
 
   # Merge vertically with the empty row beween the 2 data_frames
@@ -178,7 +184,7 @@ call_API_data_endpoint <- function(municipalities = NULL, year = NULL, data_fram
   }
   else {
     err <- paste("Cannot call API data endpoint because one of the parameters is not valid: year = ",  year, 
-                 " no municipalities = ", is.null(municipalities) || length(municipalities) == 0, 
+                 " no municipalities = ", is.null(municipalities) || (length(municipalities) == 0), 
                  " data_frames is NULL = ", is.null(data_frames))
     result <- list(success = 'false', error_message = err)
     print(result)
@@ -383,7 +389,7 @@ get_municipality_data <- function(municipalities, year, population_by_year = F, 
       easyClose = TRUE,
       footer = NULL))
   }
-  else if (is.null(result$data) || length(result$data) == 0 || result$data == "[]") {
+  else if (is.null(result$data) || (length(result$data) == 0)) {
     print(paste("No data found for selected year:", year, "or years: ", years, "and selected municipalities: ", municipalities, 
                 "\nError message from data server: ", result$error_message))
     data_frame <- create_empty_data_frame(years = years, by_year_columns = by_year_columns)
