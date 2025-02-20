@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import {
     kApiUrl,
     kLoginEndpoint,
@@ -48,20 +48,35 @@ export function getPopulationYears(selectedYear: number): number[] {
 }
 
 // Excel file handling functions
-export function excelSheetNames(filename: string): string[] {
-    const workbook = XLSX.readFile(filename);
-    return workbook.SheetNames;
+export async function excelSheetNames(filename: string): Promise<string[]> {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(filename);
+    return workbook.worksheets.map(sheet => sheet.name);
 }
 
-export function readExcelSheets(filename: string, sheets?: string[]): { [key: string]: DataFrame } {
-    const workbook = XLSX.readFile(filename);
-    const sheetsToRead = sheets || workbook.SheetNames;
+export async function readExcelSheets(filename: string, sheets?: string[]): Promise<{ [key: string]: DataFrame }> {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(filename);
+    
+    const sheetsToRead = sheets || workbook.worksheets.map(sheet => sheet.name);
     
     const result: { [key: string]: DataFrame } = {};
-    sheetsToRead.forEach(sheet => {
-        const worksheet = workbook.Sheets[sheet];
-        result[sheet] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-    });
+    for (const sheetName of sheetsToRead) {
+        const worksheet = workbook.getWorksheet(sheetName);
+        if (worksheet) {
+            result[sheetName] = {};
+            worksheet.eachRow((row, rowNumber) => {
+                const rowValues = row.values.slice(1); // slice(1) because ExcelJS row values are 1-based
+                rowValues.forEach((value, columnIndex) => {
+                    const columnName = worksheet.getRow(1).getCell(columnIndex + 1).value;
+                    if (!result[sheetName][columnName]) {
+                        result[sheetName][columnName] = [];
+                    }
+                    result[sheetName][columnName][rowNumber - 1] = value;
+                });
+            });
+        }
+    }
     
     return result;
 }

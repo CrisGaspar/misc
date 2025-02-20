@@ -14,7 +14,8 @@ import {
     callApiColumnsByYearsEndpoint,
     callApiDataEndpoint,
     getRecentYears,
-    readExcelSheets
+    readExcelSheets,
+    excelSheetNames
 } from './bma_utils';
 
 // Interface definitions
@@ -119,26 +120,34 @@ async function handleDataByYears(req: Request): Promise<Response> {
 }
 
 async function handleFileUpload(req: Request): Promise<Response> {
-    const formData = await req.formData();
-    const file = formData.get('file') as File;
-    
-    if (!file) {
-        return new Response(
-            JSON.stringify({ success: false, error: 'No file uploaded' }),
-            { status: 400 }
-        );
-    }
-
     try {
+        const form = await req.formData();
+        const file = form.get('file') as File;
+        
+        if (!file) {
+            return new Response('No file uploaded', { status: 400 });
+        }
+
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
-        const sheets = readExcelSheets(buffer);
-        return new Response(JSON.stringify({ success: true, data: sheets }));
+        
+        // Save the file temporarily
+        const tempPath = `/tmp/${file.name}`;
+        await Bun.write(tempPath, buffer);
+
+        // Read Excel data
+        const sheets = await excelSheetNames(tempPath);
+        const data = await readExcelSheets(tempPath, sheets);
+
+        // Clean up temp file
+        await Bun.file(tempPath).remove();
+
+        return new Response(JSON.stringify({ success: true, data }), {
+            headers: { 'Content-Type': 'application/json' }
+        });
     } catch (error) {
-        return new Response(
-            JSON.stringify({ success: false, error: 'Failed to process Excel file' }),
-            { status: 500 }
-        );
+        console.error('Error processing file:', error);
+        return new Response('Error processing file', { status: 500 });
     }
 }
 
