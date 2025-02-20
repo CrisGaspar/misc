@@ -1,0 +1,19 @@
+{
+  "name": "bma-municipal-study",
+  "version": "1.0.0",
+  "description": "BMA Municipal Study Application",
+  "module": "src/app.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/app.ts",
+    "dev": "bun --watch run src/app.ts",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "typescript": "^5.3.2"
+  }
+}
