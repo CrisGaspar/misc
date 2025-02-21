@@ -8,7 +8,17 @@ import {
     kDataByYearsEndpoint,
     kNonNumericColumnsCount,
     kInfoNoMunicipalitySelection,
-    kTabBuildingPermitByYear
+    kTabBuildingPermitByYear,
+    kTabPopulation,
+    kTabDensityLandArea,
+    kTabAssessmentInfo,
+    COLUMN_NAME_POPULATION,
+    COLUMN_NAME_POPULATION_DENSITY,
+    COLUMN_NAME_LAND_AREA,
+    COLUMN_NAME_UNWEIGHTED_ASSESSMENT_PER_CAPITA,
+    COLUMN_NAME_WEIGHTED_ASSESSMENT_PER_CAPITA,
+    COLUMN_NAME_TOTAL_UNWEIGHTED_ASSESSMENT,
+    COLUMN_NAME_TOTAL_WEIGHTED_ASSESSMENT
 } from './bma_constants';
 
 interface DataFrame {
@@ -67,8 +77,8 @@ export async function readExcelSheets(filename: string, sheets?: string[]): Prom
             result[sheetName] = {};
             worksheet.eachRow((row, rowNumber) => {
                 const rowValues = row.values.slice(1); // slice(1) because ExcelJS row values are 1-based
-                rowValues.forEach((value, columnIndex) => {
-                    const columnName = worksheet.getRow(1).getCell(columnIndex + 1).value;
+                rowValues.forEach((value: any, columnIndex: number) => {
+                    const columnName = worksheet.getRow(1).getCell(columnIndex + 1).value as string;
                     if (!result[sheetName][columnName]) {
                         result[sheetName][columnName] = [];
                     }
@@ -232,4 +242,86 @@ export async function callApiDataEndpoint(
             error_message: error.message
         };
     }
+}
+
+// Column names per sub-tab selection
+const columnNamesPerSubTabSelection: { [key: string]: string[] } = {
+    [kTabPopulation]: [COLUMN_NAME_POPULATION],
+    [kTabDensityLandArea]: [COLUMN_NAME_POPULATION_DENSITY, COLUMN_NAME_LAND_AREA],
+    [kTabAssessmentInfo]: [
+        COLUMN_NAME_UNWEIGHTED_ASSESSMENT_PER_CAPITA,
+        COLUMN_NAME_WEIGHTED_ASSESSMENT_PER_CAPITA,
+        COLUMN_NAME_LAND_AREA,
+        COLUMN_NAME_TOTAL_UNWEIGHTED_ASSESSMENT,
+        COLUMN_NAME_TOTAL_WEIGHTED_ASSESSMENT
+    ],
+    // Add other tab mappings as needed
+};
+
+export function getFilterColumns(selectedSubTab: string): string[] {
+    const columnNames = columnNamesPerSubTabSelection[selectedSubTab] || [];
+    return ['Municipality', ...columnNames];
+}
+
+export function filterDataFrame(dataFrame: DataFrame, filterColumns: string[]): DataFrame {
+    const filteredDataFrame: DataFrame = {};
+    filterColumns.forEach(column => {
+        if (dataFrame[column]) {
+            filteredDataFrame[column] = dataFrame[column];
+        }
+    });
+    return filteredDataFrame;
+}
+
+export function filterAndDisplay(dataFrame: DataFrame, selectedSubTab: string, selectedYear: number): DataFrame {
+    if (!dataFrame) return {};
+
+    if (selectedSubTab === kTabBuildingPermitByYear) {
+        // No need to filter, use all columns
+        return dataFrame;
+    } else {
+        const filterColumns = getFilterColumns(selectedSubTab);
+        const filteredDataFrame = filterDataFrame(dataFrame, filterColumns);
+        
+        // Prepend year to column names (except Municipality)
+        const renamedDataFrame: DataFrame = {};
+        Object.entries(filteredDataFrame).forEach(([key, value]) => {
+            const newKey = key === 'Municipality' ? key : `${selectedYear} ${key}`;
+            renamedDataFrame[newKey] = value;
+        });
+        
+        return renamedDataFrame;
+    }
+}
+
+// Create stats data frame for given data frame with min, max, average, and median
+export async function getStats(dataFrame: DataFrame): Promise<DataFrame> {
+    // Skip non-numeric columns (first column)
+    const numericColumns = Object.keys(dataFrame).slice(kNonNumericColumnsCount);
+    const stats: DataFrame = {
+        Municipality: ['Min', 'Max', 'Average', 'Median']
+    };
+
+    numericColumns.forEach(column => {
+        const values = dataFrame[column].filter((v: any) => v !== null && !isNaN(v)).map(Number);
+        if (values.length > 0) {
+            // Calculate min, max, average
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+
+            // Calculate median
+            const sorted = [...values].sort((a, b) => a - b);
+            const mid = Math.floor(sorted.length / 2);
+            const median = sorted.length % 2 === 0 
+                ? (sorted[mid - 1] + sorted[mid]) / 2 
+                : sorted[mid];
+
+            stats[column] = [min, max, avg, median];
+        } else {
+            stats[column] = [null, null, null, null];
+        }
+    });
+
+    return stats;
 }

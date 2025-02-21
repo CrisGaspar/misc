@@ -163,6 +163,70 @@ async function handleRoot(req: Request): Promise<Response> {
     }
 }
 
+async function handleFilterData(req: Request): Promise<Response> {
+    const { data, selectedSubTab, selectedYear } = await req.json();
+    
+    try {
+        const filteredData = filterAndDisplay(data, selectedSubTab, selectedYear);
+        return new Response(JSON.stringify({
+            success: true,
+            data: filteredData
+        }));
+    } catch (error) {
+        return new Response(
+            JSON.stringify({ success: false, error: 'Failed to filter data' }),
+            { status: 500 }
+        );
+    }
+}
+
+async function handleExcelDownload(req: Request): Promise<Response> {
+    const { data, selectedSubTab, selectedYear } = await req.json();
+    
+    try {
+        // Get filtered data
+        const filteredData = filterAndDisplay(data, selectedSubTab, selectedYear);
+        
+        // Create stats and merge with filtered data
+        const stats = await getStats(filteredData);
+        const mergedData = mergeDataFramesVerticallyExport(filteredData, stats);
+
+        // Create Excel workbook
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet(selectedSubTab);
+
+        // Add headers
+        const columns = Object.keys(mergedData).map(key => ({ header: key, key }));
+        worksheet.columns = columns;
+
+        // Add data rows
+        const numRows = mergedData[Object.keys(mergedData)[0]].length;
+        for (let i = 0; i < numRows; i++) {
+            const row = {};
+            Object.keys(mergedData).forEach(key => {
+                row[key] = mergedData[key][i];
+            });
+            worksheet.addRow(row);
+        }
+
+        // Generate Excel file
+        const buffer = await workbook.xlsx.writeBuffer();
+        
+        return new Response(buffer, {
+            headers: {
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition': `attachment; filename=data-${new Date().toISOString().split('T')[0]}-${selectedSubTab}.xlsx`
+            }
+        });
+    } catch (error) {
+        console.error('Error generating Excel:', error);
+        return new Response(
+            JSON.stringify({ success: false, error: 'Failed to generate Excel file' }),
+            { status: 500 }
+        );
+    }
+}
+
 // Create and start the server
 const server = Bun.serve({
     port: 3000,
@@ -196,6 +260,12 @@ const server = Bun.serve({
         }
         if (method === 'POST' && path === '/upload') {
             return handleFileUpload(req);
+        }
+        if (method === 'POST' && path === '/filter-data') {
+            return handleFilterData(req);
+        }
+        if (method === 'POST' && path === '/download-excel') {
+            return handleExcelDownload(req);
         }
         if (method === 'GET' && path === '/') {
             return handleRoot(req);

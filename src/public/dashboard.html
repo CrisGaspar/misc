@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMA Municipal Study - Dashboard</title>
+    <title>BMA Municipal Study</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -70,6 +70,33 @@
             background: #dc3545;
             color: white;
         }
+        .data-container {
+            padding: 20px;
+        }
+        .data-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #f0f0f0;
+        }
+        .download-btn {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .download-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -80,12 +107,16 @@
         </header>
         
         <div class="controls">
-            <select id="yearSelect">
-                <option value="">Select Year</option>
+            <select id="yearSelect"></select>
+            <select id="municipalitySelect"></select>
+            <select id="subTabSelect">
+                <option value="Population">Population</option>
+                <option value="Density and Land Area">Density and Land Area</option>
+                <option value="Assessment Information">Assessment Information</option>
+                <option value="Building Permit Activity">Building Permit Activity</option>
+                <!-- Add other tabs as needed -->
             </select>
-            <select id="municipalitySelect" multiple>
-                <option value="">Loading municipalities...</option>
-            </select>
+            <button id="downloadBtn" class="download-btn" disabled>Download Excel</button>
         </div>
         
         <div class="content">
@@ -100,11 +131,14 @@
                 <div id="content">
                     Select a year and municipality to view data.
                 </div>
+                <div class="data-container"></div>
             </div>
         </div>
     </div>
 
     <script>
+        let currentData = null;
+
         // Initialize the dashboard
         async function initDashboard() {
             // Populate year select
@@ -119,6 +153,9 @@
 
             // Add event listeners
             yearSelect.addEventListener('change', loadMunicipalities);
+            document.getElementById('municipalitySelect').addEventListener('change', loadData);
+            document.getElementById('subTabSelect').addEventListener('change', displayData);
+            document.getElementById('downloadBtn').addEventListener('click', downloadExcel);
         }
 
         // Load municipalities for selected year
@@ -143,6 +180,125 @@
                 }
             } catch (error) {
                 console.error('Failed to load municipalities:', error);
+            }
+        }
+
+        // Load data for selected municipality and year
+        async function loadData() {
+            const year = document.getElementById('yearSelect').value;
+            const municipality = document.getElementById('municipalitySelect').value;
+            if (!year || !municipality) return;
+
+            try {
+                const response = await fetch(`/data?year=${year}&municipality=${municipality}`);
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    currentData = result.data;
+                    displayData();
+                }
+            } catch (error) {
+                console.error('Failed to load data:', error);
+            }
+        }
+
+        // Display filtered data based on selected sub-tab
+        async function displayData() {
+            if (!currentData) return;
+
+            const year = document.getElementById('yearSelect').value;
+            const subTab = document.getElementById('subTabSelect').value;
+            
+            try {
+                const response = await fetch('/filter-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        data: currentData,
+                        selectedSubTab: subTab,
+                        selectedYear: parseInt(year)
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success && result.data) {
+                    displayDataInTable(result.data);
+                    document.getElementById('downloadBtn').disabled = false;
+                }
+            } catch (error) {
+                console.error('Failed to filter data:', error);
+            }
+        }
+
+        // Helper function to display data in a table
+        function displayDataInTable(data) {
+            const container = document.querySelector('.data-container');
+            if (!data || Object.keys(data).length === 0) {
+                container.innerHTML = '<p>No data available</p>';
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.className = 'data-table';
+
+            // Create header row
+            const headerRow = document.createElement('tr');
+            Object.keys(data).forEach(column => {
+                const th = document.createElement('th');
+                th.textContent = column;
+                headerRow.appendChild(th);
+            });
+            table.appendChild(headerRow);
+
+            // Create data rows
+            const numRows = data[Object.keys(data)[0]].length;
+            for (let i = 0; i < numRows; i++) {
+                const row = document.createElement('tr');
+                Object.keys(data).forEach(column => {
+                    const td = document.createElement('td');
+                    td.textContent = data[column][i];
+                    row.appendChild(td);
+                });
+                table.appendChild(row);
+            }
+
+            container.innerHTML = '';
+            container.appendChild(table);
+        }
+
+        // Handle Excel download
+        async function downloadExcel() {
+            const year = document.getElementById('yearSelect').value;
+            const subTab = document.getElementById('subTabSelect').value;
+            
+            try {
+                const response = await fetch('/download-excel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        data: currentData,
+                        selectedSubTab: subTab,
+                        selectedYear: parseInt(year)
+                    })
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `data-${new Date().toISOString().split('T')[0]}-${subTab}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                }
+            } catch (error) {
+                console.error('Failed to download Excel:', error);
             }
         }
 
