@@ -5,7 +5,10 @@ import {
     kCustomMunicipalityGroupsLabel,
     kAllMunicipalitySelector,
     kCustomMunicipalityGroupSelector,
-    kSheetNetExpendituresPerCapita
+    kSheetNetExpendituresPerCapita,
+    kExpectedSheets,
+    kErrorNotAuthorized,
+    kErrorFailedToLoadData
 } from './bma_constants';
 import {
     callLoginEndpoint,
@@ -120,12 +123,30 @@ async function handleDataByYears(req: Request): Promise<Response> {
 }
 
 async function handleFileUpload(req: Request): Promise<Response> {
+    // Check if user is authenticated and is a superuser
+    if (!userState.authenticated || !userState.is_superuser) {
+        return new Response(JSON.stringify({
+            success: false,
+            error: kErrorNotAuthorized
+        }), { 
+            status: 403,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
     try {
         const form = await req.formData();
         const file = form.get('file') as File;
+        const year = form.get('year') as string;
         
-        if (!file) {
-            return new Response('No file uploaded', { status: 400 });
+        if (!file || !year) {
+            return new Response(JSON.stringify({
+                success: false,
+                error: 'Missing file or year'
+            }), { 
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
         }
 
         const arrayBuffer = await file.arrayBuffer();
@@ -135,26 +156,81 @@ async function handleFileUpload(req: Request): Promise<Response> {
         const tempPath = `/tmp/${file.name}`;
         await Bun.write(tempPath, buffer);
 
-        // Read Excel data
-        const sheets = await excelSheetNames(tempPath);
-        const data = await readExcelSheets(tempPath, sheets);
+        // Get sheet names and validate
+        const sheetNames = await excelSheetNames(tempPath);
+        
+        // Check for missing sheets
+        const missingSheets = kExpectedSheets.filter(sheet => !sheetNames.includes(sheet));
+        if (missingSheets.length > 0) {
+            await Bun.file(tempPath).remove();
+            return new Response(JSON.stringify({
+                success: false,
+                error: `Missing sheets in uploaded file: ${missingSheets.join(', ')}`
+            }), { 
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
+        // Log any new sheets (but continue processing)
+        const newSheets = sheetNames.filter(sheet => !kExpectedSheets.includes(sheet));
+        if (newSheets.length > 0) {
+            console.log(`Ignoring new sheets in uploaded file: ${newSheets.join(', ')}`);
+        }
+
+        // Read only expected sheets
+        const dataSheets = await readExcelSheets(tempPath, kExpectedSheets);
 
         // Clean up temp file
         await Bun.file(tempPath).remove();
 
-        return new Response(JSON.stringify({ success: true, data }), {
-            headers: { 'Content-Type': 'application/json' }
-        });
+        // Send data to API
+        const result = await callApiDataEndpoint(undefined, parseInt(year), dataSheets);
+        
+        if (result.success === 'true') {
+            return new Response(JSON.stringify({
+                success: true,
+                message: 'Successfully uploaded data to server'
+            }), {
+                headers: { 'Content-Type': 'application/json' }
+            });
+        } else {
+            return new Response(JSON.stringify({
+                success: false,
+                error: result.error_message || kErrorFailedToLoadData
+            }), { 
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
     } catch (error) {
         console.error('Error processing file:', error);
-        return new Response('Error processing file', { status: 500 });
+        return new Response(JSON.stringify({
+            success: false,
+            error: kErrorFailedToLoadData
+        }), { 
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 }
 
 async function handleRoot(req: Request): Promise<Response> {
     try {
-        const file = !userState.authenticated ? 'login.html' : 'dashboard.html';
-        const content = await Bun.file(`public/${file}`).text();
+        if (!userState.authenticated) {
+            const content = await Bun.file('public/login.html').text();
+            return new Response(content, {
+                headers: { 'Content-Type': 'text/html' }
+            });
+        }
+
+        // For authenticated users, inject user state into dashboard.html
+        let content = await Bun.file('public/dashboard.html').text();
+        const userStateScript = `<script>window.userState = ${JSON.stringify({
+            is_superuser: userState.is_superuser
+        })};</script>`;
+        content = content.replace('</head>', `${userStateScript}</head>`);
+        
         return new Response(content, {
             headers: { 'Content-Type': 'text/html' }
         });

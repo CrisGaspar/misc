@@ -96,6 +96,27 @@ export const COLUMN_NAME_LAND_AREA = 'Land Area km2';
 export const COLUMN_NAME_TOTAL_UNWEIGHTED_ASSESSMENT = 'Total Unweighted Assessment';
 export const COLUMN_NAME_TOTAL_WEIGHTED_ASSESSMENT = 'Total Weighted Assessment';
 
+// Expected sheets in uploaded Excel file
+export const kExpectedSheets = [
+    "Population",
+    "Density and Land Area",
+    "Assessment Information",
+    "Assessment Composition",
+    "Building Permit Activity",
+    "Total Levy",
+    "Upper Tier Levy",
+    "Lower Tier Levy",
+    "Tax Asset Consumption Ratio",
+    "Financial Position per Capita",
+    "Tax Dis Res as Percent OSR",
+    "Tax Reserves as Percent of Taxation",
+    "Tax Res per Capita"
+];
+
+// Error messages
+export const kErrorTitleFailedToLoadData = "Failed to Load Data";
+export const kErrorNotAuthorized = "Not authorized. Only superusers can upload data.";
+
 // Menu sub tabs configuration
 export const menu_sub_tabs_text: { [key: string]: string[] } = {
     [kSheetNetExpendituresPerCapita]: [
