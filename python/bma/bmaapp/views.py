@@ -272,7 +272,7 @@ def municipality_data_by_years(request):
             return error_response(ERROR_JSON_DECODING_FAILED)
         except Exception as e:
             logging.error(e, exc_info=True)
-            return error_response("Encountered exception {}".format(str(e)))
+            return error_response("Encountered an error")
         return success_response()
     return error_response(ERROR_UNSUPPORTED_HTTP_OPERATION)
 
