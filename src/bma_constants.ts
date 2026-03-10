@@ -39,7 +39,7 @@ export const kSheetNetExpendituresPerCapita = "Net Expenditures per Capita";
 export const kTabPopulation = "Population";
 export const kTabDensityLandArea = "Density and Land Area";
 export const kTabAssessmentInfo = "Assessment Information";
-export const kTabAssessmentComposition = "Assessment Composition";
+export const kTabAssessmentComposition = "UW Assessment Composition";
 export const kTabBuildingPermitByYear = "Building Permit Activity";
 export const kTabTotalLevy = "Total Levy";
 export const kTabUpperTierLevy = "Upper Tier Levy";
@@ -101,7 +101,7 @@ export const kExpectedSheets = [
     "Population",
     "Density and Land Area",
     "Assessment Information",
-    "Assessment Composition",
+    "UW Assessment Composition",
     "Building Permit Activity",
     "Total Levy",
     "Upper Tier Levy",

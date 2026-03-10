@@ -385,7 +385,7 @@ def split_to_year_and_property_name(str, default_year, sheet_name):
             pass
 
     if property_name == COLUMN_NAME_MULTI_RESIDENTIAL and sheet_name == 'Tax Ratios':
-        # this column name is same in both Tax Ratios and Assessment Composition sheets
+        # this column name is same in both Tax Ratios and UW Assessment Composition sheets
         # but we now know it's the tax ratio one
         property_name = COLUMN_NAME_TAX_RATIOS_MULTI_RESIDENTIAL
     elif property_name == COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX and sheet_name == 'Building Permit Activity':
