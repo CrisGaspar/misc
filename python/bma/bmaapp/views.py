@@ -170,10 +170,6 @@ def municipality_data(request):
                 # each sheet can have different municipalities so reset
                 municipalities = []
 
-                if not sheet_name in EXPECTED_SHEET_NAMES:
-                    logging.error("Unexpected sheet name: {}".format(sheet_name))
-                    # ignore
-                    continue
                 for column_name, column_data in sheet_data.items():
                     if column_name == "Municipality":
                         municipalities = column_data
@@ -451,30 +447,3 @@ ERROR_BAD_REQUEST_DATA_ENDPOINT = 'Bad request to data endpoint. No municipaliti
 ERROR_BAD_REQUEST_DATA_NO_MUNICIPALITIES = 'Bad request to data_subset_by_years endpoint. No municipalities in JSON body'
 ERROR_BAD_REQUEST_DATA_NO_YEARS = 'Bad request to data_subset_by_years endpoint. No year list in JSON body'
 ERROR_BAD_REQUEST_DATA_NO_COLUMNS = 'Bad request to data_subset_by_years endpoint. No data columns list in JSON body'
-
-
-EXPECTED_SHEET_NAMES = [
-    "Population", "Density and Land Area", "Assessment Information", "Assessment Composition",
-    "Building Permit Activity",
-
-    "Total Levy", "Upper Tier Levy", "Lower Tier Levy", "Tax Asset Consumption Ratio",
-    "Financial Position per Capita", "Tax Dis Res as % OSR", "Tax Reserves as % of Taxation",
-    "Tax Res per Capita", "Tax Debt Int % OSR", "Tax Debt Charges as % OSR", "Total Debt Out per Capita",
-    "Tax Debt Out per Capita", "Debt to Reserve Ratio", "Tax Receivable as % Tax",
-    "Rates Coverage Ratio", "Net Fin Liab Ratio",
-
-    "Development Charges", "Building Permit Fees",
-
-    "Tax Ratios", "Optional Class",
-
-    "Total Tax Rates", "Municipal Tax Rates", "Education Tax Rates", "Residential", "Multi-Residential",
-    "Commercial", "Industrial",
-
-    "Water&Sewer Costs", "Water Asset Consumption", "Wastewater Asset Consumption", "Water Res as % OSR",
-    "Wastewater Res as % OSR", "Water Res as % Acum Amort", "Wastewater Res as % Acum Amort", "Water Debt Int Cover",
-    "Wastewater Debt Int Cover", "Water Net Fin Liab", "Wastewater Net Fin Liab",
-
-    "Average Household Income", "Average Value of Dwelling", "Combined costs", "Taxes as a % of Income",
-
-    "Net Expenditures per Capita"
-]

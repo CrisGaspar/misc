@@ -1,0 +1,59 @@
+# Commit Message Standard Labels
+
+## Format
+<type>(<scope>): <subject>
+
+## Types
+
+### Main Categories
+- **feat**: New feature or functionality
+- **fix**: Bug fix or error correction
+- **docs**: Documentation changes only
+- **style**: Code style changes (formatting, missing semicolons, etc.)
+- **refactor**: Code refactoring without functional changes
+- **perf**: Performance improvements
+- **test**: Adding or updating tests
+- **chore**: Maintenance tasks, dependency updates, build process
+
+### Special Categories
+- **ci**: CI/CD configuration changes
+- **build**: Build system or external dependency changes
+- **revert**: Reverting previous changes
+- **merge**: Merge commits (use for PR merges)
+
+## Scopes
+Common scopes for this project:
+- **bmaapp**: Main application logic
+- **api**: API endpoints and routes
+- **ui**: User interface components
+- **db**: Database schema or migrations
+- **config**: Configuration files
+- **deps**: Dependency management
+- **security**: Security-related changes
+
+## Examples
+feat(bmaapp): add user authentication system
+fix(api): resolve null pointer exception in user endpoint
+docs(readme): update installation instructions
+style(bmaapp): format code according to PEP8
+refactor(db): optimize query performance
+test(api): add unit tests for user endpoints
+chore(deps): update Python dependencies
+ci(github): add automated testing workflow
+
+## Subject Line Rules
+- Use present tense ("add" not "added")
+- Keep under 50 characters
+- Don't capitalize first letter
+- Don't end with period
+- Be descriptive and concise
+
+## Body (Optional)
+- Separate from subject with blank line
+- Wrap at 72 characters
+- Explain what and why, not how
+- Use bullet points for multiple changes
+
+## Footer (Optional)
+- Reference issues: "Closes #123"
+- Add breaking changes: "BREAKING CHANGE:"
