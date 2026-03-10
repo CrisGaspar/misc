@@ -27,6 +27,7 @@ COLUMN_NAME_PIPELINES = 'Pipelines'
 COLUMN_NAME_FARMLANDS = 'Farmlands'
 COLUMN_NAME_FORESTS = 'Forests'
 COLUMN_NAME_LANDFILL = 'Landfill'
+COLUMN_NAME_AGGREGATE_EXTRACTION = 'Aggregate Extraction'
 COLUMN_NAME_BUILDING_CONSTRUCTION_VALUE = 'Building Construction Value ($000)'
 COLUMN_NAME_BUILDING_CONSTRUCTION_PER_CAPITA_WITH_YEAR_PREFIX = 'per Capita'
 COLUMN_NAME_TOTAL_NET_LEVY = 'Total Net Levy (Upper and Lower Tiers)'
@@ -197,6 +198,7 @@ excel_column_name_to_db_column_name = {
     COLUMN_NAME_FARMLANDS: 'farmlands',
     COLUMN_NAME_FORESTS: 'forests',
     COLUMN_NAME_LANDFILL: 'landfill',
+    COLUMN_NAME_AGGREGATE_EXTRACTION: 'aggregate_extraction',
 
     COLUMN_NAME_TOTAL_NET_LEVY: 'total_net_levy_upper_and_lower_tiers',
     COLUMN_NAME_LEVY_PER_CAPITA: 'levy_per_capita',
@@ -412,6 +414,7 @@ class MunicipalityData(models.Model):
     farmlands = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     forests = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
     landfill = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
+    aggregate_extraction = models.DecimalField(max_digits=default_max_digits, decimal_places=default_decimal_places, null=True)
 
     total_net_levy_upper_and_lower_tiers = models.DecimalField(max_digits=default_max_digits,
                                                                decimal_places=default_decimal_places, null=True)
